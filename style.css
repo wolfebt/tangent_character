@@ -303,4 +303,49 @@ textarea {
     color: var(--header-text);
     border-bottom: 1px solid var(--border-color);
     padding-bottom: var(--spacing-xs);
+}/* ADD THIS TO THE END OF YOUR style.css FILE */
+
+/* Layout for the new Traits section */
+.trait-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.trait-group h4 {
+    margin: 0 0 var(--spacing-sm) 0;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+}
+
+.trait-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm);
+}
+
+.trait-header {
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: var(--header-text);
+}
+
+/* Layout for Invocations/Augmentations */
+.simple-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-sm);
+}
+.simple-grid .simple-header {
+     font-weight: bold;
+    font-size: 0.8rem;
+    color: var(--header-text);
+}
+
+
+/* Allows the first item in a skill row to be an input field */
+.skill-row .skill-label-input {
+    text-align: left;
+    font-weight: normal;
+    color: var(--text-color);
 }
