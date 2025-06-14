@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TANGENT RPG Character Sheet</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js" integrity="sha512-w61kvDEdEh9PzJIZhJ4MVIy/MJoCHucfbzH2K8MAoYAiA93gs/o2yBDR8AstsTUr86gNIlr4FwyG3DRL32S+zA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -22,7 +24,195 @@
     </div>
 
     <form class="character-sheet">
-        </form>
+        <section id="folio-1">
+            <header class="sheet-header">
+                <h1>TANGENT</h1>
+                <h2>SCI-FI FANTASY RPG // PERSONA FOLIO 1</h2>
+            </header>
+
+            <fieldset class="info-grid">
+                <legend>Character Information</legend>
+                <div class="input-group">
+                    <label for="char-name">Name</label>
+                    <input type="text" id="char-name" name="char-name">
+                </div>
+                <div class="input-group">
+                    <label for="char-concept">Concept</label>
+                    <input type="text" id="char-concept" name="char-concept">
+                </div>
+                <div class="input-group">
+                    <label for="char-species">Species</label>
+                    <input type="text" id="char-species" name="char-species">
+                </div>
+                <div class="input-group">
+                    <label for="char-origin">Origin</label>
+                    <input type="text" id="char-origin" name="char-origin">
+                </div>
+                <div class="input-group">
+                    <label for="char-faction">Faction</label>
+                    <input type="text" id="char-faction" name="char-faction">
+                </div>
+                <div class="input-group">
+                    <label for="char-occu">Occupation</label>
+                    <input type="text" id="char-occu" name="char-occu">
+                </div>
+                <div class="input-group">
+                    <label for="char-age">Age</label>
+                    <input type="text" id="char-age" name="char-age">
+                </div>
+                <div class="input-group">
+                    <label for="char-gender">Gender</label>
+                    <input type="text" id="char-gender" name="char-gender">
+                </div>
+                <div class="input-group">
+                    <label for="char-height">Height</label>
+                    <input type="text" id="char-height" name="char-height">
+                </div>
+                <div class="input-group">
+                    <label for="char-weight">Weight</label>
+                    <input type="text" id="char-weight" name="char-weight">
+                </div>
+                <div class="input-group full-width">
+                    <label for="char-motive">Personality / Motive</label>
+                    <input type="text" id="char-motive" name="char-motive">
+                </div>
+                <div class="input-group full-width">
+                    <label for="char-style">Description / Style</label>
+                    <input type="text" id="char-style" name="char-style">
+                </div>
+            </fieldset>
+
+            <div class="columns-2">
+                <div class="col-left">
+                    <fieldset class="attributes-grid">
+                        <legend>Primary Attributes</legend>
+                        <label for="attr-strength">Strength</label>
+                        <input type="number" id="attr-strength" name="attr-strength">
+                        <label for="attr-might">Might</label>
+                        <input type="number" id="attr-might" name="attr-might">
+                        
+                        <label for="attr-intellect">Intellect</label>
+                        <input type="number" id="attr-intellect" name="attr-intellect">
+                        <label for="attr-logic">Logic</label>
+                        <input type="number" id="attr-logic" name="attr-logic">
+                        
+                        <label for="attr-agility">Agility</label>
+                        <input type="number" id="attr-agility" name="attr-agility">
+                        <label for="attr-reflex">Reflex</label>
+                        <input type="number" id="attr-reflex" name="attr-reflex">
+                        
+                        <label for="attr-wisdom">Wisdom</label>
+                        <input type="number" id="attr-wisdom" name="attr-wisdom">
+                        <label for="attr-will">Will</label>
+                        <input type="number" id="attr-will" name="attr-will">
+                        
+                        <label for="attr-constitution">Constitution</label>
+                        <input type="number" id="attr-constitution" name="attr-constitution">
+                        <label for="attr-fortitude">Fortitude</label>
+                        <input type="number" id="attr-fortitude" name="attr-fortitude">
+                        
+                        <label for="attr-charisma">Charisma</label>
+                        <input type="number" id="attr-charisma" name="attr-charisma">
+                        <label for="attr-etiquette">Etiquette</label>
+                        <input type="number" id="attr-etiquette" name="attr-etiquette">
+                    </fieldset>
+
+                    <fieldset class="vitals-grid">
+                        <legend>Core Stats</legend>
+                        <div class="input-group">
+                           <label for="health">Health</label>
+                           <input type="number" id="health" name="health">
+                        </div>
+                         <div class="input-group">
+                           <label for="initiative">Initiative</label>
+                           <input type="number" id="initiative" name="initiative">
+                        </div>
+                        <div class="input-group">
+                           <label for="vitality">Vitality</label>
+                           <input type="number" id="vitality" name="vitality">
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-right">
+                    <fieldset>
+                        <legend>Modifiers</legend>
+                        <textarea name="modifiers" rows="12"></textarea>
+                    </fieldset>
+                </div>
+            </div>
+
+            <fieldset>
+                <legend>Skills</legend>
+                <div class="skills-container">
+                    
+                    <div class="skill-group">
+                        <h4 class="skill-group-header">Physical</h4>
+                        <div class="skill-row header"><span>Skill</span><span>Rank</span><span>Base</span><span>Mod</span><span>Total</span></div>
+                        <div class="skill-row" data-skill-id="acrobatics"><label>Acrobatics</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                        <div class="skill-row" data-skill-id="athletics"><label>Athletics</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                        <div class="skill-row" data-skill-id="piloting"><label>Piloting</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                        <div class="skill-row" data-skill-id="stealth"><label>Stealth</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                    </div>
+
+                    <div class="skill-group">
+                        <h4 class="skill-group-header">Social</h4>
+                        <div class="skill-row header"><span>Skill</span><span>Rank</span><span>Base</span><span>Mod</span><span>Total</span></div>
+                        <div class="skill-row" data-skill-id="awareness"><label>Awareness</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                        <div class="skill-row" data-skill-id="bluff"><label>Bluff</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                        <div class="skill-row" data-skill-id="diplomacy"><label>Diplomacy</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                        <div class="skill-row" data-skill-id="intimidate"><label>Intimidate</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                        <div class="skill-row" data-skill-id="streetwise"><label>Streetwise</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                    </div>
+                    
+                     <div class="skill-group">
+                        <h4 class="skill-group-header">Combat</h4>
+                        <div class="skill-row header"><span>Skill</span><span>Rank</span><span>Base</span><span>Mod</span><span>Total</span></div>
+                        <div class="skill-row" data-skill-id="archaic-defense"><label>Archaic: Defense</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                        <div class="skill-row" data-skill-id="archaic-melee"><label>Archaic: Melee</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                        <div class="skill-row" data-skill-id="archaic-ranged"><label>Archaic: Ranged</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                        <div class="skill-row" data-skill-id="modern-ballistic"><label>Modern: Ballistic</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                        <div class="skill-row" data-skill-id="advanced-energy"><label>Advanced: Energy</label><input type="number" class="skill-rank"><input type="number" class="skill-base"><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div>
+                    </div>
+                </div>
+            </fieldset>
+
+        </section>
+
+        <section id="folio-2">
+            <header class="sheet-header">
+                <h2>PERSONA FOLIO 2</h2>
+            </header>
+            <fieldset>
+                <legend>Traits & Features</legend>
+                <textarea name="traits-features" rows="10"></textarea>
+            </fieldset>
+             <fieldset>
+                <legend>Metafocus</legend>
+                <textarea name="metafocus" rows="10"></textarea>
+            </fieldset>
+        </section>
+        
+        <section id="folio-3">
+             <header class="sheet-header">
+                <h2>PERSONA FOLIO 3</h2>
+            </header>
+            <fieldset>
+                <legend>Mecha & Gear</legend>
+                <textarea name="mecha-gear" rows="15"></textarea>
+            </fieldset>
+        </section>
+
+        <section id="folio-4">
+             <header class="sheet-header">
+                <h2>PERSONA FOLIO 4</h2>
+            </header>
+            <fieldset>
+                <legend>Notes</legend>
+                <textarea name="notes" rows="20"></textarea>
+            </fieldset>
+        </section>
+
+    </form>
     
     <script src="script.js"></script>
 </body>
