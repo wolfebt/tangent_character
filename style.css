@@ -259,4 +259,48 @@ textarea {
     .info-grid, .vitals-grid {
         grid-template-columns: 1fr 1fr;
     }
+}/* ADD THIS TO THE END OF YOUR style.css FILE */
+
+/* New layout for the 3-column skills section */
+.skills-container-3-col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+/* Grid for the new Attack table */
+.attack-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 3fr;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+.attack-header {
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: var(--header-text);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--spacing-xs);
+}
+
+/* Grid for the new Armor Location table */
+.armor-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 4fr;
+    gap: var(--spacing-sm) var(--spacing-md);
+    align-items: center;
+}
+
+.armor-grid label {
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.armor-header {
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: var(--header-text);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--spacing-xs);
 }
