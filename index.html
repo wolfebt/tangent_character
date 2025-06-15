@@ -17,9 +17,17 @@
     <style>
         /* style.css content is now embedded in the HTML file for simplicity */
         :root {
-            --bg-color: #f8f9fa; --text-color: #212529; --border-color: #ced4da;
-            --header-bg: #e9ecef; --header-text: #495057; --input-bg: #fff;
-            --font-body: 'Roboto Condensed', sans-serif; --font-display: 'Share Tech Mono', monospace;
+            /* New greyscale palette for high contrast */
+            --bg-color: #e0e0e0; 
+            --section-bg: #ffffff;
+            --text-color: #212121;
+            --border-color: #757575; /* Darker grey for prominent borders */
+            --subtle-border: #bdbdbd; /* Lighter grey for internal lines */
+            --header-bg: #f5f5f5; 
+            --header-text: #424242; 
+            --input-bg: #fff;
+            --font-body: 'Roboto Condensed', sans-serif; 
+            --font-display: 'Share Tech Mono', monospace;
             --spacing-xs: 0.25rem; --spacing-sm: 0.5rem; --spacing-md: 1rem; --spacing-lg: 1.5rem;
         }
         *, *::before, *::after { box-sizing: border-box; }
@@ -34,8 +42,8 @@
             max-width: 1200px; 
             margin: 0 auto var(--spacing-md) auto; 
             padding: var(--spacing-md); 
-            background-color: var(--input-bg); 
-            border: 1px solid var(--border-color); 
+            background-color: var(--section-bg); 
+            border: 2px solid var(--border-color); 
             border-radius: 8px;
             text-align: center; 
         }
@@ -49,10 +57,10 @@
             font-size: 1rem; 
             padding: var(--spacing-sm) var(--spacing-md); 
             margin: 0 var(--spacing-sm); 
-            border: 1px solid var(--header-text); 
+            border: 2px solid var(--header-text); 
             border-radius: 5px;
             background-color: var(--header-text); 
-            color: var(--bg-color); 
+            color: #ffffff; 
             cursor: pointer; 
             transition: all 0.2s ease-in-out; 
         }
@@ -67,10 +75,10 @@
             flex-direction: column; 
             gap: var(--spacing-lg); 
         }
-        section { 
-            border: 1px solid var(--border-color); 
+        .main-section { 
+            border: 2px solid var(--border-color); 
             padding: var(--spacing-lg); 
-            background-color: var(--input-bg); 
+            background-color: var(--section-bg); 
             border-radius: 8px;
         }
         .sheet-header { 
@@ -89,7 +97,7 @@
             flex: 1;
         }
         fieldset { 
-            border: 1px solid var(--border-color); 
+            border: 2px solid var(--border-color); 
             border-radius: 4px;
             padding: var(--spacing-md); 
             margin: 0 0 var(--spacing-lg) 0; 
@@ -101,13 +109,13 @@
             font-family: var(--font-display); 
             text-transform: uppercase; 
         }
-        .input-group { display: flex; flex-direction: column; margin-bottom: 0; }
+        .input-group { display: flex; flex-direction: column; }
         .input-group.full-width { grid-column: 1 / -1; }
         label { margin-bottom: var(--spacing-xs); font-size: 0.875rem; font-weight: bold; color: var(--header-text); }
         input[type="text"], input[type="number"], select, textarea { 
             width: 100%; 
             padding: var(--spacing-sm); 
-            border: 1px solid var(--border-color); 
+            border: 1.5px solid var(--border-color); 
             border-radius: 4px;
             background-color: var(--input-bg); 
             font-family: var(--font-body); 
@@ -116,7 +124,11 @@
         textarea { resize: vertical; }
 
         /* Grid Layouts */
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--spacing-md); }
+        .bio-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md) var(--spacing-lg);
+        }
         .vitals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); }
         .attributes-container { display: flex; gap: var(--spacing-md); }
         .attribute-column { flex: 1; display: flex; flex-direction: column; gap: var(--spacing-md); }
@@ -128,10 +140,15 @@
         .attack-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 3fr; gap: var(--spacing-sm); align-items: center; }
         .armor-grid { display: grid; grid-template-columns: 1fr 1fr 4fr; gap: var(--spacing-sm) var(--spacing-md); align-items: center; }
         .armor-grid label { font-weight: bold; margin-bottom: 0; }
-        .attack-header, .armor-header { font-weight: bold; font-size: 0.8rem; color: var(--header-text); border-bottom: 1px solid var(--border-color); padding-bottom: var(--spacing-xs); }
+        .attack-header, .armor-header, .grid-header { font-weight: bold; font-size: 0.8rem; color: var(--header-text); border-bottom: 1.5px solid var(--subtle-border); padding-bottom: var(--spacing-xs); }
 
         .core-stats-container { display: flex; flex-direction: column; gap: var(--spacing-lg); }
-        .secondary-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-md); }
+        .ratings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-md); }
+        .move-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-md); }
+        .perception-grid { display: grid; grid-template-columns: auto 1fr; gap: var(--spacing-xs) var(--spacing-sm); align-items: center;}
+        .perception-grid > input:first-child { grid-column: 1 / -1; margin-bottom: var(--spacing-sm); }
+        .perception-grid label { text-align: right; }
+
 
         /* Skills Section */
         .skills-column {
@@ -140,7 +157,7 @@
              gap: var(--spacing-lg);
         }
         .skill-group { break-inside: avoid; }
-        .skill-group-header { background-color: var(--header-bg); padding: var(--spacing-sm); margin: 0 0 var(--spacing-sm) 0; text-align: center; font-family: var(--font-display); text-transform: uppercase; }
+        .skill-group-header { background-color: var(--header-bg); padding: var(--spacing-sm); margin: 0 0 var(--spacing-sm) 0; text-align: center; font-family: var(--font-display); text-transform: uppercase; border: 1.5px solid var(--subtle-border);}
         .skill-subcategory-header {
             font-family: var(--font-body);
             font-weight: bold;
@@ -149,11 +166,11 @@
             color: var(--header-text);
             padding-left: var(--spacing-sm);
             margin: var(--spacing-md) 0 var(--spacing-sm) 0;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1.5px solid var(--subtle-border);
         }
         .skill-row { display: grid; grid-template-columns: 2.5fr 1fr 1.5fr 1fr 1fr; gap: var(--spacing-sm); align-items: center; margin-bottom: var(--spacing-sm); }
         .skill-row.header { font-weight: bold; text-align: center; font-size: 0.8rem; color: var(--header-text); }
-        .skill-row.header span { border-bottom: 1px solid var(--border-color); padding-bottom: var(--spacing-xs); }
+        .skill-row.header span { border-bottom: 1.5px solid var(--subtle-border); padding-bottom: var(--spacing-xs); }
         .skill-row label { font-weight: normal; margin-bottom: 0; color: var(--text-color); }
         .skill-row input, .skill-row select { text-align: center; padding: var(--spacing-xs); font-size: 0.9rem; }
         .skill-row input.skill-name-input {
@@ -162,20 +179,21 @@
         }
         .skill-row .skill-total { background-color: var(--header-bg); font-weight: bold; }
 
-        /* Folio 2 Specifics */
+        /* Folio 2 & 3 Specifics */
         .trait-grid { display: grid; grid-template-columns: 1fr 2fr; gap: var(--spacing-sm) var(--spacing-md); }
         .trait-grid-container { display: flex; flex-direction: column; gap: var(--spacing-lg); }
-        .trait-grid h5 { margin: 0; grid-column: 1 / -1; font-family: var(--font-display); text-transform: uppercase; border-bottom: 1px solid #e0e0e0; padding-bottom: var(--spacing-xs); margin-bottom: var(--spacing-sm); }
+        .trait-grid h5 { margin: 0; grid-column: 1 / -1; font-family: var(--font-display); text-transform: uppercase; border-bottom: 1.5px solid var(--subtle-border); padding-bottom: var(--spacing-xs); margin-bottom: var(--spacing-sm); }
         .trait-grid .grid-header { font-weight: bold; font-size: 0.8rem; color: var(--header-text); }
         .simple-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm); }
+        .single-column-grid { display: grid; grid-template-columns: 1fr; gap: var(--spacing-sm); }
 
 
         /* Responsive */
         @media (max-width: 768px) {
             .columns-2 { flex-direction: column; }
-            .info-grid, .vitals-grid { grid-template-columns: 1fr 1fr; }
+            .bio-grid { grid-template-columns: 1fr; }
+            .vitals-grid, .ratings-grid, .move-grid { grid-template-columns: 1fr 1fr; }
             .attributes-container { flex-direction: column; }
-            .secondary-stats-grid { grid-template-columns: 1fr 1fr; }
             .skills-column { gap: 0; }
         }
     </style>
@@ -189,28 +207,32 @@
     </div>
 
     <form class="character-sheet">
-        <section id="folio-1">
-            <header class="sheet-header">
-                <h1>TANGENT</h1>
-                <h2>SCI-FI FANTASY RPG</h2>
-            </header>
-            
-            <fieldset class="info-grid"><legend>Character Information</legend>
-                <div class="input-group"><label for="char-name">Name</label><input type="text" id="char-name" name="char-name"></div>
-                <div class="input-group"><label for="char-concept">Concept</label><input type="text" id="char-concept" name="char-concept"></div>
-                <div class="input-group"><label for="char-species">Species</label><input type="text" id="char-species" name="char-species"></div>
-                <div class="input-group"><label for="char-origin">Origin</label><input type="text" id="char-origin" name="char-origin"></div>
-                <div class="input-group"><label for="char-faction">Faction</label><input type="text" id="char-faction" name="char-faction"></div>
-                <div class="input-group"><label for="char-occu">Occupation</label><input type="text" id="char-occu" name="char-occu"></div>
-                <div class="input-group"><label for="char-age">Age</label><input type="text" id="char-age" name="char-age"></div>
-                <div class="input-group"><label for="char-gender">Gender</label><input type="text" id="char-gender" name="char-gender"></div>
-                <div class="input-group"><label for="char-height">Height</label><input type="text" id="char-height" name="char-height"></div>
-                <div class="input-group"><label for="char-weight">Weight</label><input type="text" id="char-weight" name="char-weight"></div>
-                <div class="input-group full-width"><label for="char-motive">Personality / Motive</label><input type="text" id="char-motive" name="char-motive"></div>
-                <div class="input-group full-width"><label for="char-style">Description / Style</label><input type="text" id="char-style" name="char-style"></div>
+        <header class="sheet-header">
+            <h1>TANGENT</h1>
+            <h2>SCI-FI FANTASY RPG</h2>
+        </header>
+        
+        <section id="bio-section">
+            <fieldset><legend>Character Information</legend>
+                <div class="bio-grid">
+                    <div class="input-group"><label for="char-name">Name</label><input type="text" id="char-name" name="char-name"></div>
+                    <div class="input-group"><label for="char-concept">Concept</label><input type="text" id="char-concept" name="char-concept"></div>
+                    <div class="input-group"><label for="char-species">Species</label><input type="text" id="char-species" name="char-species"></div>
+                    <div class="input-group"><label for="char-occu">Occupation</label><input type="text" id="char-occu" name="char-occu"></div>
+                    <div class="input-group"><label for="char-origin">Origin</label><input type="text" id="char-origin" name="char-origin"></div>
+                    <div class="input-group"><label for="char-faction">Faction</label><input type="text" id="char-faction" name="char-faction"></div>
+                    <div class="input-group"><label for="char-age">Age</label><input type="text" id="char-age" name="char-age"></div>
+                    <div class="input-group"><label for="char-gender">Gender</label><input type="text" id="char-gender" name="char-gender"></div>
+                    <div class="input-group"><label for="char-height">Height</label><input type="text" id="char-height" name="char-height"></div>
+                    <div class="input-group"><label for="char-weight">Weight</label><input type="text" id="char-weight" name="char-weight"></div>
+                    <div class="input-group full-width"><label for="char-style">Description / Style</label><input type="text" id="char-style" name="char-style"></div>
+                    <div class="input-group full-width"><label for="char-motive">Personality / Motive</label><input type="text" id="char-motive" name="char-motive"></div>
+                </div>
             </fieldset>
-            
-            <div class="columns-2">
+        </section>
+
+        <section id="attributes-stats-section">
+             <div class="columns-2">
                 <div class="col-left">
                     <fieldset><legend>Primary Attributes</legend>
                         <div class="attributes-container">
@@ -226,29 +248,49 @@
                             </div>
                         </div>
                     </fieldset>
-                    <div class="core-stats-container">
-                        <fieldset class="vitals-grid"><legend>Core Stats</legend>
+                     <fieldset><legend>Modifiers</legend>
+                        <div class="single-column-grid" id="modifiers-list">
+                             <!-- Modifiers will be dynamically populated -->
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-right">
+                    <fieldset><legend>Core Stats</legend>
+                        <div class="vitals-grid">
                             <div class="input-group"><label for="health">Health</label><input type="number" id="health"></div>
                             <div class="input-group"><label for="vitality">Vitality</label><input type="number" id="vitality"></div>
                             <div class="input-group"><label for="initiative">Initiative</label><input type="number" id="initiative"></div>
-                        </fieldset>
-                        <fieldset class="secondary-stats-grid"><legend>Ratings & Move</legend>
+                        </div>
+                    </fieldset>
+                    <fieldset><legend>Ratings</legend>
+                        <div class="ratings-grid">
                             <div class="input-group"><label for="karma">Karma</label><input type="number" id="karma"></div>
                             <div class="input-group"><label for="plot-points">Plot Points</label><input type="number" id="plot-points"></div>
                             <div class="input-group"><label for="tech-level">Tech Level</label><input type="text" id="tech-level"></div>
                             <div class="input-group"><label for="wealth">Wealth</label><input type="text" id="wealth"></div>
+                        </div>
+                    </fieldset>
+                     <fieldset><legend>Move</legend>
+                        <div class="move-grid">
                             <div class="input-group"><label for="move-walk">Walk</label><input type="text" id="move-walk"></div>
                             <div class="input-group"><label for="move-swim">Swim</label><input type="text" id="move-swim"></div>
                             <div class="input-group"><label for="move-climb">Climb</label><input type="text" id="move-climb"></div>
                             <div class="input-group"><label for="move-fly">Fly</label><input type="text" id="move-fly"></div>
-                        </fieldset>
-                    </div>
-                </div>
-                <div class="col-right">
-                    <fieldset><legend>Modifiers</legend><textarea id="modifiers" name="modifiers" rows="23"></textarea></fieldset>
+                        </div>
+                    </fieldset>
+                     <fieldset><legend>Perception</legend>
+                        <div class="perception-grid">
+                            <input type="number" id="perception">
+                            <label for="perception-meta">Meta</label><input type="number" id="perception-meta">
+                            <label for="perception-social">Social</label><input type="number" id="perception-social">
+                            <label for="perception-tech">Technology</label><input type="number" id="perception-tech">
+                        </div>
+                    </fieldset>
                 </div>
             </div>
+        </section>
 
+        <section id="skills-section">
             <fieldset><legend>Skills</legend>
                 <div class="columns-2 equal-width">
                     <div id="skills-list-left" class="skills-column">
@@ -259,8 +301,10 @@
                     </div>
                 </div>
             </fieldset>
+        </section>
 
-            <fieldset><legend>Attack</legend>
+        <section id="combat-section">
+             <fieldset><legend>Attack</legend>
                 <div class="attack-grid" id="attack-rows">
                     <div class="attack-header">Attack</div><div class="attack-header">Score</div><div class="attack-header">Damage</div><div class="attack-header">Notes</div>
                     <!-- Attack rows will be populated by JS -->
@@ -287,7 +331,9 @@
             </div>
 
              <fieldset><legend>Other Traits</legend>
-                <textarea id="other-traits" rows="5"></textarea>
+                <div class="single-column-grid" id="other-traits-list">
+                    <!-- Dynamic rows -->
+                </div>
             </fieldset>
 
              <fieldset><legend>Augmentations</legend>
@@ -297,41 +343,67 @@
                 </div>
             </fieldset>
 
+             <fieldset><legend>Features</legend>
+                <div class="simple-grid" id="features-list">
+                    <div class="grid-header">Feature</div><div class="grid-header">Effect</div>
+                    <!-- Feature rows will be populated -->
+                </div>
+            </fieldset>
+            
+            <fieldset><legend>Disadvantages</legend>
+                <div class="single-column-grid" id="disadvantages-list">
+                    <!-- Disadvantage rows will be populated -->
+                </div>
+            </fieldset>
+
             <fieldset><legend>Metafocus</legend>
                  <div class="columns-2 equal-width">
                      <div id="metafocus-skills-list-left" class="skills-column"></div>
                      <div id="metafocus-skills-list-right" class="skills-column"></div>
                  </div>
-            </fieldset>
-             
-             <fieldset><legend>Invocations</legend>
-                <div class="simple-grid" id="invocations-list">
+                 <hr>
+                 <h5 class="skill-subcategory-header" style="text-align:center; margin-top: 1rem;">Invocations</h5>
+                 <div class="simple-grid" id="invocations-list">
                      <div class="grid-header">Invocation</div><div class="grid-header">Level</div>
-                     <!-- Invocation rows will be populated -->
-                </div>
+                 </div>
+                 <hr>
+                 <h5 class="skill-subcategory-header" style="text-align:center; margin-top: 1rem;">Special Abilities</h5>
+                 <div id="special-abilities-list">
+                 </div>
             </fieldset>
 
-             <fieldset><legend>Special Abilities</legend>
-                <div id="special-abilities-list">
-                     <!-- Special abilities will be populated -->
-                </div>
-            </fieldset>
         </section>
 
         <section id="folio-3">
             <div class="columns-2">
                 <div class="col-left">
-                    <fieldset><legend>Mecha</legend><textarea id="mecha" name="mecha" rows="15"></textarea></fieldset>
-                    <fieldset><legend>Miscellaneous</legend><textarea id="miscellaneous" name="miscellaneous" rows="15"></textarea></fieldset>
+                    <fieldset><legend>Mecha</legend>
+                        <div class="single-column-grid" id="mecha-list">
+                             <div class="grid-header">Mecha</div>
+                        </div>
+                    </fieldset>
+                    <fieldset><legend>Miscellaneous</legend>
+                         <div class="single-column-grid" id="miscellaneous-list">
+                             <div class="grid-header">Item</div>
+                        </div>
+                    </fieldset>
                 </div>
                 <div class="col-right">
-                    <fieldset><legend>Gear</legend><textarea id="gear" name="gear" rows="33"></textarea></fieldset>
+                    <fieldset><legend>Gear</legend>
+                        <div class="single-column-grid" id="gear-list">
+                             <div class="grid-header">Gear</div>
+                        </div>
+                    </fieldset>
                 </div>
             </div>
         </section>
 
         <section id="folio-4">
-            <fieldset><legend>Notes</legend><textarea id="notes" name="notes" rows="20"></textarea></fieldset>
+             <fieldset><legend>Notes</legend>
+                <div class="single-column-grid" id="notes-list">
+                    <!-- Notes rows will be populated -->
+                </div>
+            </fieldset>
         </section>
 
     </form>
@@ -425,6 +497,7 @@
                 const row = document.createElement('div');
                 row.className = 'skill-row';
                 row.dataset.skillId = skillId;
+                row.dataset.dynamicRow = true;
                 let optionsHtml = '<option value="">--</option>';
                 attributeOptions.forEach(opt => {
                     optionsHtml += `<option value="${opt.value}">${opt.text}</option>`;
@@ -449,7 +522,7 @@
                     groupDiv.className = 'skill-group';
                     const header = document.createElement('h4');
                     header.className = 'skill-group-header';
-                    header.textContent = groupName.trim(); // Trim space from fake header
+                    header.textContent = groupName.trim();
                     groupDiv.appendChild(header);
                     const headerRow = document.createElement('div');
                     headerRow.className = 'skill-row header';
@@ -480,25 +553,33 @@
             
             function addTraitRow(grid, traitType) {
                 const index = grid.querySelectorAll('input[type="text"]').length / 2;
-                
                 const traitInput = document.createElement('input');
                 traitInput.type = 'text';
                 traitInput.id = `trait-${traitType}-trait-${index}`;
                 traitInput.dataset.traitType = traitType;
-                
                 const effectInput = document.createElement('input');
                 effectInput.type = 'text';
                 effectInput.id = `trait-${traitType}-effect-${index}`;
                 effectInput.dataset.traitType = traitType;
-
                 grid.appendChild(traitInput);
                 grid.appendChild(effectInput);
             }
 
             function addSimpleGridRow(grid) {
                 const index = grid.querySelectorAll('input').length / 2;
-                const type = grid.id.split('-')[0]; // 'augmentation' or 'invocation'
-                grid.innerHTML += `<input type="text" id="${type}-name-${index}"><input type="text" id="${type}-effect-${index}">`;
+                const type = grid.id.split('-')[0];
+                const newRow = document.createElement('div');
+                newRow.style.display = 'contents';
+                newRow.innerHTML = `<input type="text" id="${type}-name-${index}" data-dynamic-row><input type="text" id="${type}-effect-${index}" data-dynamic-row>`;
+                grid.appendChild(newRow);
+            }
+             function addSingleColumnRow(grid) {
+                const index = grid.querySelectorAll('input').length;
+                const type = grid.id.split('-')[0];
+                 const newRow = document.createElement('div');
+                newRow.style.display = 'contents';
+                newRow.innerHTML = `<input type="text" id="${type}-name-${index}" data-dynamic-row>`;
+                grid.appendChild(newRow);
             }
             
             function addSpecialAbilityRow(container) {
@@ -506,6 +587,11 @@
                  container.appendChild(createEditableSkillRow(`special-${index}`));
             }
 
+
+            function populateFolio1() {
+                addSingleColumnRow(document.getElementById('modifiers-list'));
+                addAttackRow();
+            }
 
             function populateFolio2() {
                 const traitsContainerLeft = document.getElementById('traits-list-left');
@@ -532,18 +618,28 @@
 
                 addSimpleGridRow(document.getElementById('invocations-list'));
                 addSimpleGridRow(document.getElementById('augmentations-list'));
+                 addSimpleGridRow(document.getElementById('features-list'));
+                addSingleColumnRow(document.getElementById('other-traits-list'));
+                addSingleColumnRow(document.getElementById('disadvantages-list'));
                 addSpecialAbilityRow(document.getElementById('special-abilities-list'));
             }
+             function populateFolio3() {
+                addSingleColumnRow(document.getElementById('mecha-list'));
+                addSingleColumnRow(document.getElementById('gear-list'));
+                addSingleColumnRow(document.getElementById('miscellaneous-list'));
+            }
+            
+            function populateFolio4() {
+                addSingleColumnRow(document.getElementById('notes-list'));
+            }
 
-            function populateAttackRows() {
-                const container = document.getElementById('attack-rows');
-                if(!container) return;
-                for (let i = 1; i <= 4; i++) {
-                    const row = document.createElement('div');
-                    row.style.display = 'contents'; 
-                    row.innerHTML = `<input type="text" aria-label="Attack ${i} Name" class="attack-name"><input type="text" aria-label="Attack ${i} Score" class="attack-score"><input type="text" aria-label="Attack ${i} Damage" class="attack-damage"><input type="text" aria-label="Attack ${i} Notes" class="attack-notes">`;
-                    container.appendChild(row);
-                }
+            function addAttackRow() {
+                 const container = document.getElementById('attack-rows');
+                 const index = container.querySelectorAll('input').length / 4;
+                 const row = document.createElement('div');
+                 row.style.display = 'contents'; 
+                 row.innerHTML = `<input type="text" aria-label="Attack ${index} Name" class="attack-name" data-dynamic-row><input type="text" aria-label="Attack ${index} Score" class="attack-score" data-dynamic-row><input type="text" aria-label="Attack ${index} Damage" class="attack-damage" data-dynamic-row><input type="text" aria-label="Attack ${index} Notes" class="attack-notes" data-dynamic-row>`;
+                 container.appendChild(row);
             }
 
             const calculateSkillTotal = (skillRow) => {
@@ -567,32 +663,50 @@
             };
 
             function handleDynamicRowCreation(event) {
-                const traitGrid = event.target.closest('.trait-grid');
+                const target = event.target;
+
+                const traitGrid = target.closest('.trait-grid');
                 if (traitGrid) {
                     const inputs = Array.from(traitGrid.querySelectorAll('input[type="text"]'));
-                    const lastInput = inputs[inputs.length - 1];
-                    if (event.target === lastInput) {
-                         addTraitRow(traitGrid, traitGrid.dataset.traitType);
+                    if (inputs.indexOf(target) >= inputs.length - 2) {
+                        addTraitRow(traitGrid, traitGrid.dataset.traitType);
                     }
                     return;
                 }
 
-                const simpleGrid = event.target.closest('.simple-grid');
-                if(simpleGrid) {
+                const simpleGrid = target.closest('.simple-grid');
+                if(simpleGrid && target.dataset.dynamicRow) {
                     const inputs = Array.from(simpleGrid.querySelectorAll('input'));
-                    const lastInput = inputs[inputs.length - 1];
-                     if (event.target === lastInput) {
-                        addSimpleGridRow(simpleGrid);
+                    if (inputs.indexOf(target) >= inputs.length - 2) {
+                       addSimpleGridRow(simpleGrid);
                     }
                     return;
                 }
 
-                const specialList = event.target.closest('#special-abilities-list');
+                 const singleGrid = target.closest('.single-column-grid');
+                 if(singleGrid && target.dataset.dynamicRow) {
+                    const inputs = Array.from(singleGrid.querySelectorAll('input'));
+                     if (target === inputs[inputs.length - 1]) {
+                       addSingleColumnRow(singleGrid);
+                    }
+                    return;
+                 }
+
+
+                const specialList = target.closest('#special-abilities-list');
                 if(specialList) {
-                    const rows = Array.from(specialList.querySelectorAll('.skill-row'));
+                    const rows = Array.from(specialList.querySelectorAll('.skill-row[data-dynamic-row]'));
                     const lastRow = rows[rows.length - 1];
-                    if(lastRow && lastRow.contains(event.target)){
+                    if(lastRow && lastRow.contains(target)){
                         addSpecialAbilityRow(specialList);
+                    }
+                }
+                
+                const attackGrid = target.closest('#attack-rows');
+                if(attackGrid && target.dataset.dynamicRow) {
+                    const inputs = Array.from(attackGrid.querySelectorAll('input'));
+                    if(inputs.indexOf(target) >= inputs.length - 4) {
+                        addAttackRow();
                     }
                 }
             }
@@ -641,23 +755,15 @@
                            if (element.classList.contains('skill-subcategory-header')) {
                                 body.push([{text: element.textContent, colSpan: 5, style: 'subgroupHeader'}, {}, {}, {}, {}]);
                             } else if (element.classList.contains('skill-row') && element.dataset.skillId) {
-                                let label;
-                                const labelElement = element.querySelector('label');
-                                const inputNameElement = element.querySelector('.skill-name-input');
-                                if (labelElement) {
-                                    label = labelElement.textContent;
-                                } else if (inputNameElement) {
-                                    label = inputNameElement.value;
-                                } else {
-                                    label = '';
-                                }
-
+                                let label = (element.querySelector('.skill-name-input') || element.querySelector('label')).value || (element.querySelector('.skill-name-input') || element.querySelector('label')).textContent;
                                 const rank = element.querySelector('.skill-rank').value;
                                 const baseSelect = element.querySelector('.skill-base-select');
                                 const base = baseSelect.options[baseSelect.selectedIndex]?.text || '';
                                 const mod = element.querySelector('.skill-mod').value;
                                 const total = element.querySelector('.skill-total').value;
-                                body.push([label, rank, base, mod, {text: total, bold: true}]);
+                                if (label || rank || base || mod || total) {
+                                    body.push([label, rank, base, mod, {text: total, bold: true}]);
+                                }
                             }
                         });
                         
@@ -691,10 +797,25 @@
                     }
                     return body;
                 };
+
+                const getSingleColumnBody = (containerId, header) => {
+                    const body = [[{text: header, style: 'tableHeader'}]];
+                     const container = document.getElementById(containerId);
+                    if (!container) return body;
+                    const inputs = container.querySelectorAll('input[type=text]');
+                    inputs.forEach(input => {
+                        if (input.value) {
+                            body.push([input.value]);
+                        }
+                    });
+                    return body;
+                }
                 
-                const getAttackTableBody = () => {
-                    return getSimpleGridBody('attack-rows', ['Attack', 'Score', 'Damage', 'Notes']);
-                };
+                const getAttackTableBody = () => getSimpleGridBody('attack-rows', ['Attack', 'Score', 'Damage', 'Notes']);
+                const getInvocationsBody = () => getSimpleGridBody('invocations-list', ['Invocation', 'Level']);
+                const getAugmentationsBody = () => getSimpleGridBody('augmentations-list', ['Augmentation', 'Effect']);
+                const getFeaturesBody = () => getSimpleGridBody('features-list', ['Feature', 'Effect']);
+
 
                  const getArmorTableBody = () => {
                     const body = [[{ text: 'Location', style: 'tableHeader' }, { text: 'Total DR', style: 'tableHeader' }, { text: 'Notes', style: 'tableHeader' }]];
@@ -716,14 +837,14 @@
                         
                         const traitGrid = document.querySelector(`.trait-grid[data-trait-type="${typeLowerCase}"]`);
                         if(traitGrid) {
-                            const numRows = traitGrid.querySelectorAll('input[type="text"]').length / 2;
-                            for(let i=0; i<numRows; i++){
-                                 const traitVal = getInputValue(`trait-${typeLowerCase}-trait-${i}`);
-                                 const effectVal = getInputValue(`trait-${typeLowerCase}-effect-${i}`);
-                                 if(traitVal || effectVal) {
+                             const inputs = traitGrid.querySelectorAll('input[type="text"]');
+                            for (let i = 0; i < inputs.length; i += 2) {
+                                const traitVal = inputs[i].value;
+                                const effectVal = inputs[i+1].value;
+                                if (traitVal || effectVal) {
                                     body.push([traitVal, effectVal]);
-                                 }
-                             }
+                                }
+                            }
                         }
                         stack.push({
                             table: { widths:['35%', '65%'], body: body },
@@ -734,20 +855,11 @@
                     return stack;
                 };
 
-                const getFullWidthTextBlock = (title, elementId) => {
-                    return {
-                        stack: [
-                            { text: title, style: 'h3', margin: [0, 15, 0, 5]},
-                            { text: getInputValue(elementId), style: 'textarea' }
-                        ],
-                        unbreakable: true
-                    };
-                };
-
                 const docDefinition = {
                     pageSize: 'LETTER',
                     pageMargins: [ 25, 40, 25, 40 ],
                     content: [
+                        // Page 1
                         { text: 'TANGENT', style: 'h1', alignment: 'center' },
                         { text: 'SCI-FI FANTASY RPG', style: 'h2', alignment: 'center', margin: [0, 0, 0, 15] },
                         {
@@ -767,6 +879,8 @@
                         { table: { widths: ['*', 50, 50, '*'], body: getAttackTableBody() }, layout: 'lightHorizontalLines' },
                         { text: 'Armor', style: 'h3', margin: [0, 15, 0, 5]},
                         { table: { widths: [100, 100, '*'], body: getArmorTableBody() }, layout: 'lightHorizontalLines' },
+                        
+                        // Page 2
                         {
                             text: '',
                             pageBreak: 'before'
@@ -778,8 +892,14 @@
                             ],
                             columnGap: 10
                         },
-                        getFullWidthTextBlock('Other Traits', 'other-traits'),
-                        getFullWidthTextBlock('Augmentations', 'augmentations-list'),
+                        {text: 'Other Traits', style: 'h3', margin: [0, 15, 0, 5]},
+                        {table: { widths: ['*'], body: getSingleColumnBody('other-traits-list', 'Other Trait') }, layout:'lightHorizontalLines', marginBottom: 15},
+                        {text: 'Augmentations', style: 'h3', margin: [0, 15, 0, 5]},
+                        {table: { widths: ['*', '*'], body: getAugmentationsBody()}, layout:'lightHorizontalLines', marginBottom: 15},
+                        {text: 'Features', style: 'h3', margin: [0, 15, 0, 5]},
+                        {table: { widths: ['*', '*'], body: getFeaturesBody()}, layout:'lightHorizontalLines', marginBottom: 15},
+                        {text: 'Disadvantages', style: 'h3', margin: [0, 15, 0, 5]},
+                        {table: { widths: ['*'], body: getSingleColumnBody('disadvantages-list', 'Disadvantage') }, layout:'lightHorizontalLines', marginBottom: 15},
                         { text: 'Metafocus', style: 'h3', margin: [0,15,0,5] },
                         {
                              columns: [
@@ -794,6 +914,8 @@
                             ],
                             columnGap: 10
                         },
+                        
+                        // Page 3
                         {
                             text: '',
                             pageBreak: 'before'
@@ -803,24 +925,30 @@
                                 {
                                     width: '50%',
                                     stack:[
-                                        getFullWidthTextBlock('Mecha', 'mecha'),
-                                        getFullWidthTextBlock('Miscellaneous', 'miscellaneous')
+                                        {text: 'Mecha', style: 'h3', margin: [0, 15, 0, 5]},
+                                        {table: { widths: ['*'], body: getSingleColumnBody('mecha-list', 'Mecha') }, layout:'lightHorizontalLines', marginBottom: 15},
+                                        {text: 'Miscellaneous', style: 'h3', margin: [0, 15, 0, 5]},
+                                        {table: { widths: ['*'], body: getSingleColumnBody('miscellaneous-list', 'Item') }, layout:'lightHorizontalLines', marginBottom: 15}
                                     ]
                                 },
                                 {
                                     width: '50%',
                                     stack: [
-                                        getFullWidthTextBlock('Gear', 'gear')
+                                        {text: 'Gear', style: 'h3', margin: [0, 15, 0, 5]},
+                                        {table: { widths: ['*'], body: getSingleColumnBody('gear-list', 'Gear') }, layout:'lightHorizontalLines', marginBottom: 15}
                                     ]
                                 }
                             ],
                             columnGap: 20
                         },
+                        
+                        // Page 4
                         {
                             text: '',
                             pageBreak: 'before'
                         },
-                        getFullWidthTextBlock('Notes', 'notes')
+                         {text: 'Notes', style: 'h3', margin: [0, 15, 0, 5]},
+                         {table: { widths: ['*'], body: getSingleColumnBody('notes-list', 'Note') }, layout:'lightHorizontalLines', marginBottom: 15}
                     ],
                     styles: {
                         h1: { font: 'ShareTechMono', fontSize: 28, bold: true },
@@ -865,8 +993,10 @@
             populateSkillContainer('skills-list-right', otherSkillData);
             populateSkillContainer('metafocus-skills-list-left', metafocusSkillDataLeft);
             populateSkillContainer('metafocus-skills-list-right', metafocusSkillDataRight);
-            populateAttackRows();
+            populateFolio1();
             populateFolio2();
+            populateFolio3();
+            populateFolio4();
 
             document.querySelectorAll('.skill-row[data-skill-id]').forEach(calculateSkillTotal);
         });
