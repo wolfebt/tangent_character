@@ -85,6 +85,9 @@
         .columns-2 { display: flex; gap: var(--spacing-lg); }
         .columns-2 > .col-left { flex: 2; }
         .columns-2 > .col-right { flex: 1; }
+        .columns-2.equal-width > * {
+            flex: 1;
+        }
         fieldset { 
             border: 1px solid var(--border-color); 
             border-radius: 4px;
@@ -153,11 +156,16 @@
         .skill-row.header span { border-bottom: 1px solid var(--border-color); padding-bottom: var(--spacing-xs); }
         .skill-row label { font-weight: normal; margin-bottom: 0; color: var(--text-color); }
         .skill-row input, .skill-row select { text-align: center; padding: var(--spacing-xs); font-size: 0.9rem; }
+        .skill-row input.skill-name-input {
+            text-align: left;
+            font-style: italic;
+        }
         .skill-row .skill-total { background-color: var(--header-bg); font-weight: bold; }
 
         /* Folio 2 Specifics */
-        .trait-grid { display: grid; grid-template-columns: 1fr 2fr; gap: var(--spacing-sm) var(--spacing-md); margin-bottom: var(--spacing-md);}
-        .trait-grid h5 { margin: 0; grid-column: 1 / -1; }
+        .trait-grid { display: grid; grid-template-columns: 1fr 2fr; gap: var(--spacing-sm) var(--spacing-md); }
+        .trait-grid-container { display: flex; flex-direction: column; gap: var(--spacing-lg); }
+        .trait-grid h5 { margin: 0; grid-column: 1 / -1; font-family: var(--font-display); text-transform: uppercase; border-bottom: 1px solid #e0e0e0; padding-bottom: var(--spacing-xs); margin-bottom: var(--spacing-sm); }
         .trait-grid .grid-header { font-weight: bold; font-size: 0.8rem; color: var(--header-text); }
         .simple-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm); }
 
@@ -242,35 +250,22 @@
             </div>
 
             <fieldset><legend>Skills</legend>
-                <div class="columns-2">
-                    <div id="skills-list-left" class="skills-column col-left">
+                <div class="columns-2 equal-width">
+                    <div id="skills-list-left" class="skills-column">
                         <!-- Mental skills will be dynamically populated by JavaScript -->
                     </div>
-                    <div id="skills-list-right" class="skills-column col-right">
+                    <div id="skills-list-right" class="skills-column">
                         <!-- Other skills will be dynamically populated by JavaScript -->
                     </div>
                 </div>
             </fieldset>
 
-            <div class="columns-2">
-                <div class="col-left">
-                     <fieldset><legend>Attack</legend>
-                        <div class="attack-grid" id="attack-rows">
-                            <div class="attack-header">Attack</div><div class="attack-header">Score</div><div class="attack-header">Damage</div><div class="attack-header">Notes</div>
-                            <!-- Attack rows will be populated by JS -->
-                        </div>
-                    </fieldset>
+            <fieldset><legend>Attack</legend>
+                <div class="attack-grid" id="attack-rows">
+                    <div class="attack-header">Attack</div><div class="attack-header">Score</div><div class="attack-header">Damage</div><div class="attack-header">Notes</div>
+                    <!-- Attack rows will be populated by JS -->
                 </div>
-                <div class="col-right">
-                     <fieldset><legend>Combat Ratings</legend>
-                        <div class="vitals-grid">
-                            <div class="input-group"><label for="combat-arch-defense">Arch. Defense</label><input type="number" id="combat-arch-defense"></div>
-                            <div class="input-group"><label for="combat-arch-melee">Arch. Melee</label><input type="number" id="combat-arch-melee"></div>
-                             <div class="input-group"><label for="combat-arch-ranged">Arch. Ranged</label><input type="number" id="combat-arch-ranged"></div>
-                        </div>
-                    </fieldset>
-                </div>
-            </div>
+            </fieldset>
            
             <fieldset><legend>Armor Location</legend>
                 <div class="armor-grid" id="armor-rows">
@@ -286,43 +281,36 @@
         </section>
         
         <section id="folio-2">
-            <div class="columns-2">
-                <div class="col-left">
-                    <fieldset><legend>Traits</legend>
-                        <div id="traits-list">
-                            <!-- Traits will be dynamically populated -->
-                        </div>
-                    </fieldset>
-                    <fieldset><legend>Other Traits</legend>
-                        <textarea id="other-traits" rows="8"></textarea>
-                    </fieldset>
-                </div>
-                <div class="col-right">
-                    <fieldset><legend>Metafocus</legend>
-                         <div class="skills-column" id="metafocus-skills-list">
-                            <!-- Metafocus Skills will be dynamically populated -->
-                        </div>
-                    </fieldset>
-                </div>
+            <div class="columns-2 equal-width">
+                <div id="traits-list-left" class="trait-grid-container"></div>
+                <div id="traits-list-right" class="trait-grid-container"></div>
             </div>
-             <div class="columns-2">
-                <div class="col-left">
-                    <fieldset><legend>Invocations</legend>
-                        <div class="simple-grid" id="invocations-list">
-                             <div class="grid-header">Invocation</div><div class="grid-header">Level</div>
-                             <!-- Invocation rows will be populated -->
-                        </div>
-                    </fieldset>
+
+             <fieldset><legend>Other Traits</legend>
+                <textarea id="other-traits" rows="5"></textarea>
+            </fieldset>
+
+             <fieldset><legend>Augmentations</legend>
+                <div class="simple-grid" id="augmentations-list">
+                    <div class="grid-header">Augmentation</div><div class="grid-header">Effect</div>
+                    <!-- Augmentation rows will be populated -->
                 </div>
-                 <div class="col-right">
-                    <fieldset><legend>Augmentations</legend>
-                        <div class="simple-grid" id="augmentations-list">
-                            <div class="grid-header">Augmentation</div><div class="grid-header">Effect</div>
-                            <!-- Augmentation rows will be populated -->
-                        </div>
-                    </fieldset>
+            </fieldset>
+
+            <fieldset><legend>Metafocus</legend>
+                 <div class="columns-2 equal-width">
+                     <div id="metafocus-skills-list-left" class="skills-column"></div>
+                     <div id="metafocus-skills-list-right" class="skills-column"></div>
+                 </div>
+            </fieldset>
+             
+             <fieldset><legend>Invocations</legend>
+                <div class="simple-grid" id="invocations-list">
+                     <div class="grid-header">Invocation</div><div class="grid-header">Level</div>
+                     <!-- Invocation rows will be populated -->
                 </div>
-            </div>
+            </fieldset>
+
              <fieldset><legend>Special Abilities</legend>
                 <div id="special-abilities-list">
                      <!-- Special abilities will be populated -->
@@ -388,21 +376,27 @@
                     }
                 },
                 "Combat": {
-                    "skills": ["Unarmed"],
                     "subcategories": {
+                        "Archaic": ["Defense", "Melee", "Ranged", "Unarmed"],
                         "Modern": ["Ballistic", "Heavy Weapons"],
                         "Advanced": ["Energy", "Heavy Energy"]
                     }
                 }
             };
 
-            const metafocusSkillData = {
+            const metafocusSkillDataLeft = {
                 "Attune": {
                     "subcategories": {
                         "Dimension": ["Summoning", "Teleport"],
                         "Energy": ["Elemental", "Force"],
                         "Entropy": ["Chaos", "Order"],
-                        "Illusion": ["Phantasmal", "Shadow"],
+                    }
+                }
+            };
+            const metafocusSkillDataRight = {
+                 "Attune ": { // Space in name to differentiate, but header will be same
+                    "subcategories": {
+                         "Illusion": ["Phantasmal", "Shadow"],
                         "Matter": ["Enhancement", "Transmutation"],
                         "Mental": ["Projection", "Sense"]
                     }
@@ -426,6 +420,24 @@
                 `;
                 return row;
             }
+
+            function createEditableSkillRow(skillId) {
+                const row = document.createElement('div');
+                row.className = 'skill-row';
+                row.dataset.skillId = skillId;
+                let optionsHtml = '<option value="">--</option>';
+                attributeOptions.forEach(opt => {
+                    optionsHtml += `<option value="${opt.value}">${opt.text}</option>`;
+                });
+                row.innerHTML = `
+                    <input type="text" id="skill-${skillId}-name" class="skill-name-input" placeholder="Enter ability name...">
+                    <input type="number" id="skill-${skillId}-rank" class="skill-rank" placeholder="0">
+                    <select id="skill-${skillId}-base" class="skill-base-select">${optionsHtml}</select>
+                    <input type="number" id="skill-${skillId}-mod" class="skill-mod" placeholder="0">
+                    <input type="number" id="skill-${skillId}-total" class="skill-total" readonly>
+                `;
+                return row;
+            }
             
             function populateSkillContainer(containerId, data) {
                 const container = document.getElementById(containerId);
@@ -437,7 +449,7 @@
                     groupDiv.className = 'skill-group';
                     const header = document.createElement('h4');
                     header.className = 'skill-group-header';
-                    header.textContent = groupName;
+                    header.textContent = groupName.trim(); // Trim space from fake header
                     groupDiv.appendChild(header);
                     const headerRow = document.createElement('div');
                     headerRow.className = 'skill-row header';
@@ -466,41 +478,61 @@
                 }
             }
             
+            function addTraitRow(grid, traitType) {
+                const index = grid.querySelectorAll('input[type="text"]').length / 2;
+                
+                const traitInput = document.createElement('input');
+                traitInput.type = 'text';
+                traitInput.id = `trait-${traitType}-trait-${index}`;
+                traitInput.dataset.traitType = traitType;
+                
+                const effectInput = document.createElement('input');
+                effectInput.type = 'text';
+                effectInput.id = `trait-${traitType}-effect-${index}`;
+                effectInput.dataset.traitType = traitType;
+
+                grid.appendChild(traitInput);
+                grid.appendChild(effectInput);
+            }
+
+            function addSimpleGridRow(grid) {
+                const index = grid.querySelectorAll('input').length / 2;
+                const type = grid.id.split('-')[0]; // 'augmentation' or 'invocation'
+                grid.innerHTML += `<input type="text" id="${type}-name-${index}"><input type="text" id="${type}-effect-${index}">`;
+            }
+            
+            function addSpecialAbilityRow(container) {
+                 const index = container.querySelectorAll('.skill-row').length;
+                 container.appendChild(createEditableSkillRow(`special-${index}`));
+            }
+
+
             function populateFolio2() {
-                const traitsContainer = document.getElementById('traits-list');
-                if (!traitsContainer) return;
-                ['Species', 'Origin', 'Occupation'].forEach(traitType => {
+                const traitsContainerLeft = document.getElementById('traits-list-left');
+                const traitsContainerRight = document.getElementById('traits-list-right');
+
+                const createTraitGrid = (traitType) => {
                     const traitGrid = document.createElement('div');
                     traitGrid.className = 'trait-grid';
-                    traitGrid.innerHTML = `<h5>${traitType}</h5><div class="grid-header">Feature</div><div class="grid-header">Effect</div>`;
-                    for(let i=0; i<3; i++){
-                        const featureInput = document.createElement('input');
-                        featureInput.type = 'text';
-                        featureInput.id = `trait-${traitType.toLowerCase()}-feature-${i}`;
-                        traitGrid.appendChild(featureInput);
-                        const effectInput = document.createElement('input');
-                        effectInput.type = 'text';
-                        effectInput.id = `trait-${traitType.toLowerCase()}-effect-${i}`;
-                        traitGrid.appendChild(effectInput);
-                    }
-                    traitsContainer.appendChild(traitGrid);
+                    traitGrid.dataset.traitType = traitType.toLowerCase();
+                    traitGrid.innerHTML = `<h5>${traitType}</h5><div class="grid-header">Trait</div><div class="grid-header">Effect</div>`;
+                    addTraitRow(traitGrid, traitType.toLowerCase());
+                    return traitGrid;
+                }
+
+                if (!traitsContainerLeft || !traitsContainerRight) return;
+                
+                ['Species', 'Origin'].forEach(traitType => {
+                    traitsContainerLeft.appendChild(createTraitGrid(traitType));
                 });
-                const invocationsContainer = document.getElementById('invocations-list');
-                for (let i = 0; i < 5; i++) {
-                    invocationsContainer.innerHTML += `<input type="text" id="invocation-name-${i}"><input type="text" id="invocation-level-${i}">`;
-                }
-                 const augmentationsContainer = document.getElementById('augmentations-list');
-                 for (let i = 0; i < 5; i++) {
-                    augmentationsContainer.innerHTML += `<input type="text" id="augmentation-name-${i}"><input type="text" id="augmentation-effect-${i}">`;
-                }
-                const specialAbilitiesContainer = document.getElementById('special-abilities-list');
-                const headerRow = document.createElement('div');
-                headerRow.className = 'skill-row header';
-                headerRow.innerHTML = `<span>Skill</span><span>Rank</span><span>Base</span><span>Mod</span><span>Total</span>`;
-                specialAbilitiesContainer.appendChild(headerRow);
-                for (let i = 0; i < 4; i++) {
-                     specialAbilitiesContainer.appendChild(createSkillRow('Special Ability', `special-${i}`));
-                }
+                
+                ['Occupation', 'Faction'].forEach(traitType => {
+                     traitsContainerRight.appendChild(createTraitGrid(traitType));
+                });
+
+                addSimpleGridRow(document.getElementById('invocations-list'));
+                addSimpleGridRow(document.getElementById('augmentations-list'));
+                addSpecialAbilityRow(document.getElementById('special-abilities-list'));
             }
 
             function populateAttackRows() {
@@ -534,6 +566,37 @@
                 }
             };
 
+            function handleDynamicRowCreation(event) {
+                const traitGrid = event.target.closest('.trait-grid');
+                if (traitGrid) {
+                    const inputs = Array.from(traitGrid.querySelectorAll('input[type="text"]'));
+                    const lastInput = inputs[inputs.length - 1];
+                    if (event.target === lastInput) {
+                         addTraitRow(traitGrid, traitGrid.dataset.traitType);
+                    }
+                    return;
+                }
+
+                const simpleGrid = event.target.closest('.simple-grid');
+                if(simpleGrid) {
+                    const inputs = Array.from(simpleGrid.querySelectorAll('input'));
+                    const lastInput = inputs[inputs.length - 1];
+                     if (event.target === lastInput) {
+                        addSimpleGridRow(simpleGrid);
+                    }
+                    return;
+                }
+
+                const specialList = event.target.closest('#special-abilities-list');
+                if(specialList) {
+                    const rows = Array.from(specialList.querySelectorAll('.skill-row'));
+                    const lastRow = rows[rows.length - 1];
+                    if(lastRow && lastRow.contains(event.target)){
+                        addSpecialAbilityRow(specialList);
+                    }
+                }
+            }
+
             sheet.addEventListener('input', (event) => {
                 if (event.target.matches('.skill-rank, .skill-mod, .attribute-input')) {
                      const skillRow = event.target.closest('.skill-row');
@@ -549,6 +612,7 @@
                         });
                     }
                 }
+                handleDynamicRowCreation(event);
             });
 
             sheet.addEventListener('change', (event) => {
@@ -571,13 +635,23 @@
                     container.querySelectorAll('.skill-group').forEach(group => {
                         const body = [];
                         const groupName = group.querySelector('.skill-group-header').textContent;
-                        body.push([{ text: groupName, colSpan: 5, style: 'groupHeader'}, {}, {}, {}, {}]);
+                        body.push([{ text: groupName.trim(), colSpan: 5, style: 'groupHeader'}, {}, {}, {}, {}]);
                         
                         group.querySelectorAll('.skill-row[data-skill-id], .skill-subcategory-header').forEach(element => {
                            if (element.classList.contains('skill-subcategory-header')) {
                                 body.push([{text: element.textContent, colSpan: 5, style: 'subgroupHeader'}, {}, {}, {}, {}]);
                             } else if (element.classList.contains('skill-row') && element.dataset.skillId) {
-                                const label = element.querySelector('label').textContent;
+                                let label;
+                                const labelElement = element.querySelector('label');
+                                const inputNameElement = element.querySelector('.skill-name-input');
+                                if (labelElement) {
+                                    label = labelElement.textContent;
+                                } else if (inputNameElement) {
+                                    label = inputNameElement.value;
+                                } else {
+                                    label = '';
+                                }
+
                                 const rank = element.querySelector('.skill-rank').value;
                                 const baseSelect = element.querySelector('.skill-base-select');
                                 const base = baseSelect.options[baseSelect.selectedIndex]?.text || '';
@@ -593,18 +667,19 @@
                                 body: body,
                                 dontBreakRows: true
                             },
-                             layout: 'lightHorizontalLines'
+                             layout: 'lightHorizontalLines',
+                             marginBottom: 10
                         });
-                        tables.push({text: '', margin: [0, 0, 0, 10]});
                     });
                     return tables;
                 };
                 
-                const getSimpleGridBody = (containerId, numCols) => {
-                    const body = [];
+                const getSimpleGridBody = (containerId, headers) => {
+                    const body = [headers.map(h => ({text: h, style: 'tableHeader'}))];
                     const container = document.getElementById(containerId);
                     if (!container) return body;
                     const inputs = container.querySelectorAll('input[type=text], input[type=number]');
+                    const numCols = headers.length;
                     for (let i = 0; i < inputs.length; i += numCols) {
                         const row = [];
                         for (let j = 0; j < numCols; j++) {
@@ -616,20 +691,47 @@
                     }
                     return body;
                 };
+                
+                const getAttackTableBody = () => {
+                    return getSimpleGridBody('attack-rows', ['Attack', 'Score', 'Damage', 'Notes']);
+                };
 
-                const getTraitsBody = () => {
-                     const body = [];
-                     ['Species', 'Origin', 'Occupation'].forEach(traitType => {
-                         body.push([{text: traitType, style: 'subgroupHeader', colSpan: 2}, {}]);
-                         for(let i=0; i<3; i++){
-                             const feature = getInputValue(`trait-${traitType.toLowerCase()}-feature-${i}`);
-                             const effect = getInputValue(`trait-${traitType.toLowerCase()}-effect-${i}`);
-                             if(feature || effect) {
-                                body.push([feature, effect]);
+                 const getArmorTableBody = () => {
+                    const body = [[{ text: 'Location', style: 'tableHeader' }, { text: 'Total DR', style: 'tableHeader' }, { text: 'Notes', style: 'tableHeader' }]];
+                     document.querySelectorAll('#armor-rows > label').forEach(label => {
+                        const location = label.textContent;
+                        const dr = document.getElementById(`${label.htmlFor}-dr`)?.value || '';
+                        const notes = document.getElementById(`${label.htmlFor}-notes`)?.value || '';
+                        body.push([location, dr, notes]);
+                    });
+                    return body;
+                };
+
+                const getTraitColumnStack = (traitTypes) => {
+                    const stack = [];
+                    traitTypes.forEach(traitType => {
+                        const body = [];
+                        const typeLowerCase = traitType.toLowerCase();
+                        body.push([{text: traitType, style: 'h3', colSpan: 2, alignment: 'left', border: [false, false, false, true]}, {}]);
+                        
+                        const traitGrid = document.querySelector(`.trait-grid[data-trait-type="${typeLowerCase}"]`);
+                        if(traitGrid) {
+                            const numRows = traitGrid.querySelectorAll('input[type="text"]').length / 2;
+                            for(let i=0; i<numRows; i++){
+                                 const traitVal = getInputValue(`trait-${typeLowerCase}-trait-${i}`);
+                                 const effectVal = getInputValue(`trait-${typeLowerCase}-effect-${i}`);
+                                 if(traitVal || effectVal) {
+                                    body.push([traitVal, effectVal]);
+                                 }
                              }
-                         }
-                     });
-                     return body;
+                        }
+                        stack.push({
+                            table: { widths:['35%', '65%'], body: body },
+                            layout: 'noBorders',
+                            marginBottom: 10
+                        });
+                    });
+                    return stack;
                 };
 
                 const getFullWidthTextBlock = (title, elementId) => {
@@ -661,30 +763,36 @@
                             ],
                             columnGap: 10
                         },
+                        { text: 'Attack', style: 'h3', margin: [0, 15, 0, 5]},
+                        { table: { widths: ['*', 50, 50, '*'], body: getAttackTableBody() }, layout: 'lightHorizontalLines' },
+                        { text: 'Armor', style: 'h3', margin: [0, 15, 0, 5]},
+                        { table: { widths: [100, 100, '*'], body: getArmorTableBody() }, layout: 'lightHorizontalLines' },
                         {
                             text: '',
                             pageBreak: 'before'
                         },
-                        {
+                         {
                             columns: [
+                                { width: '50%', stack: getTraitColumnStack(['Species', 'Origin']) },
+                                { width: '50%', stack: getTraitColumnStack(['Occupation', 'Faction']) }
+                            ],
+                            columnGap: 10
+                        },
+                        getFullWidthTextBlock('Other Traits', 'other-traits'),
+                        getFullWidthTextBlock('Augmentations', 'augmentations-list'),
+                        { text: 'Metafocus', style: 'h3', margin: [0,15,0,5] },
+                        {
+                             columns: [
                                 {
-                                    width: '60%',
-                                    stack: [
-                                        { text: 'Traits', style: 'h3' },
-                                        { table: { widths:['35%', '65%'], body: getTraitsBody() }, layout: 'lightHorizontalLines' },
-                                        { text: 'Other', style: 'h3', margin: [0, 10, 0, 0] },
-                                        { text: getInputValue('other-traits'), style: 'textarea'}
-                                    ]
+                                    width: '50%',
+                                    stack: getPdfSkillTables('metafocus-skills-list-left')
                                 },
                                 {
-                                    width: '40%',
-                                    stack: [
-                                        { text: 'Metafocus', style: 'h3' },
-                                        { stack: getPdfSkillTables('metafocus-skills-list') }
-                                    ]
+                                    width: '50%',
+                                    stack: getPdfSkillTables('metafocus-skills-list-right')
                                 }
                             ],
-                            columnGap: 20
+                            columnGap: 10
                         },
                         {
                             text: '',
@@ -755,7 +863,8 @@
 
             populateSkillContainer('skills-list-left', mentalSkillData);
             populateSkillContainer('skills-list-right', otherSkillData);
-            populateSkillContainer('metafocus-skills-list', metafocusSkillData);
+            populateSkillContainer('metafocus-skills-list-left', metafocusSkillDataLeft);
+            populateSkillContainer('metafocus-skills-list-right', metafocusSkillDataRight);
             populateAttackRows();
             populateFolio2();
 
