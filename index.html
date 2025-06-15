@@ -26,7 +26,20 @@
                 <h2>SCI-FI FANTASY RPG // PERSONA FOLIO</h2>
             </header>
             
-            <fieldset class="info-grid"></fieldset>
+            <fieldset class="info-grid"><legend>Character Information</legend>
+                <div class="input-group"><label for="char-name">Name</label><input type="text" id="char-name" name="char-name"></div>
+                <div class="input-group"><label for="char-concept">Concept</label><input type="text" id="char-concept" name="char-concept"></div>
+                <div class="input-group"><label for="char-species">Species</label><input type="text" id="char-species" name="char-species"></div>
+                <div class="input-group"><label for="char-origin">Origin</label><input type="text" id="char-origin" name="char-origin"></div>
+                <div class="input-group"><label for="char-faction">Faction</label><input type="text" id="char-faction" name="char-faction"></div>
+                <div class="input-group"><label for="char-occu">Occupation</label><input type="text" id="char-occu" name="char-occu"></div>
+                <div class="input-group"><label for="char-age">Age</label><input type="text" id="char-age" name="char-age"></div>
+                <div class="input-group"><label for="char-gender">Gender</label><input type="text" id="char-gender" name="char-gender"></div>
+                <div class="input-group"><label for="char-height">Height</label><input type="text" id="char-height" name="char-height"></div>
+                <div class="input-group"><label for="char-weight">Weight</label><input type="text" id="char-weight" name="char-weight"></div>
+                <div class="input-group full-width"><label for="char-motive">Personality / Motive</label><input type="text" id="char-motive" name="char-motive"></div>
+                <div class="input-group full-width"><label for="char-style">Description / Style</label><input type="text" id="char-style" name="char-style"></div>
+            </fieldset>
             
             <div class="columns-2">
                 <div class="col-left">
@@ -44,31 +57,30 @@
                             </div>
                         </div>
                     </fieldset>
-                    <fieldset class="vitals-grid"><legend>Core Stats</legend>
-                        <div class="input-group"><label for="health">Health</label><input type="number" id="health"></div>
-                        <div class="input-group"><label for="vitality">Vitality</label><input type="number" id="vitality"></div>
-                        <div class="input-group"><label for="initiative">Initiative</label><input type="number" id="initiative"></div>
-                    </fieldset>
+                    <div class="core-stats-container">
+                        <fieldset class="vitals-grid"><legend>Core Stats</legend>
+                            <div class="input-group"><label for="health">Health</label><input type="number" id="health"></div>
+                            <div class="input-group"><label for="vitality">Vitality</label><input type="number" id="vitality"></div>
+                            <div class="input-group"><label for="initiative">Initiative</label><input type="number" id="initiative"></div>
+                        </fieldset>
+                        <fieldset class="secondary-stats-grid"><legend>Ratings</legend>
+                            <div class="input-group"><label for="karma">Karma</label><input type="number" id="karma"></div>
+                            <div class="input-group"><label for="plot-points">Plot Points</label><input type="number" id="plot-points"></div>
+                            <div class="input-group"><label for="tech-level">Tech Level</label><input type="text" id="tech-level"></div>
+                            <div class="input-group"><label for="wealth">Wealth</label><input type="text" id="wealth"></div>
+                        </fieldset>
+                    </div>
                 </div>
                 <div class="col-right"><fieldset><legend>Modifiers</legend><textarea name="modifiers" rows="20"></textarea></fieldset></div>
             </div>
 
+            <fieldset><legend>Skills</legend></fieldset>
             <fieldset><legend>Attack</legend></fieldset>
             <fieldset><legend>Armor Location</legend></fieldset>
-            <fieldset><legend>Skills</legend></fieldset>
         </section>
 
-        <section id="folio-2">
-            <fieldset><legend>Traits</legend></fieldset>
-            <fieldset><legend>Metafocus</legend></fieldset>
-            <fieldset><legend>Other Abilities</legend></fieldset>
-            <fieldset><legend>Special Abilities</legend></fieldset>
-        </section>
-
-        <section id="folio-3">
-            <div class="columns-2"></div>
-        </section>
-
+        <section id="folio-2"></section>
+        <section id="folio-3"></section>
         <section id="folio-4"><header class="sheet-header"><h2>PERSONA FOLIO 4</h2></header><fieldset><legend>Notes</legend><textarea name="notes" rows="20"></textarea></fieldset></section>
     </form>
     
