@@ -404,7 +404,7 @@
 
     </form>
     
-    <script>
+<script>
         document.addEventListener('DOMContentLoaded', () => {
             console.log("Character sheet script loaded. 🚀");
 
@@ -434,11 +434,11 @@
             };
 
             const otherSkillData = {
-                 "Physical": {
+                "Physical": {
                     "skills": ["Acrobatics", "Athletics", "Piloting", "Stealth"]
                 },
                 "Social": {
-                     "subcategories": {
+                    "subcategories": {
                         "Manipulation": ["Insight", "Bluff", "Diplomacy", "Intimidate", "Streetwise"],
                         "Expression": ["Acting", "Comedy", "Dancing", "Disguise", "Keyboard", "Legerdemain", "Oratory", "Percussion", "Singing", "String", "Style", "Wind"]
                     }
@@ -453,7 +453,7 @@
             };
             
             const metafocusData = {
-                "Attune": [],
+                "Attune": [], // Attune is a skill on its own
                 "Dimension": ["Summoning", "Teleport"],
                 "Energy": ["Elemental", "Force"],
                 "Entropy": ["Chaos", "Order"],
@@ -484,7 +484,7 @@
                 const row = document.createElement('div');
                 row.className = 'skill-row';
                 row.dataset.skillId = skillId;
-                row.dataset.dynamicRow = true;
+                row.dataset.dynamicRow = "true";
                 let optionsHtml = '<option value="">--</option>';
                 attributeOptions.forEach(opt => {
                     optionsHtml += `<option value="${opt.value}">${opt.text}</option>`;
@@ -563,15 +563,15 @@
              function addSingleColumnRow(grid) {
                 const index = grid.querySelectorAll('[data-dynamic-row]').length;
                 const type = grid.id.split('-')[0];
-                 const newRow = document.createElement('div');
+                const newRow = document.createElement('div');
                 newRow.style.display = 'contents';
                 newRow.innerHTML = `<input type="text" id="${type}-name-${index}" data-dynamic-row="true">`;
                 grid.appendChild(newRow);
             }
             
             function addSpecialAbilityRow(container) {
-                 const index = container.querySelectorAll('.skill-row').length;
-                 container.appendChild(createEditableSkillRow(`special-${index}`));
+                const index = container.querySelectorAll('.skill-row[data-dynamic-row]').length;
+                container.appendChild(createEditableSkillRow(`special-${index}`));
             }
 
 
@@ -594,25 +594,33 @@
                 const columnsDiv = document.createElement('div');
                 columnsDiv.className = 'columns-2 equal-width';
                 const leftCol = document.createElement('div');
+                leftCol.id = 'metafocus-skills-list-left'; // Add ID for PDF generation
                 leftCol.className = 'skills-column';
                 const rightCol = document.createElement('div');
+                rightCol.id = 'metafocus-skills-list-right'; // Add ID for PDF generation
                 rightCol.className = 'skills-column';
 
                 const leftSkills = ["Dimension", "Energy", "Entropy"];
                 
                 for (const subcatName in metafocusData) {
-                    if (subcatName === 'Attune') continue;
-
-                    const targetCol = leftSkills.includes(subcatName) ? leftCol : rightCol;
-                    const subcatHeader = document.createElement('h5');
-                    subcatHeader.className = 'skill-subcategory-header';
-                    subcatHeader.textContent = subcatName;
-                    targetCol.appendChild(subcatHeader);
+                    if (subcatName === 'Attune' || subcatName === 'skills') continue;
                     
-                    metafocusData[subcatName].forEach(skillName => {
-                        const skillId = `metafocus-${subcatName}-${skillName}`.toLowerCase().replace(/\s+/g, '-');
-                        targetCol.appendChild(createSkillRow(skillName, skillId));
-                    });
+                    if(metafocusData[subcatName].length > 0) { // It's a subcategory
+                        const groupDiv = document.createElement('div');
+                        groupDiv.className = 'skill-group'; // Use skill-group for consistency
+                        
+                        const targetCol = leftSkills.includes(subcatName) ? leftCol : rightCol;
+                        const subcatHeader = document.createElement('h5');
+                        subcatHeader.className = 'skill-subcategory-header';
+                        subcatHeader.textContent = subcatName;
+                        groupDiv.appendChild(subcatHeader);
+                        
+                        metafocusData[subcatName].forEach(skillName => {
+                            const skillId = `metafocus-${subcatName}-${skillName}`.toLowerCase().replace(/\s+/g, '-');
+                            groupDiv.appendChild(createSkillRow(skillName, skillId));
+                        });
+                        targetCol.appendChild(groupDiv);
+                    }
                 }
                 columnsDiv.appendChild(leftCol);
                 columnsDiv.appendChild(rightCol);
@@ -640,12 +648,12 @@
                 });
                 
                 ['Occupation', 'Faction'].forEach(traitType => {
-                     traitsContainerRight.appendChild(createTraitGrid(traitType));
+                    traitsContainerRight.appendChild(createTraitGrid(traitType));
                 });
 
                 addSimpleGridRow(document.getElementById('invocations-list'));
                 addSimpleGridRow(document.getElementById('augmentations-list'));
-                 addSimpleGridRow(document.getElementById('features-list'));
+                addSimpleGridRow(document.getElementById('features-list'));
                 addSingleColumnRow(document.getElementById('other-traits-list'));
                 addSingleColumnRow(document.getElementById('disadvantages-list'));
                 addSpecialAbilityRow(document.getElementById('special-abilities-list'));
@@ -661,12 +669,12 @@
             }
 
             function addAttackRow() {
-                 const container = document.getElementById('attack-rows');
-                 const index = container.querySelectorAll('input').length / 4;
-                 const row = document.createElement('div');
-                 row.style.display = 'contents'; 
-                 row.innerHTML = `<input type="text" aria-label="Attack ${index} Name" class="attack-name" data-dynamic-row="true"><input type="text" aria-label="Attack ${index} Score" class="attack-score" data-dynamic-row="true"><input type="text" aria-label="Attack ${index} Damage" class="attack-damage" data-dynamic-row="true"><input type="text" aria-label="Attack ${index} Notes" class="attack-notes" data-dynamic-row="true">`;
-                 container.appendChild(row);
+                const container = document.getElementById('attack-rows');
+                const index = container.querySelectorAll('[data-dynamic-row]').length / 4;
+                const row = document.createElement('div');
+                row.style.display = 'contents'; 
+                row.innerHTML = `<input type="text" aria-label="Attack ${index} Name" class="attack-name" data-dynamic-row="true"><input type="text" aria-label="Attack ${index} Score" class="attack-score" data-dynamic-row="true"><input type="text" aria-label="Attack ${index} Damage" class="attack-damage" data-dynamic-row="true"><input type="text" aria-label="Attack ${index} Notes" class="attack-notes" data-dynamic-row="true">`;
+                container.appendChild(row);
             }
 
             const calculateSkillTotal = (skillRow) => {
@@ -706,28 +714,28 @@
                 if(simpleGrid) {
                     const inputs = Array.from(simpleGrid.querySelectorAll('[data-dynamic-row]'));
                     if (inputs.indexOf(target) >= inputs.length - 2) {
-                       addSimpleGridRow(simpleGrid);
+                        addSimpleGridRow(simpleGrid);
                     }
                     return;
                 }
 
-                 const singleGrid = target.closest('.single-column-grid');
-                 if(singleGrid) {
+                const singleGrid = target.closest('.single-column-grid');
+                if(singleGrid) {
                     const inputs = Array.from(singleGrid.querySelectorAll('[data-dynamic-row]'));
-                     if (target === inputs[inputs.length - 1]) {
-                       addSingleColumnRow(singleGrid);
+                    if (target === inputs[inputs.length - 1]) {
+                        addSingleColumnRow(singleGrid);
                     }
                     return;
-                 }
+                }
 
 
                 const specialList = target.closest('#special-abilities-list');
                 if(specialList) {
                     const inputs = Array.from(specialList.querySelectorAll('[data-dynamic-row]'));
                     if(inputs.indexOf(target) >= inputs.length - 5) { // 5 inputs per row
-                         addSpecialAbilityRow(specialList);
+                        addSpecialAbilityRow(specialList);
                     }
-                     return;
+                    return;
                 }
                 
                 const attackGrid = target.closest('#attack-rows');
@@ -741,7 +749,7 @@
 
             sheet.addEventListener('input', (event) => {
                 if (event.target.matches('.skill-rank, .skill-mod, .attribute-input')) {
-                     const skillRow = event.target.closest('.skill-row');
+                    const skillRow = event.target.closest('.skill-row');
                     if (skillRow) {
                         calculateSkillTotal(skillRow);
                     }
@@ -776,11 +784,12 @@
 
                     container.querySelectorAll('.skill-group').forEach(group => {
                         const body = [];
-                        const groupName = group.querySelector('.skill-group-header').textContent;
+                        const groupName = group.querySelector('.skill-group-header, .skill-subcategory-header').textContent;
+                        // Use a consistent header style for all groups/subgroups in the PDF
                         body.push([{ text: groupName.trim(), colSpan: 5, style: 'groupHeader'}, {}, {}, {}, {}]);
                         
                         group.querySelectorAll('.skill-row[data-skill-id], .skill-subcategory-header').forEach(element => {
-                           if (element.classList.contains('skill-subcategory-header')) {
+                            if (element.classList.contains('skill-subcategory-header') && group.querySelector('.skill-group-header')) {
                                 body.push([{text: element.textContent, colSpan: 5, style: 'subgroupHeader'}, {}, {}, {}, {}]);
                             } else if (element.classList.contains('skill-row') && element.dataset.skillId) {
                                 let label = (element.querySelector('.skill-name-input') || element.querySelector('label')).value || (element.querySelector('.skill-name-input') || element.querySelector('label')).textContent;
@@ -789,9 +798,8 @@
                                 const base = baseSelect.options[baseSelect.selectedIndex]?.text || '';
                                 const mod = element.querySelector('.skill-mod').value;
                                 const total = element.querySelector('.skill-total').value;
-                                if (label || rank || base || mod || total) {
-                                    body.push([label, rank, base, mod, {text: total, bold: true}]);
-                                }
+                                // MODIFICATION: Always push the row, even if empty.
+                                body.push([label, rank || ' ', base || ' ', mod || ' ', {text: total || ' ', bold: true}]);
                             }
                         });
                         
@@ -801,8 +809,8 @@
                                 body: body,
                                 dontBreakRows: true
                             },
-                             layout: 'lightHorizontalLines',
-                             marginBottom: 10
+                            layout: 'lightHorizontalLines',
+                            marginBottom: 10
                         });
                     });
                     return tables;
@@ -812,30 +820,54 @@
                     const body = [headers.map(h => ({text: h, style: 'tableHeader'}))];
                     const container = document.getElementById(containerId);
                     if (!container) return body;
+
                     const inputs = container.querySelectorAll('input[type=text], input[type=number]');
                     const numCols = headers.length;
+                    const contentRows = [];
+
                     for (let i = 0; i < inputs.length; i += numCols) {
                         const row = [];
+                        let hasContent = false;
                         for (let j = 0; j < numCols; j++) {
-                            row.push(inputs[i+j]?.value || '');
+                            const value = inputs[i+j]?.value || '';
+                            if (value) hasContent = true;
+                            row.push(value);
                         }
-                        if (row.some(cell => cell)) {
-                             body.push(row);
+                        // MODIFICATION: Collect rows with content.
+                        if (hasContent) {
+                           contentRows.push(row);
                         }
+                    }
+
+                    // MODIFICATION: If there are content rows, add them. Otherwise, add a single blank row.
+                    if (contentRows.length > 0) {
+                        contentRows.forEach(row => body.push(row));
+                    } else {
+                        body.push(new Array(headers.length).fill(' '));
                     }
                     return body;
                 };
 
                 const getSingleColumnBody = (containerId, header) => {
                     const body = [[{text: header, style: 'tableHeader'}]];
-                     const container = document.getElementById(containerId);
+                    const container = document.getElementById(containerId);
                     if (!container) return body;
                     const inputs = container.querySelectorAll('input[type=text]');
+                    const contentRows = [];
+                    
+                    // MODIFICATION: Collect inputs with content.
                     inputs.forEach(input => {
                         if (input.value) {
-                            body.push([input.value]);
+                            contentRows.push([input.value]);
                         }
                     });
+
+                    // MODIFICATION: If there are content rows, add them. Otherwise, add a single blank row.
+                    if (contentRows.length > 0) {
+                        contentRows.forEach(row => body.push(row));
+                    } else {
+                        body.push([' ']);
+                    }
                     return body;
                 }
                 
@@ -844,13 +876,12 @@
                 const getAugmentationsBody = () => getSimpleGridBody('augmentations-list', ['Augmentation', 'Effect']);
                 const getFeaturesBody = () => getSimpleGridBody('features-list', ['Feature', 'Effect']);
 
-
-                 const getArmorTableBody = () => {
+                const getArmorTableBody = () => {
                     const body = [[{ text: 'Location', style: 'tableHeader' }, { text: 'Total DR', style: 'tableHeader' }, { text: 'Notes', style: 'tableHeader' }]];
-                     document.querySelectorAll('#armor-rows > label').forEach(label => {
+                    document.querySelectorAll('#armor-rows > label').forEach(label => {
                         const location = label.textContent;
-                        const dr = document.getElementById(`${label.htmlFor}-dr`)?.value || '';
-                        const notes = document.getElementById(`${label.htmlFor}-notes`)?.value || '';
+                        const dr = document.getElementById(`${label.htmlFor}-dr`)?.value || ' ';
+                        const notes = document.getElementById(`${label.htmlFor}-notes`)?.value || ' ';
                         body.push([location, dr, notes]);
                     });
                     return body;
@@ -863,17 +894,27 @@
                         const typeLowerCase = traitType.toLowerCase();
                         body.push([{text: traitType, style: 'h3', colSpan: 2, alignment: 'left', border: [false, false, false, true]}, {}]);
                         
+                        const contentRows = [];
                         const traitGrid = document.querySelector(`.trait-grid[data-trait-type="${typeLowerCase}"]`);
                         if(traitGrid) {
-                             const inputs = traitGrid.querySelectorAll('input[type="text"]');
+                            const inputs = traitGrid.querySelectorAll('input[type="text"]');
                             for (let i = 0; i < inputs.length; i += 2) {
                                 const traitVal = inputs[i].value;
                                 const effectVal = inputs[i+1].value;
+                                // MODIFICATION: Collect rows with content.
                                 if (traitVal || effectVal) {
-                                    body.push([traitVal, effectVal]);
+                                    contentRows.push([traitVal, effectVal]);
                                 }
                             }
                         }
+
+                        // MODIFICATION: If there are content rows, add them. Otherwise, add a single blank row.
+                        if(contentRows.length > 0){
+                            contentRows.forEach(row => body.push(row));
+                        } else {
+                            body.push([' ',' ']); // Add empty row if no data
+                        }
+
                         stack.push({
                             table: { widths:['35%', '65%'], body: body },
                             layout: 'noBorders',
@@ -891,7 +932,7 @@
                         { text: 'TANGENT', style: 'h1', alignment: 'center' },
                         { text: 'SCI-FI FANTASY RPG', style: 'h2', alignment: 'center', margin: [0, 0, 0, 15] },
                         {
-                             columns: [
+                            columns: [
                                 {
                                     width: '50%',
                                     stack: getPdfSkillTables('skills-list-left')
@@ -930,17 +971,8 @@
                         {table: { widths: ['*'], body: getSingleColumnBody('disadvantages-list', 'Disadvantage') }, layout:'lightHorizontalLines', marginBottom: 15},
                         { text: 'Metafocus', style: 'h3', margin: [0,15,0,5] },
                         {
-                             columns: [
-                                {
-                                    width: '50%',
-                                    stack: getPdfSkillTables('metafocus-skills-list-left')
-                                },
-                                {
-                                    width: '50%',
-                                    stack: getPdfSkillTables('metafocus-skills-list-right')
-                                }
-                            ],
-                            columnGap: 10
+                            // This gets the Attune skill specifically
+                            stack: getPdfSkillTables('metafocus-skills-list') 
                         },
                         
                         // Page 3
@@ -963,16 +995,27 @@
                          {text: 'Notes', style: 'h3', margin: [0, 15, 0, 5]},
                          {table: { widths: ['*'], body: getSingleColumnBody('notes-list', 'Note') }, layout:'lightHorizontalLines', marginBottom: 15}
                     ],
+                    footer: function(currentPage, pageCount) { 
+                        if (currentPage === pageCount) {
+                            return { 
+                                text: 'WOLFE.BT@TANGENTLLC',
+                                alignment: 'center',
+                                style: 'footer'
+                            }; 
+                        }
+                        return null;
+                    },
                     styles: {
-                        h1: { font: 'ShareTechMono', fontSize: 28, bold: true },
-                        h2: { font: 'ShareTechMono', fontSize: 10, color: '#495057' },
-                        h3: { font: 'ShareTechMono', fontSize: 14, bold: true, textTransform: 'uppercase' },
+                        h1: { font: 'Roboto', fontSize: 28, bold: true },
+                        h2: { font: 'Roboto', fontSize: 10, color: '#495057' },
+                        h3: { font: 'Roboto', fontSize: 14, bold: true, textTransform: 'uppercase' },
                         label: { bold: true, color: '#333333' },
                         attrValue: { alignment: 'right', bold: true, fontSize: 14 },
                         tableHeader: { bold: true, fontSize: 9, color: 'black', fillColor: '#e9ecef', alignment: 'center' },
                         groupHeader: { bold: true, fontSize: 11, color: 'black', margin: [0, 5, 0, 5], fillColor: '#e9ecef'},
                         subgroupHeader: { bold: true, italics: true, fontSize: 9, color: '#333333', margin: [10, 2, 0, 2]},
-                        textarea: { margin: [0, 5, 0, 5], italics: true, color: '#555', fontSize: 9 }
+                        textarea: { margin: [0, 5, 0, 5], italics: true, color: '#555', fontSize: 9 },
+                        footer: { fontSize: 8, color: '#616161', margin: [0, 10, 0, 0]}
                     },
                     defaultStyle: { font: 'Roboto', fontSize: 10 }
                 };
@@ -982,6 +1025,7 @@
             
             const saveAsMarkdown = () => {
                 // This function can be expanded further
+                alert("Save as Markdown is not yet implemented.");
             };
             
             pdfMake.fonts = {
@@ -990,12 +1034,6 @@
                     bold: 'Roboto-Medium.ttf',
                     italics: 'Roboto-Italic.ttf',
                     bolditalics: 'Roboto-MediumItalic.ttf'
-                },
-                ShareTechMono: {
-                    normal: 'ShareTechMono-Regular.ttf',
-                    bold: 'ShareTechMono-Regular.ttf',
-                    italics: 'ShareTechMono-Regular.ttf',
-                    bolditalics: 'ShareTechMono-Regular.ttf',
                 }
             };
             
