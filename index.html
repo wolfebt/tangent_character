@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TANGENT RPG Character Sheet</title>
+    <title>TANGENT SFF RPG Persona Folio</title>
     <!-- Google Fonts for the web page styling -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -210,6 +210,7 @@
         <header class="sheet-header">
             <h1>TANGENT</h1>
             <h2>SCI-FI FANTASY RPG</h2>
+            <h2>PERSONA FOLIO</h2>
         </header>
         
         <section class="main-section" id="bio-section">
@@ -359,9 +360,8 @@
         
         <section class="main-section" id="metafocus-section">
             <fieldset><legend>Metafocus</legend>
-                 <div class="columns-2 equal-width">
-                     <div id="metafocus-skills-list-left" class="skills-column"></div>
-                     <div id="metafocus-skills-list-right" class="skills-column"></div>
+                 <div id="metafocus-skills-list">
+                     <!-- Metafocus skills will be populated here -->
                  </div>
                  <hr>
                  <h5 class="skill-subcategory-header" style="text-align:center; margin-top: 1rem;">Invocations</h5>
@@ -451,24 +451,15 @@
                     }
                 }
             };
-
-            const metafocusSkillDataLeft = {
-                "Attune": {
-                    "subcategories": {
-                        "Dimension": ["Summoning", "Teleport"],
-                        "Energy": ["Elemental", "Force"],
-                        "Entropy": ["Chaos", "Order"],
-                    }
-                }
-            };
-            const metafocusSkillDataRight = {
-                 "Attune ": { // Space in name to differentiate, but header will be same
-                    "subcategories": {
-                         "Illusion": ["Phantasmal", "Shadow"],
-                        "Matter": ["Enhancement", "Transmutation"],
-                        "Mental": ["Projection", "Sense"]
-                    }
-                }
+            
+            const metafocusData = {
+                "Attune": [],
+                "Dimension": ["Summoning", "Teleport"],
+                "Energy": ["Elemental", "Force"],
+                "Entropy": ["Chaos", "Order"],
+                "Illusion": ["Phantasmal", "Shadow"],
+                "Matter": ["Enhancement", "Transmutation"],
+                "Mental": ["Projection", "Sense"]
             };
 
             function createSkillRow(skillName, skillId) {
@@ -499,10 +490,10 @@
                     optionsHtml += `<option value="${opt.value}">${opt.text}</option>`;
                 });
                 row.innerHTML = `
-                    <input type="text" id="skill-${skillId}-name" class="skill-name-input" placeholder="Enter ability name...">
-                    <input type="number" id="skill-${skillId}-rank" class="skill-rank" placeholder="0">
-                    <select id="skill-${skillId}-base" class="skill-base-select">${optionsHtml}</select>
-                    <input type="number" id="skill-${skillId}-mod" class="skill-mod" placeholder="0">
+                    <input type="text" id="skill-${skillId}-name" class="skill-name-input" placeholder="Enter ability name..." data-dynamic-row="true">
+                    <input type="number" id="skill-${skillId}-rank" class="skill-rank" placeholder="0" data-dynamic-row="true">
+                    <select id="skill-${skillId}-base" class="skill-base-select" data-dynamic-row="true">${optionsHtml}</select>
+                    <input type="number" id="skill-${skillId}-mod" class="skill-mod" placeholder="0" data-dynamic-row="true">
                     <input type="number" id="skill-${skillId}-total" class="skill-total" readonly>
                 `;
                 return row;
@@ -548,33 +539,33 @@
             }
             
             function addTraitRow(grid, traitType) {
-                const index = grid.querySelectorAll('input[type="text"]').length / 2;
+                const index = grid.querySelectorAll('[data-dynamic-row="true"]').length / 2;
                 const traitInput = document.createElement('input');
                 traitInput.type = 'text';
                 traitInput.id = `trait-${traitType}-trait-${index}`;
-                traitInput.dataset.traitType = traitType;
+                traitInput.dataset.dynamicRow = "true";
                 const effectInput = document.createElement('input');
                 effectInput.type = 'text';
                 effectInput.id = `trait-${traitType}-effect-${index}`;
-                effectInput.dataset.traitType = traitType;
+                effectInput.dataset.dynamicRow = "true";
                 grid.appendChild(traitInput);
                 grid.appendChild(effectInput);
             }
 
             function addSimpleGridRow(grid) {
-                const index = grid.querySelectorAll('input').length / 2;
+                const index = grid.querySelectorAll('[data-dynamic-row]').length / 2;
                 const type = grid.id.split('-')[0];
                 const newRow = document.createElement('div');
                 newRow.style.display = 'contents';
-                newRow.innerHTML = `<input type="text" id="${type}-name-${index}" data-dynamic-row><input type="text" id="${type}-effect-${index}" data-dynamic-row>`;
+                newRow.innerHTML = `<input type="text" id="${type}-name-${index}" data-dynamic-row="true"><input type="text" id="${type}-effect-${index}" data-dynamic-row="true">`;
                 grid.appendChild(newRow);
             }
              function addSingleColumnRow(grid) {
-                const index = grid.querySelectorAll('input').length;
+                const index = grid.querySelectorAll('[data-dynamic-row]').length;
                 const type = grid.id.split('-')[0];
                  const newRow = document.createElement('div');
                 newRow.style.display = 'contents';
-                newRow.innerHTML = `<input type="text" id="${type}-name-${index}" data-dynamic-row>`;
+                newRow.innerHTML = `<input type="text" id="${type}-name-${index}" data-dynamic-row="true">`;
                 grid.appendChild(newRow);
             }
             
@@ -588,6 +579,46 @@
                 addSingleColumnRow(document.getElementById('modifiers-list'));
                 addAttackRow();
             }
+            
+            function populateMetafocus() {
+                const container = document.getElementById('metafocus-skills-list');
+                const headerRow = document.createElement('div');
+                headerRow.className = 'skill-row header';
+                headerRow.innerHTML = `<span>Skill</span><span>Rank</span><span>Base</span><span>Mod</span><span>Total</span>`;
+                container.appendChild(headerRow);
+                
+                // Add the top-level Attune skill
+                container.appendChild(createSkillRow("Attune", "metafocus-attune"));
+
+                // Add the rest in columns
+                const columnsDiv = document.createElement('div');
+                columnsDiv.className = 'columns-2 equal-width';
+                const leftCol = document.createElement('div');
+                leftCol.className = 'skills-column';
+                const rightCol = document.createElement('div');
+                rightCol.className = 'skills-column';
+
+                const leftSkills = ["Dimension", "Energy", "Entropy"];
+                
+                for (const subcatName in metafocusData) {
+                    if (subcatName === 'Attune') continue;
+
+                    const targetCol = leftSkills.includes(subcatName) ? leftCol : rightCol;
+                    const subcatHeader = document.createElement('h5');
+                    subcatHeader.className = 'skill-subcategory-header';
+                    subcatHeader.textContent = subcatName;
+                    targetCol.appendChild(subcatHeader);
+                    
+                    metafocusData[subcatName].forEach(skillName => {
+                        const skillId = `metafocus-${subcatName}-${skillName}`.toLowerCase().replace(/\s+/g, '-');
+                        targetCol.appendChild(createSkillRow(skillName, skillId));
+                    });
+                }
+                columnsDiv.appendChild(leftCol);
+                columnsDiv.appendChild(rightCol);
+                container.appendChild(columnsDiv);
+            }
+
 
             function populateFolio2() {
                 const traitsContainerLeft = document.getElementById('traits-list-left');
@@ -634,7 +665,7 @@
                  const index = container.querySelectorAll('input').length / 4;
                  const row = document.createElement('div');
                  row.style.display = 'contents'; 
-                 row.innerHTML = `<input type="text" aria-label="Attack ${index} Name" class="attack-name" data-dynamic-row><input type="text" aria-label="Attack ${index} Score" class="attack-score" data-dynamic-row><input type="text" aria-label="Attack ${index} Damage" class="attack-damage" data-dynamic-row><input type="text" aria-label="Attack ${index} Notes" class="attack-notes" data-dynamic-row>`;
+                 row.innerHTML = `<input type="text" aria-label="Attack ${index} Name" class="attack-name" data-dynamic-row="true"><input type="text" aria-label="Attack ${index} Score" class="attack-score" data-dynamic-row="true"><input type="text" aria-label="Attack ${index} Damage" class="attack-damage" data-dynamic-row="true"><input type="text" aria-label="Attack ${index} Notes" class="attack-notes" data-dynamic-row="true">`;
                  container.appendChild(row);
             }
 
@@ -660,10 +691,11 @@
 
             function handleDynamicRowCreation(event) {
                 const target = event.target;
+                if (!target.dataset.dynamicRow) return;
 
                 const traitGrid = target.closest('.trait-grid');
                 if (traitGrid) {
-                    const inputs = Array.from(traitGrid.querySelectorAll('input[type="text"]'));
+                    const inputs = Array.from(traitGrid.querySelectorAll('[data-dynamic-row]'));
                     if (inputs.indexOf(target) >= inputs.length - 2) {
                         addTraitRow(traitGrid, traitGrid.dataset.traitType);
                     }
@@ -671,8 +703,8 @@
                 }
 
                 const simpleGrid = target.closest('.simple-grid');
-                if(simpleGrid && target.dataset.dynamicRow) {
-                    const inputs = Array.from(simpleGrid.querySelectorAll('input'));
+                if(simpleGrid) {
+                    const inputs = Array.from(simpleGrid.querySelectorAll('[data-dynamic-row]'));
                     if (inputs.indexOf(target) >= inputs.length - 2) {
                        addSimpleGridRow(simpleGrid);
                     }
@@ -680,8 +712,8 @@
                 }
 
                  const singleGrid = target.closest('.single-column-grid');
-                 if(singleGrid && target.dataset.dynamicRow) {
-                    const inputs = Array.from(singleGrid.querySelectorAll('input'));
+                 if(singleGrid) {
+                    const inputs = Array.from(singleGrid.querySelectorAll('[data-dynamic-row]'));
                      if (target === inputs[inputs.length - 1]) {
                        addSingleColumnRow(singleGrid);
                     }
@@ -691,16 +723,16 @@
 
                 const specialList = target.closest('#special-abilities-list');
                 if(specialList) {
-                    const rows = Array.from(specialList.querySelectorAll('.skill-row[data-dynamic-row]'));
-                    const lastRow = rows[rows.length - 1];
-                    if(lastRow && lastRow.contains(target)){
-                        addSpecialAbilityRow(specialList);
+                    const inputs = Array.from(specialList.querySelectorAll('[data-dynamic-row]'));
+                    if(inputs.indexOf(target) >= inputs.length - 5) { // 5 inputs per row
+                         addSpecialAbilityRow(specialList);
                     }
+                     return;
                 }
                 
                 const attackGrid = target.closest('#attack-rows');
-                if(attackGrid && target.dataset.dynamicRow) {
-                    const inputs = Array.from(attackGrid.querySelectorAll('input'));
+                if(attackGrid) {
+                    const inputs = Array.from(attackGrid.querySelectorAll('[data-dynamic-row]'));
                     if(inputs.indexOf(target) >= inputs.length - 4) {
                         addAttackRow();
                     }
@@ -916,27 +948,12 @@
                             text: '',
                             pageBreak: 'before'
                         },
-                         {
-                            columns: [
-                                {
-                                    width: '50%',
-                                    stack:[
-                                        {text: 'Mecha', style: 'h3', margin: [0, 15, 0, 5]},
-                                        {table: { widths: ['*'], body: getSingleColumnBody('mecha-list', 'Mecha') }, layout:'lightHorizontalLines', marginBottom: 15},
-                                        {text: 'Miscellaneous', style: 'h3', margin: [0, 15, 0, 5]},
-                                        {table: { widths: ['*'], body: getSingleColumnBody('miscellaneous-list', 'Item') }, layout:'lightHorizontalLines', marginBottom: 15}
-                                    ]
-                                },
-                                {
-                                    width: '50%',
-                                    stack: [
-                                        {text: 'Gear', style: 'h3', margin: [0, 15, 0, 5]},
-                                        {table: { widths: ['*'], body: getSingleColumnBody('gear-list', 'Gear') }, layout:'lightHorizontalLines', marginBottom: 15}
-                                    ]
-                                }
-                            ],
-                            columnGap: 20
-                        },
+                        {text: 'Gear', style: 'h3', margin: [0, 15, 0, 5]},
+                        {table: { widths: ['*'], body: getSingleColumnBody('gear-list', 'Gear') }, layout:'lightHorizontalLines', marginBottom: 15},
+                        {text: 'Mecha', style: 'h3', margin: [0, 15, 0, 5]},
+                        {table: { widths: ['*'], body: getSingleColumnBody('mecha-list', 'Mecha') }, layout:'lightHorizontalLines', marginBottom: 15},
+                        {text: 'Miscellaneous', style: 'h3', margin: [0, 15, 0, 5]},
+                        {table: { widths: ['*'], body: getSingleColumnBody('miscellaneous-list', 'Item') }, layout:'lightHorizontalLines', marginBottom: 15},
                         
                         // Page 4
                         {
@@ -987,8 +1004,7 @@
 
             populateSkillContainer('skills-list-left', mentalSkillData);
             populateSkillContainer('skills-list-right', otherSkillData);
-            populateSkillContainer('metafocus-skills-list-left', metafocusSkillDataLeft);
-            populateSkillContainer('metafocus-skills-list-right', metafocusSkillDataRight);
+            populateMetafocus();
             populateFolio1();
             populateFolio2();
             populateFolio3();
