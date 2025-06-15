@@ -1,3 +1,4 @@
+@ -1,788 +1,786 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -781,233 +782,265 @@
             
             const saveAsPdf = () => {
                 const charName = getInputValue('char-name').trim();
+
+                // *** NEW *** Function to get Character Information
                 const getBioBlock = () => {
                     const body = [
                         [{text: 'Name:', style: 'label'}, getInputValue('char-name'), {text: 'Concept:', style: 'label'}, getInputValue('char-concept')],
-                        [{text: 'Species:', style: 'label'}, getInputValue('char-species'), {text: 'Occupation:', style: 'label'}, getInputValue('char-occu')],
-                        [{text: 'Origin:', style: 'label'}, getInputValue('char-origin'), {text: 'Faction:', style: 'label'}, getInputValue('char-faction')],
-                        [{text: 'Age:', style: 'label'}, getInputValue('char-age'), {text: 'Gender:', style: 'label'}, getInputValue('char-gender')],
-                        [{text: 'Height:', style: 'label'}, getInputValue('char-height'), {text: 'Weight:', style: 'label'}, getInputValue('char-weight')],
-                        [{text: 'Description / Style:', style: 'label', colSpan: 4, margin: [0, 5, 0, 2]}, {}, {}, {}],
-                        [{text: getInputValue('char-style'), colSpan: 4, style: 'textarea'}, {}, {}, {}],
+@ -795,14 +793,8 @@
                         [{text: 'Personality / Motive:', style: 'label', colSpan: 4, margin: [0, 5, 0, 2]}, {}, {}, {}],
                         [{text: getInputValue('char-motive'), colSpan: 4, style: 'textarea'}, {}, {}, {}]
                     ];
+                    return {
+                        table: { widths: ['auto', '*', 'auto', '*'], body: body },
+                        layout: 'noBorders',
+                        marginBottom: 10
+                    };
                     return { table: { widths: ['auto', '*', 'auto', '*'], body: body }, layout: 'noBorders', marginBottom: 10 };
                 };
+                
+                // *** NEW *** Function to get Primary Attributes
                 const getAttributesBlock = () => {
                     const body = [
                         [{text: 'Primary Attributes', style: 'h3', colSpan: 4, alignment: 'left', border: [false, false, false, true], marginBottom: 5}, {}, {}, {}],
-                        [{text: 'Strength', style:'attrLabel'}, getInputValue('attr-strength'), {text: 'Intellect', style:'attrLabel'}, getInputValue('attr-intellect')],
-                        [{text: 'Might', style:'subLabel'}, getInputValue('attr-might'), {text: 'Logic', style:'subLabel'}, getInputValue('attr-logic')],
-                        [{text: 'Agility', style:'attrLabel'}, getInputValue('attr-agility'), {text: 'Wisdom', style:'attrLabel'}, getInputValue('attr-wisdom')],
-                        [{text: 'Reflex', style:'subLabel'}, getInputValue('attr-reflex'), {text: 'Will', style:'subLabel'}, getInputValue('attr-will')],
+@ -813,14 +805,8 @@
                         [{text: 'Constitution', style:'attrLabel'}, getInputValue('attr-constitution'), {text: 'Charisma', style:'attrLabel'}, getInputValue('attr-charisma')],
                         [{text: 'Fortitude', style:'subLabel'}, getInputValue('attr-fortitude'), {text: 'Etiquette', style:'subLabel'}, getInputValue('attr-etiquette')]
                     ];
+                    return {
+                        table: { widths: ['*', 'auto', '*', 'auto'], body: body },
+                        layout: 'noBorders',
+                        marginBottom: 10
+                    };
                     return { table: { widths: ['*', 'auto', '*', 'auto'], body: body }, layout: 'noBorders', marginBottom: 10 };
                 };
+
+                // *** NEW *** Functions for other stats
                 const getCoreStatsBlock = () => {
                     const body = [
                         [{text: 'Core Stats', style: 'h3', colSpan: 2, alignment: 'left', border: [false, false, false, true], marginBottom: 5}, {}],
-                        [{text: 'Health', style: 'label'}, getInputValue('health')],
-                        [{text: 'Vitality', style: 'label'}, getInputValue('vitality')],
-                        [{text: 'Initiative', style: 'label'}, getInputValue('initiative')]
+@ -840,17 +826,14 @@
                     ];
                     return { table: { widths: ['*', 'auto'], body: body }, layout: 'noBorders', marginBottom: 10 };
                 };
-                const getRatingsBlock = () => {
-                     const body = [
-                        [{text: 'Ratings', style: 'h3', colSpan: 2, alignment: 'left', border: [false, false, false, true], marginBottom: 5}, {}],
-                        [{text: 'Karma', style: 'label'}, getInputValue('karma')],
-                        [{text: 'Plot Points', style: 'label'}, getInputValue('plot-points')],
-                        [{text: 'Tech Level', style: 'label'}, getInputValue('tech-level')],
-                        [{text: 'Wealth', style: 'label'}, getInputValue('wealth')]
-                    ];
-                    return { table: { widths: ['*', 'auto'], body: body }, layout: 'noBorders', marginBottom: 10 };
-                };
+
                 const getPdfSkillTables = (containerId) => {
                     const tables = [];
                     const container = document.getElementById(containerId);
                     if (!container) return tables;
+
                     container.querySelectorAll('.skill-group').forEach(group => {
                         const body = [];
                         const groupName = group.querySelector('.skill-group-header, .skill-subcategory-header').textContent;
                         body.push([{ text: groupName.trim(), colSpan: 5, style: 'groupHeader'}, {}, {}, {}, {}]);
+                        
                         group.querySelectorAll('.skill-row[data-skill-id], .skill-subcategory-header').forEach(element => {
                             if (element.classList.contains('skill-subcategory-header') && group.querySelector('.skill-group-header')) {
                                 body.push([{text: element.textContent, colSpan: 5, style: 'subgroupHeader'}, {}, {}, {}, {}]);
-                            } else if (element.classList.contains('skill-row') && element.dataset.skillId) {
-                                let label = (element.querySelector('.skill-name-input') || element.querySelector('label')).value || (element.querySelector('.skill-name-input') || element.querySelector('label')).textContent;
-                                const rank = element.querySelector('.skill-rank').value;
-                                const baseSelect = element.querySelector('.skill-base-select');
-                                const base = baseSelect.options[baseSelect.selectedIndex]?.text || '';
-                                const mod = element.querySelector('.skill-mod').value;
-                                const total = element.querySelector('.skill-total').value;
+@ -864,25 +847,17 @@
                                 body.push([label, rank || ' ', base || ' ', mod || ' ', {text: total || ' ', bold: true}]);
                             }
+                        });
+                        
+                        tables.push({
+                            table: { widths: ['*', 'auto', 'auto', 'auto', 'auto'], body: body, dontBreakRows: true },
+                            layout: 'lightHorizontalLines',
+                            marginBottom: 10
                         });
                         tables.push({ table: { widths: ['*', 'auto', 'auto', 'auto', 'auto'], body: body, dontBreakRows: true }, layout: 'lightHorizontalLines', marginBottom: 10 });
                     });
                     return tables;
                 };
+                
                 const getSimpleGridBody = (containerId, headers) => {
                     const body = [headers.map(h => ({text: h, style: 'tableHeader'}))];
                     const container = document.getElementById(containerId);
                     if (!container) return body;
+
                     const inputs = container.querySelectorAll('input[type=text], input[type=number]');
                     const numCols = headers.length;
                     const contentRows = [];
+
                     for (let i = 0; i < inputs.length; i += numCols) {
                         const row = [];
                         let hasContent = false;
-                        for (let j = 0; j < numCols; j++) {
-                            const value = inputs[i+j]?.value.trim() || '';
+@ -891,9 +866,7 @@
                             if (value) hasContent = true;
                             row.push(value);
+                        }
+                        if (hasContent) {
+                           contentRows.push(row);
                         }
                         if (hasContent) { contentRows.push(row); }
                     }
                     if (contentRows.length > 0) {
                         contentRows.forEach(row => body.push(row));
-                    } else {
-                        body.push(new Array(headers.length).fill(' '));
+@ -902,18 +875,14 @@
                     }
                     return body;
                 };
+
                 const getSingleColumnBody = (containerId, header) => {
                     const body = [[{text: header, style: 'tableHeader'}]];
                     const container = document.getElementById(containerId);
                     if (!container) return body;
                     const inputs = container.querySelectorAll('input[type=text]');
                     const contentRows = [];
+                    
                     inputs.forEach(input => {
+                        if (input.value.trim()) {
+                            contentRows.push([input.value]);
+                        }
                         if (input.value.trim()) { contentRows.push([input.value]); }
                     });
                     if (contentRows.length > 0) {
                         contentRows.forEach(row => body.push(row));
-                    } else {
-                        body.push([' ']);
+@ -922,12 +891,10 @@
                     }
                     return body;
                 }
+                
                 const getAttackTableBody = () => getSimpleGridBody('attack-rows', ['Attack', 'Score', 'Damage', 'Notes']);
                 const getInvocationsBody = () => getSimpleGridBody('invocations-list', ['Invocation', 'Level']);
                 const getAugmentationsBody = () => getSimpleGridBody('augmentations-list', ['Augmentation', 'Effect']);
                 const getFeaturesBody = () => getSimpleGridBody('features-list', ['Feature', 'Effect']);
+
                 const getArmorTableBody = () => {
                     const body = [[{ text: 'Location', style: 'tableHeader' }, { text: 'Total DR', style: 'tableHeader' }, { text: 'Notes', style: 'tableHeader' }]];
                     document.querySelectorAll('#armor-rows > label').forEach(label => {
-                        const location = label.textContent;
-                        const dr = getInputValue(`${label.htmlFor}-dr`);
-                        const notes = getInputValue(`${label.htmlFor}-notes`);
-                        body.push([location, dr, notes]);
+@ -938,14 +905,12 @@
                     });
                     return body;
                 };
+
                 const getTraitColumnStack = (traitTypes) => {
                     const stack = [];
                     traitTypes.forEach(traitType => {
                         const body = [];
                         const typeLowerCase = traitType.toLowerCase();
                         body.push([{text: traitType, style: 'h3', colSpan: 2, alignment: 'left', border: [false, false, false, true]}, {}]);
+                        
                         const contentRows = [];
                         const traitGrid = document.querySelector(`.trait-grid[data-trait-type="${typeLowerCase}"]`);
                         if(traitGrid) {
-                            const inputs = traitGrid.querySelectorAll('input[type="text"]');
+@ -953,9 +918,7 @@
                             for (let i = 0; i < inputs.length; i += 2) {
                                 const traitVal = inputs[i].value;
                                 const effectVal = inputs[i+1].value;
+                                if (traitVal.trim() || effectVal.trim()) {
+                                    contentRows.push([traitVal, effectVal]);
+                                }
                                 if (traitVal.trim() || effectVal.trim()) { contentRows.push([traitVal, effectVal]); }
                             }
                         }
                         if(contentRows.length > 0){
-                            contentRows.forEach(row => body.push(row));
+@ -963,39 +926,20 @@
                         } else {
                             body.push([' ',' ']);
                         }
+
+                        stack.push({
+                            table: { widths:['35%', '65%'], body: body },
+                            layout: 'noBorders',
+                            marginBottom: 10
+                        });
                         stack.push({ table: { widths:['35%', '65%'], body: body }, layout: 'noBorders', marginBottom: 10 });
                     });
                     return stack;
                 };
+
+                // *** NEW: Revised Document Definition for better layout ***
                 const docDefinition = {
                     pageSize: 'LETTER',
                     pageMargins: [ 25, 40, 25, 40 ],
                     content: [
+                        // Page 1: Bio, Attributes, Core Stats, Combat
                         { text: 'TANGENT SFF RPG', style: 'h1', alignment: 'center', margin: [0, 0, 0, 15] },
                         getBioBlock(),
                         {
                             columns: [
+                                {
+                                    width: '60%',
+                                    stack: [
+                                        getAttributesBlock(),
+                                    ]
+                                },
+                                {
+                                    width: '40%',
+                                    stack: [
+                                        getCoreStatsBlock(),
+                                        getRatingsBlock(),
+                                    ]
+                                }
                                 { width: '60%', stack: [ getAttributesBlock() ] },
                                 { width: '40%', stack: [ getCoreStatsBlock(), getRatingsBlock() ] }
                             ],
                             columnGap: 20
                         },
-                        { text: 'Attack', style: 'h3', margin: [0, 10, 0, 5]},
+@ -1003,8 +947,6 @@
                         { table: { widths: ['*', 50, 50, '*'], body: getAttackTableBody() }, layout: 'lightHorizontalLines' },
                         { text: 'Armor', style: 'h3', margin: [0, 10, 0, 5]},
                         { table: { widths: [100, 100, '*'], body: getArmorTableBody() }, layout: 'lightHorizontalLines' },
+
+                        // Page 2: Skills
                         { text: '', pageBreak: 'before' },
                         { text: 'Skills', style: 'h1', alignment: 'center', margin: [0, 0, 0, 15] },
                         {
-                            columns: [
-                                { width: '50%', stack: getPdfSkillTables('skills-list-left') },
-                                { width: '50%', stack: getPdfSkillTables('skills-list-right') }
+@ -1014,8 +956,6 @@
                             ],
                             columnGap: 10
                         },
+                        
+                        // Page 3: Traits, Features, Metafocus
                         { text: '', pageBreak: 'before' },
                         { text: 'Traits & Features', style: 'h1', alignment: 'center', margin: [0, 0, 0, 15] },
                          {
-                            columns: [
-                                { width: '50%', stack: getTraitColumnStack(['Species', 'Origin']) },
-                                { width: '50%', stack: getTraitColumnStack(['Occupation', 'Faction']) }
-                            ],
-                            columnGap: 10
-                        },
-                        {text: 'Other Traits', style: 'h3', margin: [0, 10, 0, 5]},
-                        {table: { widths: ['*'], body: getSingleColumnBody('other-traits-list', 'Other Trait') }, layout:'lightHorizontalLines', marginBottom: 10},
-                        {text: 'Augmentations', style: 'h3', margin: [0, 10, 0, 5]},
-                        {table: { widths: ['*', '*'], body: getAugmentationsBody()}, layout:'lightHorizontalLines', marginBottom: 10},
-                        {text: 'Features', style: 'h3', margin: [0, 10, 0, 5]},
+@ -1033,12 +973,9 @@
                         {table: { widths: ['*', '*'], body: getFeaturesBody()}, layout:'lightHorizontalLines', marginBottom: 10},
                         {text: 'Disadvantages', style: 'h3', margin: [0, 10, 0, 5]},
                         {table: { widths: ['*'], body: getSingleColumnBody('disadvantages-list', 'Disadvantage') }, layout:'lightHorizontalLines', marginBottom: 10},
+                        
+                        // Page 4: Metafocus, Gear, Notes
                         { text: '', pageBreak: 'before' },
                         { text: 'Metafocus', style: 'h1', alignment: 'center', margin: [0, 0, 0, 15] },
                         { stack: getPdfSkillTables('metafocus-skills-list') },
+
                         {text: 'Gear', style: 'h1', alignment: 'center', margin: [0, 20, 0, 15]},
                         {table: { widths: ['*'], body: getSingleColumnBody('gear-list', 'Gear') }, layout:'lightHorizontalLines', marginBottom: 10},
                         {text: 'Mecha', style: 'h3', margin: [0, 10, 0, 5]},
-                        {table: { widths: ['*'], body: getSingleColumnBody('mecha-list', 'Mecha') }, layout:'lightHorizontalLines', marginBottom: 10},
-                        {text: 'Miscellaneous', style: 'h3', margin: [0, 10, 0, 5]},
-                        {table: { widths: ['*'], body: getSingleColumnBody('miscellaneous-list', 'Item') }, layout:'lightHorizontalLines', marginBottom: 10},
-                        {text: 'Notes', style: 'h3', margin: [0, 10, 0, 5]},
+@ -1049,11 +986,7 @@
                         {table: { widths: ['*'], body: getSingleColumnBody('notes-list', 'Note') }, layout:'lightHorizontalLines', marginBottom: 10}
                     ],
                     footer: function(currentPage, pageCount) { 
+                        return { 
+                            text: 'WOLFE.BT@TANGENTLLC - Page ' + currentPage.toString() + ' of ' + pageCount,
+                            alignment: 'center',
+                            style: 'footer'
+                        }; 
                         return { text: 'WOLFE.BT@TANGENTLLC - Page ' + currentPage.toString() + ' of ' + pageCount, alignment: 'center', style: 'footer' }; 
                     },
                     styles: {
                         h1: { font: 'Roboto', fontSize: 22, bold: true },
-                        h3: { font: 'Roboto', fontSize: 14, bold: true, textTransform: 'uppercase' },
-                        label: { bold: true, color: '#333333' },
-                        attrLabel: { bold: true, color: '#333333', margin: [0, 4, 0, 0] },
-                        subLabel: { italics: true, color: '#555555', margin: [10, 2, 0, 8] },
-                        tableHeader: { bold: true, fontSize: 9, color: 'black', fillColor: '#e9ecef', alignment: 'center' },
-                        groupHeader: { bold: true, fontSize: 11, color: 'black', margin: [0, 5, 0, 5], fillColor: '#e9ecef'},
-                        subgroupHeader: { bold: true, italics: true, fontSize: 9, color: '#333333', margin: [10, 2, 0, 2]},
-                        textarea: { margin: [0, 2, 0, 2], italics: true, color: '#555', fontSize: 9 },
-                        footer: { fontSize: 8, color: '#616161', margin: [0, 10, 0, 0]}
+@ -1069,26 +1002,186 @@
                     },
                     defaultStyle: { font: 'Roboto', fontSize: 10 }
                 };
+                
                 pdfMake.createPdf(docDefinition).download(`${charName || 'tangent-character'}.pdf`);
             };
             pdfMake.fonts = { Roboto: { normal: 'Roboto-Regular.ttf', bold: 'Roboto-Medium.ttf', italics: 'Roboto-Italic.ttf', bolditalics: 'Roboto-MediumItalic.ttf' } };
             
+            const saveAsMarkdown = () => {
+                alert("Save as Markdown is not yet implemented.");
+            };
             // --- *** NEW MARKDOWN EXPORT FUNCTIONS *** ---
             
+            pdfMake.fonts = {
+                Roboto: {
+                    normal: 'Roboto-Regular.ttf',
+                    bold: 'Roboto-Medium.ttf',
+                    italics: 'Roboto-Italic.ttf',
+                    bolditalics: 'Roboto-MediumItalic.ttf'
             const getInputValueMd = (id) => document.getElementById(id)?.value.trim() || '';
 
             // Helper function to create a Markdown table from an array of arrays
@@ -1185,13 +1218,3 @@
             populateSkillContainer('skills-list-left', mentalSkillData);
             populateSkillContainer('skills-list-right', otherSkillData);
             populateMetafocus();
-            populateFolio1();
-            populateFolio2();
-            populateFolio3();
-            populateFolio4();
-
-            document.querySelectorAll('.skill-row[data-skill-id]').forEach(calculateSkillTotal);
-        });
-    </script>
-</body>
-</html>
