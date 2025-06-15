@@ -781,8 +781,6 @@
             
             const saveAsPdf = () => {
                 const charName = getInputValue('char-name').trim();
-
-                // *** NEW *** Function to get Character Information
                 const getBioBlock = () => {
                     const body = [
                         [{text: 'Name:', style: 'label'}, getInputValue('char-name'), {text: 'Concept:', style: 'label'}, getInputValue('char-concept')],
@@ -795,14 +793,8 @@
                         [{text: 'Personality / Motive:', style: 'label', colSpan: 4, margin: [0, 5, 0, 2]}, {}, {}, {}],
                         [{text: getInputValue('char-motive'), colSpan: 4, style: 'textarea'}, {}, {}, {}]
                     ];
-                    return {
-                        table: { widths: ['auto', '*', 'auto', '*'], body: body },
-                        layout: 'noBorders',
-                        marginBottom: 10
-                    };
+                    return { table: { widths: ['auto', '*', 'auto', '*'], body: body }, layout: 'noBorders', marginBottom: 10 };
                 };
-                
-                // *** NEW *** Function to get Primary Attributes
                 const getAttributesBlock = () => {
                     const body = [
                         [{text: 'Primary Attributes', style: 'h3', colSpan: 4, alignment: 'left', border: [false, false, false, true], marginBottom: 5}, {}, {}, {}],
@@ -813,14 +805,8 @@
                         [{text: 'Constitution', style:'attrLabel'}, getInputValue('attr-constitution'), {text: 'Charisma', style:'attrLabel'}, getInputValue('attr-charisma')],
                         [{text: 'Fortitude', style:'subLabel'}, getInputValue('attr-fortitude'), {text: 'Etiquette', style:'subLabel'}, getInputValue('attr-etiquette')]
                     ];
-                    return {
-                        table: { widths: ['*', 'auto', '*', 'auto'], body: body },
-                        layout: 'noBorders',
-                        marginBottom: 10
-                    };
+                    return { table: { widths: ['*', 'auto', '*', 'auto'], body: body }, layout: 'noBorders', marginBottom: 10 };
                 };
-
-                // *** NEW *** Functions for other stats
                 const getCoreStatsBlock = () => {
                     const body = [
                         [{text: 'Core Stats', style: 'h3', colSpan: 2, alignment: 'left', border: [false, false, false, true], marginBottom: 5}, {}],
@@ -840,17 +826,14 @@
                     ];
                     return { table: { widths: ['*', 'auto'], body: body }, layout: 'noBorders', marginBottom: 10 };
                 };
-
                 const getPdfSkillTables = (containerId) => {
                     const tables = [];
                     const container = document.getElementById(containerId);
                     if (!container) return tables;
-
                     container.querySelectorAll('.skill-group').forEach(group => {
                         const body = [];
                         const groupName = group.querySelector('.skill-group-header, .skill-subcategory-header').textContent;
                         body.push([{ text: groupName.trim(), colSpan: 5, style: 'groupHeader'}, {}, {}, {}, {}]);
-                        
                         group.querySelectorAll('.skill-row[data-skill-id], .skill-subcategory-header').forEach(element => {
                             if (element.classList.contains('skill-subcategory-header') && group.querySelector('.skill-group-header')) {
                                 body.push([{text: element.textContent, colSpan: 5, style: 'subgroupHeader'}, {}, {}, {}, {}]);
@@ -864,25 +847,17 @@
                                 body.push([label, rank || ' ', base || ' ', mod || ' ', {text: total || ' ', bold: true}]);
                             }
                         });
-                        
-                        tables.push({
-                            table: { widths: ['*', 'auto', 'auto', 'auto', 'auto'], body: body, dontBreakRows: true },
-                            layout: 'lightHorizontalLines',
-                            marginBottom: 10
-                        });
+                        tables.push({ table: { widths: ['*', 'auto', 'auto', 'auto', 'auto'], body: body, dontBreakRows: true }, layout: 'lightHorizontalLines', marginBottom: 10 });
                     });
                     return tables;
                 };
-                
                 const getSimpleGridBody = (containerId, headers) => {
                     const body = [headers.map(h => ({text: h, style: 'tableHeader'}))];
                     const container = document.getElementById(containerId);
                     if (!container) return body;
-
                     const inputs = container.querySelectorAll('input[type=text], input[type=number]');
                     const numCols = headers.length;
                     const contentRows = [];
-
                     for (let i = 0; i < inputs.length; i += numCols) {
                         const row = [];
                         let hasContent = false;
@@ -891,9 +866,7 @@
                             if (value) hasContent = true;
                             row.push(value);
                         }
-                        if (hasContent) {
-                           contentRows.push(row);
-                        }
+                        if (hasContent) { contentRows.push(row); }
                     }
                     if (contentRows.length > 0) {
                         contentRows.forEach(row => body.push(row));
@@ -902,18 +875,14 @@
                     }
                     return body;
                 };
-
                 const getSingleColumnBody = (containerId, header) => {
                     const body = [[{text: header, style: 'tableHeader'}]];
                     const container = document.getElementById(containerId);
                     if (!container) return body;
                     const inputs = container.querySelectorAll('input[type=text]');
                     const contentRows = [];
-                    
                     inputs.forEach(input => {
-                        if (input.value.trim()) {
-                            contentRows.push([input.value]);
-                        }
+                        if (input.value.trim()) { contentRows.push([input.value]); }
                     });
                     if (contentRows.length > 0) {
                         contentRows.forEach(row => body.push(row));
@@ -922,12 +891,10 @@
                     }
                     return body;
                 }
-                
                 const getAttackTableBody = () => getSimpleGridBody('attack-rows', ['Attack', 'Score', 'Damage', 'Notes']);
                 const getInvocationsBody = () => getSimpleGridBody('invocations-list', ['Invocation', 'Level']);
                 const getAugmentationsBody = () => getSimpleGridBody('augmentations-list', ['Augmentation', 'Effect']);
                 const getFeaturesBody = () => getSimpleGridBody('features-list', ['Feature', 'Effect']);
-
                 const getArmorTableBody = () => {
                     const body = [[{ text: 'Location', style: 'tableHeader' }, { text: 'Total DR', style: 'tableHeader' }, { text: 'Notes', style: 'tableHeader' }]];
                     document.querySelectorAll('#armor-rows > label').forEach(label => {
@@ -938,14 +905,12 @@
                     });
                     return body;
                 };
-
                 const getTraitColumnStack = (traitTypes) => {
                     const stack = [];
                     traitTypes.forEach(traitType => {
                         const body = [];
                         const typeLowerCase = traitType.toLowerCase();
                         body.push([{text: traitType, style: 'h3', colSpan: 2, alignment: 'left', border: [false, false, false, true]}, {}]);
-                        
                         const contentRows = [];
                         const traitGrid = document.querySelector(`.trait-grid[data-trait-type="${typeLowerCase}"]`);
                         if(traitGrid) {
@@ -953,9 +918,7 @@
                             for (let i = 0; i < inputs.length; i += 2) {
                                 const traitVal = inputs[i].value;
                                 const effectVal = inputs[i+1].value;
-                                if (traitVal.trim() || effectVal.trim()) {
-                                    contentRows.push([traitVal, effectVal]);
-                                }
+                                if (traitVal.trim() || effectVal.trim()) { contentRows.push([traitVal, effectVal]); }
                             }
                         }
                         if(contentRows.length > 0){
@@ -963,39 +926,20 @@
                         } else {
                             body.push([' ',' ']);
                         }
-
-                        stack.push({
-                            table: { widths:['35%', '65%'], body: body },
-                            layout: 'noBorders',
-                            marginBottom: 10
-                        });
+                        stack.push({ table: { widths:['35%', '65%'], body: body }, layout: 'noBorders', marginBottom: 10 });
                     });
                     return stack;
                 };
-
-                // *** NEW: Revised Document Definition for better layout ***
                 const docDefinition = {
                     pageSize: 'LETTER',
                     pageMargins: [ 25, 40, 25, 40 ],
                     content: [
-                        // Page 1: Bio, Attributes, Core Stats, Combat
                         { text: 'TANGENT SFF RPG', style: 'h1', alignment: 'center', margin: [0, 0, 0, 15] },
                         getBioBlock(),
                         {
                             columns: [
-                                {
-                                    width: '60%',
-                                    stack: [
-                                        getAttributesBlock(),
-                                    ]
-                                },
-                                {
-                                    width: '40%',
-                                    stack: [
-                                        getCoreStatsBlock(),
-                                        getRatingsBlock(),
-                                    ]
-                                }
+                                { width: '60%', stack: [ getAttributesBlock() ] },
+                                { width: '40%', stack: [ getCoreStatsBlock(), getRatingsBlock() ] }
                             ],
                             columnGap: 20
                         },
@@ -1003,8 +947,6 @@
                         { table: { widths: ['*', 50, 50, '*'], body: getAttackTableBody() }, layout: 'lightHorizontalLines' },
                         { text: 'Armor', style: 'h3', margin: [0, 10, 0, 5]},
                         { table: { widths: [100, 100, '*'], body: getArmorTableBody() }, layout: 'lightHorizontalLines' },
-
-                        // Page 2: Skills
                         { text: '', pageBreak: 'before' },
                         { text: 'Skills', style: 'h1', alignment: 'center', margin: [0, 0, 0, 15] },
                         {
@@ -1014,8 +956,6 @@
                             ],
                             columnGap: 10
                         },
-                        
-                        // Page 3: Traits, Features, Metafocus
                         { text: '', pageBreak: 'before' },
                         { text: 'Traits & Features', style: 'h1', alignment: 'center', margin: [0, 0, 0, 15] },
                          {
@@ -1033,12 +973,9 @@
                         {table: { widths: ['*', '*'], body: getFeaturesBody()}, layout:'lightHorizontalLines', marginBottom: 10},
                         {text: 'Disadvantages', style: 'h3', margin: [0, 10, 0, 5]},
                         {table: { widths: ['*'], body: getSingleColumnBody('disadvantages-list', 'Disadvantage') }, layout:'lightHorizontalLines', marginBottom: 10},
-                        
-                        // Page 4: Metafocus, Gear, Notes
                         { text: '', pageBreak: 'before' },
                         { text: 'Metafocus', style: 'h1', alignment: 'center', margin: [0, 0, 0, 15] },
                         { stack: getPdfSkillTables('metafocus-skills-list') },
-
                         {text: 'Gear', style: 'h1', alignment: 'center', margin: [0, 20, 0, 15]},
                         {table: { widths: ['*'], body: getSingleColumnBody('gear-list', 'Gear') }, layout:'lightHorizontalLines', marginBottom: 10},
                         {text: 'Mecha', style: 'h3', margin: [0, 10, 0, 5]},
@@ -1049,11 +986,7 @@
                         {table: { widths: ['*'], body: getSingleColumnBody('notes-list', 'Note') }, layout:'lightHorizontalLines', marginBottom: 10}
                     ],
                     footer: function(currentPage, pageCount) { 
-                        return { 
-                            text: 'WOLFE.BT@TANGENTLLC - Page ' + currentPage.toString() + ' of ' + pageCount,
-                            alignment: 'center',
-                            style: 'footer'
-                        }; 
+                        return { text: 'WOLFE.BT@TANGENTLLC - Page ' + currentPage.toString() + ' of ' + pageCount, alignment: 'center', style: 'footer' }; 
                     },
                     styles: {
                         h1: { font: 'Roboto', fontSize: 22, bold: true },
@@ -1069,26 +1002,186 @@
                     },
                     defaultStyle: { font: 'Roboto', fontSize: 10 }
                 };
-                
                 pdfMake.createPdf(docDefinition).download(`${charName || 'tangent-character'}.pdf`);
+            };
+            pdfMake.fonts = { Roboto: { normal: 'Roboto-Regular.ttf', bold: 'Roboto-Medium.ttf', italics: 'Roboto-Italic.ttf', bolditalics: 'Roboto-MediumItalic.ttf' } };
+            
+            // --- *** NEW MARKDOWN EXPORT FUNCTIONS *** ---
+            
+            const getInputValueMd = (id) => document.getElementById(id)?.value.trim() || '';
+
+            // Helper function to create a Markdown table from an array of arrays
+            const createMdTable = (headers, rows) => {
+                if (rows.length === 0) return '_(empty)_\n';
+                let table = `| ${headers.join(' | ')} |\n`;
+                table += `| ${headers.map(() => '---').join(' | ')} |\n`;
+                rows.forEach(row => {
+                    const sanitizedRow = row.map(cell => (cell || '').replace(/\|/g, '\\|'));
+                    table += `| ${sanitizedRow.join(' | ')} |\n`;
+                });
+                return table;
+            };
+
+            const getSkillsMarkdown = (containerId) => {
+                let text = '';
+                const container = document.getElementById(containerId);
+                if (!container) return '';
+
+                container.querySelectorAll('.skill-group').forEach(group => {
+                    const groupName = group.querySelector('.skill-group-header, .skill-subcategory-header').textContent;
+                    text += `### ${groupName.trim()}\n`;
+
+                    const headers = ['Skill', 'Rank', 'Base', 'Mod', 'Total'];
+                    const rows = [];
+
+                    group.querySelectorAll('.skill-row[data-skill-id], .skill-subcategory-header').forEach(element => {
+                        if (element.classList.contains('skill-subcategory-header') && group.querySelector('.skill-group-header')) {
+                            // This case is handled by starting a new table for each subcategory if needed.
+                            // For simplicity, we'll group them under the main header.
+                        } else if (element.classList.contains('skill-row') && element.dataset.skillId) {
+                            const label = (element.querySelector('.skill-name-input') || element.querySelector('label')).value || (element.querySelector('.skill-name-input') || element.querySelector('label')).textContent;
+                            const rank = getInputValueMd(`skill-${element.dataset.skillId}-rank`);
+                            const baseSelect = element.querySelector('.skill-base-select');
+                            const base = baseSelect.options[baseSelect.selectedIndex]?.text || '';
+                            const mod = getInputValueMd(`skill-${element.dataset.skillId}-mod`);
+                            const total = getInputValueMd(`skill-${element.dataset.skillId}-total`);
+                            if (label || rank || base || mod || total) {
+                                rows.push([label, rank, base.replace('--',''), mod, `**${total}**`]);
+                            }
+                        }
+                    });
+                     text += createMdTable(headers, rows) + '\n';
+                });
+                return text;
+            };
+
+            const getSimpleGridMarkdown = (containerId, headers) => {
+                const rows = [];
+                const container = document.getElementById(containerId);
+                const inputs = container.querySelectorAll('input[type=text], input[type=number]');
+                const numCols = headers.length;
+
+                for (let i = 0; i < inputs.length; i += numCols) {
+                    const rowData = [];
+                    let hasContent = false;
+                    for (let j = 0; j < numCols; j++) {
+                        const value = inputs[i+j]?.value.trim() || '';
+                        if (value) hasContent = true;
+                        rowData.push(value);
+                    }
+                    if (hasContent) { rows.push(rowData); }
+                }
+                return createMdTable(headers, rows);
+            };
+
+            const getSingleColumnMarkdown = (containerId, header) => {
+                let text = `### ${header}\n`;
+                const container = document.getElementById(containerId);
+                const inputs = container.querySelectorAll('input[type=text]');
+                let hasContent = false;
+                inputs.forEach(input => {
+                    const value = input.value.trim();
+                    if (value) {
+                        text += `* ${value}\n`;
+                        hasContent = true;
+                    }
+                });
+                return hasContent ? text + '\n' : `${text}* _(empty)_\n\n`;
             };
             
             const saveAsMarkdown = () => {
-                alert("Save as Markdown is not yet implemented.");
+                const charName = getInputValueMd('char-name');
+                let mdString = `# ${charName || 'Tangent Character'}\n\n`;
+
+                // Character Info
+                mdString += `## Character Information\n`;
+                mdString += `* **Concept:** ${getInputValueMd('char-concept')}\n`;
+                mdString += `* **Species:** ${getInputValueMd('char-species')}\n`;
+                mdString += `* **Occupation:** ${getInputValueMd('char-occu')}\n`;
+                mdString += `* **Origin:** ${getInputValueMd('char-origin')}\n`;
+                mdString += `* **Faction:** ${getInputValueMd('char-faction')}\n`;
+                mdString += `* **Age:** ${getInputValueMd('char-age')}\n`;
+                mdString += `* **Gender:** ${getInputValueMd('char-gender')}\n`;
+                mdString += `* **Height:** ${getInputValueMd('char-height')}\n`;
+                mdString += `* **Weight:** ${getInputValueMd('char-weight')}\n\n`;
+                mdString += `### Description / Style\n${getInputValueMd('char-style') || '_(empty)_'}\n\n`;
+                mdString += `### Personality / Motive\n${getInputValueMd('char-motive') || '_(empty)_'}\n\n`;
+
+                // Attributes & Stats
+                mdString += `## Attributes & Stats\n`;
+                mdString += `| Attribute | Score | Derived | Score | | Attribute | Score | Derived | Score |\n`;
+                mdString += `| :--- | :---: | :--- | :---: | :---: | :--- | :---: | :--- | :---: |\n`;
+                mdString += `| **Strength** | ${getInputValueMd('attr-strength')} | Might | ${getInputValueMd('attr-might')} | | **Intellect** | ${getInputValueMd('attr-intellect')} | Logic | ${getInputValueMd('attr-logic')} |\n`;
+                mdString += `| **Agility** | ${getInputValueMd('attr-agility')} | Reflex | ${getInputValueMd('attr-reflex')} | | **Wisdom** | ${getInputValueMd('attr-wisdom')} | Will | ${getInputValueMd('attr-will')} |\n`;
+                mdString += `| **Constitution** | ${getInputValueMd('attr-constitution')} | Fortitude | ${getInputValueMd('attr-fortitude')} | | **Charisma** | ${getInputValueMd('attr-charisma')} | Etiquette | ${getInputValueMd('attr-etiquette')} |\n\n`;
+                
+                mdString += `| Core Stat | Value | | Rating | Value |\n`;
+                mdString += `| :--- | :---: | :---: |:--- | :---: |\n`;
+                mdString += `| Health | ${getInputValueMd('health')} | | Karma | ${getInputValueMd('karma')} |\n`;
+                mdString += `| Vitality | ${getInputValueMd('vitality')} | | Plot Points | ${getInputValueMd('plot-points')} |\n`;
+                mdString += `| Initiative | ${getInputValueMd('initiative')} | | Tech Level | ${getInputValueMd('tech-level')} |\n`;
+                mdString += `| | | | Wealth | ${getInputValueMd('wealth')} |\n\n`;
+
+                // Combat
+                mdString += `## Combat\n### Attacks\n`;
+                mdString += getSimpleGridMarkdown('attack-rows', ['Attack', 'Score', 'Damage', 'Notes']);
+                mdString += `\n### Armor\n`;
+                const armorRows = [];
+                document.querySelectorAll('#armor-rows > label').forEach(label => {
+                    const location = label.textContent;
+                    const dr = getInputValueMd(`${label.htmlFor}-dr`);
+                    const notes = getInputValueMd(`${label.htmlFor}-notes`);
+                    if (dr || notes) armorRows.push([location, dr, notes]);
+                });
+                mdString += createMdTable(['Location', 'Total DR', 'Notes'], armorRows);
+
+                // Skills
+                mdString += `\n## Skills\n`;
+                mdString += getSkillsMarkdown('skills-list-left');
+                mdString += getSkillsMarkdown('skills-list-right');
+
+                // Traits & Features
+                mdString += `\n## Traits & Features\n`;
+                document.querySelectorAll('#traits-list-left .trait-grid, #traits-list-right .trait-grid').forEach(grid => {
+                    const title = grid.querySelector('h5').textContent;
+                    mdString += `### ${title} Traits\n`;
+                    mdString += getSimpleGridMarkdown(grid.id, ['Trait', 'Effect']);
+                });
+                mdString += getSingleColumnMarkdown('other-traits-list', 'Other Traits');
+                mdString += getSimpleGridMarkdown('augmentations-list', ['Augmentation', 'Effect']);
+                mdString += getSimpleGridMarkdown('features-list', ['Feature', 'Effect']);
+                mdString += getSingleColumnMarkdown('disadvantages-list', 'Disadvantages');
+                
+                // Metafocus
+                mdString += `\n## Metafocus\n`;
+                mdString += getSkillsMarkdown('metafocus-skills-list');
+                mdString += `### Invocations\n`;
+                mdString += getSimpleGridMarkdown('invocations-list', ['Invocation', 'Level']);
+                
+                // Gear & Notes
+                mdString += `\n## Equipment & Notes\n`;
+                mdString += getSingleColumnMarkdown('gear-list', 'Gear');
+                mdString += getSingleColumnMarkdown('mecha-list', 'Mecha');
+                mdString += getSingleColumnMarkdown('miscellaneous-list', 'Miscellaneous');
+                mdString += getSingleColumnMarkdown('notes-list', 'Notes');
+
+                // Download Logic
+                const blob = new Blob([mdString], { type: 'text/markdown;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${charName.replace(/\s/g, '_') || 'tangent-character'}.md`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
             };
             
-            pdfMake.fonts = {
-                Roboto: {
-                    normal: 'Roboto-Regular.ttf',
-                    bold: 'Roboto-Medium.ttf',
-                    italics: 'Roboto-Italic.ttf',
-                    bolditalics: 'Roboto-MediumItalic.ttf'
-                }
-            };
-            
+            // Event Listeners
             savePdfBtn.addEventListener('click', saveAsPdf);
             saveMdBtn.addEventListener('click', saveAsMarkdown);
 
+            // Initial Population
             populateSkillContainer('skills-list-left', mentalSkillData);
             populateSkillContainer('skills-list-right', otherSkillData);
             populateMetafocus();
