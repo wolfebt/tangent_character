@@ -75,21 +75,60 @@
             </div>
 
             <fieldset><legend>Skills</legend>
-                <div class="skills-container"></div>
+                <div class="skills-container">
+                    <div class="skill-group"><h4 class="skill-group-header">Physical</h4><div class="skill-row header"><span>Skill</span><span>Rank</span><span>Base</span><span>Mod</span><span>Total</span></div><div class="skill-row" data-skill-id="acrobatics"><label>Acrobatics</label><input type="number" class="skill-rank"><select class="skill-base-select"><option value="">--</option><option value="attr-agility">Agility</option></select><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div><div class="skill-row" data-skill-id="athletics"><label>Athletics</label><input type="number" class="skill-rank"><select class="skill-base-select"><option value="">--</option><option value="attr-strength">Strength</option></select><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div></div>
+                    <div class="skill-group"><h4 class="skill-group-header">Social: Manipulation</h4><div class="skill-row header"><span>Skill</span><span>Rank</span><span>Base</span><span>Mod</span><span>Total</span></div><div class="skill-row" data-skill-id="awareness"><label>Awareness</label><input type="number" class="skill-rank"><select class="skill-base-select"><option value="">--</option><option value="attr-wisdom">Wisdom</option></select><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div></div>
+                    <div class="skill-group"><h4 class="skill-group-header">Social: Expression</h4><div class="skill-row header"><span>Skill</span><span>Rank</span><span>Base</span><span>Mod</span><span>Total</span></div><div class="skill-row" data-skill-id="acting"><label>Acting</label><input type="number" class="skill-rank"><select class="skill-base-select"><option value="">--</option><option value="attr-charisma">Charisma</option></select><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div></div>
+                    <div class="skill-group"><h4 class="skill-group-header">Mental</h4><div class="skill-row header"><span>Skill</span><span>Rank</span><span>Base</span><span>Mod</span><span>Total</span></div><div class="skill-row" data-skill-id="alertness"><label>Alertness</label><input type="number" class="skill-rank"><select class="skill-base-select"><option value="">--</option><option value="attr-wisdom">Wisdom</option></select><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div></div>
+                </div>
             </fieldset>
+
             <fieldset><legend>Attack</legend>
-                <div class="attack-grid"></div>
+                <div class="attack-grid">
+                    <div class="attack-header">Attack</div><div class="attack-header">Score</div><div class="attack-header">Damage</div><div class="attack-header">Notes</div>
+                    <input type="text" aria-label="Attack 1 Name"><input type="text" aria-label="Attack 1 Score"><input type="text" aria-label="Attack 1 Damage"><input type="text" aria-label="Attack 1 Notes">
+                    <input type="text" aria-label="Attack 2 Name"><input type="text" aria-label="Attack 2 Score"><input type="text" aria-label="Attack 2 Damage"><input type="text" aria-label="Attack 2 Notes">
+                    <input type="text" aria-label="Attack 3 Name"><input type="text" aria-label="Attack 3 Score"><input type="text" aria-label="Attack 3 Damage"><input type="text" aria-label="Attack 3 Notes">
+                </div>
             </fieldset>
+
             <fieldset><legend>Armor Location</legend>
-                <div class="armor-grid"></div>
+                <div class="armor-grid">
+                    <div class="armor-header">Location</div><div class="armor-header">Total DR</div><div class="armor-header">Notes</div>
+                    <label for="armor-head">Head</label><input type="text" id="armor-head-dr"><input type="text" id="armor-head-notes">
+                    <label for="armor-torso">Torso</label><input type="text" id="armor-torso-dr"><input type="text" id="armor-torso-notes">
+                    <label for="armor-right-arm">Right Arm</label><input type="text" id="armor-right-arm-dr"><input type="text" id="armor-right-arm-notes">
+                    <label for="armor-left-arm">Left Arm</label><input type="text" id="armor-left-arm-dr"><input type="text" id="armor-left-arm-notes">
+                    <label for="armor-right-leg">Right Leg</label><input type="text" id="armor-right-leg-dr"><input type="text" id="armor-right-leg-notes">
+                    <label for="armor-left-leg">Left Leg</label><input type="text" id="armor-left-leg-dr"><input type="text" id="armor-left-leg-notes">
+                    <input type="text" class="custom-limb" placeholder="Custom Limb..."><input type="text"><input type="text">
+                    <input type="text" class="custom-limb" placeholder="Custom Limb..."><input type="text"><input type="text">
+                </div>
             </fieldset>
         </section>
 
         <section id="folio-2">
-            <fieldset><legend>Traits</legend></fieldset>
-            <fieldset><legend>Metafocus</legend></fieldset>
-            <fieldset><legend>Other Abilities</legend></fieldset>
-            <fieldset><legend>Special Abilities</legend></fieldset>
+            <fieldset><legend>Traits</legend>
+                <div class="trait-container">
+                    <div class="trait-group"><h4>Species</h4><div class="trait-grid"><div class="trait-header">Feature</div><div class="trait-header">Effect</div><input type="text" aria-label="Species Feature 1"><input type="text" aria-label="Species Effect 1"><input type="text" aria-label="Species Feature 2"><input type="text" aria-label="Species Effect 2"></div></div>
+                    <div class="trait-group"><h4>Origin</h4><div class="trait-grid"><div class="trait-header">Feature</div><div class="trait-header">Effect</div><input type="text" aria-label="Origin Feature 1"><input type="text" aria-label="Origin Effect 1"><input type="text" aria-label="Origin Feature 2"><input type="text" aria-label="Origin Effect 2"></div></div>
+                    <div class="trait-group"><h4>Occupation</h4><div class="trait-grid"><div class="trait-header">Feature</div><div class="trait-header">Effect</div><input type="text" aria-label="Occupation Feature 1"><input type="text" aria-label="Occupation Effect 1"><input type="text" aria-label="Occupation Feature 2"><input type="text" aria-label="Occupation Effect 2"></div></div>
+                </div>
+            </fieldset>
+            <fieldset><legend>Metafocus</legend>
+                <div class="skills-container">
+                    <div class="skill-group"><h4 class="skill-group-header">Attune</h4><div class="skill-row header"><span>Skill</span><span>Rank</span><span>Base</span><span>Mod</span><span>Total</span></div><div class="skill-row" data-skill-id="dimension"><label>Dimension</label><input type="number" class="skill-rank"><select class="skill-base-select"><option value="">--</option></select><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div></div>
+                </div>
+            </fieldset>
+            <fieldset><legend>Other Abilities</legend>
+                <div class="columns-2">
+                    <div><h4>Invocations</h4><div class="simple-grid"><div class="simple-header">Invocation</div><div class="simple-header">Level</div><input type="text" aria-label="Invocation 1"><input type="text" aria-label="Invocation 1 Level"></div></div>
+                    <div><h4>Augmentations</h4><div class="simple-grid"><div class="simple-header">Augmentation</div><div class="simple-header">Effect</div><input type="text" aria-label="Augmentation 1"><input type="text" aria-label="Augmentation 1 Effect"></div></div>
+                </div>
+            </fieldset>
+            <fieldset><legend>Special Abilities</legend>
+                <div class="skill-group"><div class="skill-row header"><span>Skill</span><span>Rank</span><span>Base</span><span>Mod</span><span>Total</span></div><div class="skill-row" data-skill-id="special1"><input type="text" class="skill-label-input" placeholder="Enter ability name..."><input type="number" class="skill-rank"><select class="skill-base-select"><option value="">--</option></select><input type="number" class="skill-mod"><input type="number" class="skill-total" readonly></div></div>
+            </fieldset>
         </section>
 
         <section id="folio-3">
