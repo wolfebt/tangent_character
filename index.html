@@ -278,6 +278,11 @@
         .modal-buttons button:hover:not(:disabled){ filter: brightness(1.2); }
         .modal-buttons button:disabled { opacity: 0.6; cursor: wait; }
         .modal-choices { display: flex; flex-direction: column; gap: var(--spacing-sm); max-height: 200px; overflow-y: auto; margin-top: var(--spacing-md); }
+        .modal-choices button {
+             background-color: var(--input-bg) !important;
+             color: var(--input-text) !important;
+             border: 1px solid var(--border-color) !important;
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -610,13 +615,105 @@
             const modalLoginBtn = document.getElementById('modal-login-btn');
             const modalGoogleBtn = document.getElementById('modal-google-btn');
             let modalResolve = null;
+
+            // --- MODAL FUNCTIONS (Previously Missing) ---
+            const closeModal = () => {
+                modal.classList.remove('show');
+                // Use a short timeout to allow the fade-out animation to finish before resetting content
+                setTimeout(() => {
+                    // Reset text and inputs
+                    modalText.textContent = '';
+                    modalInput.value = '';
+                    modalEmailInput.value = '';
+                    modalPasswordInput.value = '';
+                    modalErrorText.textContent = '';
+                    modalChoices.innerHTML = '';
+
+                    // Hide all optional elements
+                    modalAuthForm.style.display = 'none';
+                    modalInput.style.display = 'none';
+                    modalChoices.style.display = 'none';
+                    modalCancelBtn.style.display = 'none';
+                    modalCopyBtn.style.display = 'none';
+                    modalRegisterBtn.style.display = 'none';
+                    modalLoginBtn.style.display = 'none';
+                    modalGoogleBtn.style.display = 'none';
+
+                    // Show the default OK button
+                    modalOkBtn.style.display = 'inline-block';
+                }, 300); // 300ms matches the CSS transition time for opacity
+            }
+
+            const showModal = (text, options = {}) => {
+                return new Promise(resolve => {
+                    modalResolve = resolve;
+
+                    // Set modal text
+                    modalText.textContent = text;
+
+                    // Reset modal state from previous calls
+                    modalInput.style.display = 'none';
+                    modalInput.readOnly = false;
+                    modalAuthForm.style.display = 'none';
+                    modalChoices.innerHTML = '';
+                    modalChoices.style.display = 'none';
+                    modalOkBtn.style.display = 'inline-block';
+                    modalCancelBtn.style.display = 'none';
+                    modalCopyBtn.style.display = 'none';
+                    modalRegisterBtn.style.display = 'none';
+                    modalLoginBtn.style.display = 'none';
+                    modalGoogleBtn.style.display = 'none';
+
+                    // Configure based on options
+                    if (options.auth) {
+                        modalAuthForm.style.display = 'flex';
+                        modalRegisterBtn.style.display = 'inline-block';
+                        modalLoginBtn.style.display = 'inline-block';
+                        modalGoogleBtn.style.display = 'inline-block';
+                        modalOkBtn.style.display = 'none'; // OK button not needed for auth screen
+                    }
+
+                    if (options.prompt) {
+                        modalInput.style.display = 'block';
+                        modalInput.value = options.inputValue || '';
+                        modalInput.readOnly = options.readOnly || false;
+                    }
+
+                    if (options.choices) {
+                        modalChoices.style.display = 'flex';
+                        options.choices.forEach(choice => {
+                            const button = document.createElement('button');
+                            button.textContent = choice.text;
+                            button.dataset.value = choice.value;
+                            button.onclick = () => {
+                                if (modalResolve) modalResolve(choice.value);
+                                modalResolve = null;
+                                closeModal();
+                            };
+                            modalChoices.appendChild(button);
+                        });
+                        modalOkBtn.style.display = 'none'; // OK is handled by choice buttons
+                    }
+
+                    if (options.showCancel || options.choices) {
+                        modalCancelBtn.style.display = 'inline-block';
+                    }
+
+                    if (options.showCopy) {
+                        modalCopyBtn.style.display = 'inline-block';
+                    }
+
+                    // Display the modal
+                    modal.classList.add('show');
+                });
+            }
             
             // --- FIREBASE AND AUTHENTICATION ---
             let auth, db;
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
             
-            // --- FUNCTION DECLARATIONS (MOVED TO TOP TO PREVENT INITIALIZATION ERRORS) ---
+            // --- FUNCTION DECLARATIONS ---
             function createSkillRow(skillName, skillId) {
                  const row = document.createElement('div');
                  row.className = 'skill-row';
@@ -1078,6 +1175,32 @@
             };
 
             // --- EVENT LISTENERS ---
+            // Modal general button listeners
+            modalOkBtn.addEventListener('click', () => {
+                if (modalResolve) {
+                    const isPrompt = modalInput.style.display === 'block';
+                    modalResolve(isPrompt ? modalInput.value : true);
+                }
+                modalResolve = null;
+                closeModal();
+            });
+
+            modalCancelBtn.addEventListener('click', () => {
+                if (modalResolve) modalResolve(null); // Resolve with null on cancel
+                modalResolve = null;
+                closeModal();
+            });
+
+            modalCopyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(modalInput.value).then(() => {
+                    modalCopyBtn.textContent = 'Copied!';
+                    setTimeout(() => { modalCopyBtn.textContent = 'Copy'; }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
+            });
+            
+            // Modal auth-specific button listeners
             modalRegisterBtn.addEventListener('click', () => {
                 const email = modalEmailInput.value;
                 const password = modalPasswordInput.value;
@@ -1107,7 +1230,7 @@
                 } else if (user && user.isAnonymous) {
                     console.log("User is signed in anonymously:", user.uid);
                     actorDisplayHeader.textContent = 'Guest';
-                    actorUidDisplay.textContent = 'Save/Load disabled';
+                    actorUidDisplay.textContent = 'Login to save to the cloud.';
                     [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = true);
                     closeModal();
                 } else {
