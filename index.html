@@ -531,6 +531,23 @@
         </div>
     </div>
 
+    <script>
+        // These are the credentials you provided for your Firebase project.
+        const firebaseConfigObject = {
+            apiKey: "AIzaSyDg5I-5rofObhKS7cS2dz3cC5dybRKY9-Y",
+            authDomain: "tangent-sff-rpg-sheets.firebaseapp.com",
+            projectId: "tangent-sff-rpg-sheets",
+            storageBucket: "tangent-sff-rpg-sheets.firebasestorage.app",
+            messagingSenderId: "897760227296",
+            appId: "1:897760227296:web:0e4ec5a85d1e153d76c585",
+            measurementId: "G-VMEZ9HN80Q"
+        };
+
+        // This makes the config available to the main application script.
+        const __firebase_config = JSON.stringify(firebaseConfigObject);
+    </script>
+
+
     <script type="module">
         // Firebase modules for database and authentication
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
@@ -616,7 +633,7 @@
             const modalGoogleBtn = document.getElementById('modal-google-btn');
             let modalResolve = null;
 
-            // --- MODAL FUNCTIONS (Previously Missing) ---
+            // --- MODAL FUNCTIONS ---
             const closeModal = () => {
                 modal.classList.remove('show');
                 // Use a short timeout to allow the fade-out animation to finish before resetting content
@@ -1100,10 +1117,10 @@
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
-                setLogLevel('debug');
+                setLogLevel('error'); // Set to 'error' for production, 'debug' for development
                 console.log("Firebase initialized.");
 
-                // ERROR FIX: The function loadSharedSheet() was called but not defined. 
+                // The function loadSharedSheet() was called but not defined. 
                 // It has been commented out to prevent a fatal script error.
                 // await loadSharedSheet(); 
 
