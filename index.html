@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tangent SFF RPG Persona Folio</title>
-    <!-- Google Fonts for the web page styling -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- pdfmake library for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js" xintegrity="sha512-w61kvDEdEh9PzJIZhJ4MVIy/MJoCHucfbzH2K8MAoYAiA93gs/o2yBDR8AstsTUr86gNIlr4FwyG3DRL32S+zA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- pdfmake requires a virtual file system for fonts. The default CDN only includes Roboto. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.js" xintegrity="sha512-nNkHPz+lD0Wf0eF_HsscpfrAYuEtF96SQXo2iQDrBCGucwKNYf9A1wL4hZPAy2oUv41NS1QeRbeBC5lAa3T7Jw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <style>
@@ -62,7 +59,27 @@
             margin-bottom: var(--spacing-lg); 
             padding-bottom: var(--spacing-md); 
         }
-        .sheet-header h1 { margin: 0; color: var(--text-color); flex-grow: 1; text-align: center; padding-left: 100px; /* Offset for file menu */}
+        .sheet-header h1 { margin: 0; color: var(--text-color); flex-grow: 1; text-align: center; }
+        .actor-display {
+            width: 200px; /* Give it space */
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 50px; /* Ensure consistent height */
+        }
+        #actor-display-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        #actor-uid-display {
+            font-size: 0.7em;
+            word-break: break-all;
+            color: var(--border-color);
+            line-height: 1.2;
+        }
+
         .creator-credit {
             text-align: center;
             margin-top: var(--spacing-lg);
@@ -116,9 +133,12 @@
             padding: var(--spacing-sm);
             cursor: pointer;
         }
-        .file-menu-dropdown button:hover {
-            background-color: var(--input-bg);
+        .file-menu-dropdown button:hover:not(:disabled) {
             filter: brightness(1.2);
+        }
+        .file-menu-dropdown button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         .file-menu-dropdown button:last-child { margin-bottom: 0; }
         .file-menu-dropdown.show { display: block; }
@@ -146,7 +166,7 @@
         .input-group { display: flex; flex-direction: column; }
         .input-group.full-width { grid-column: 1 / -1; }
         label { margin-bottom: var(--spacing-xs); font-size: 0.875rem; font-weight: bold; color: var(--header-text); }
-        input[type="text"], input[type="number"], select, textarea { 
+        input[type="text"], input[type="number"], input[type="email"], input[type="password"], select, textarea { 
             width: 100%; 
             padding: var(--spacing-sm); 
             border: 1.5px solid var(--border-color); 
@@ -196,7 +216,6 @@
         .perception-grid > input:first-child { grid-column: 1 / -1; margin-bottom: var(--spacing-sm); }
         .perception-grid label { text-align: right; }
 
-
         /* Skills Section */
         .skills-column {
              display: flex;
@@ -234,6 +253,36 @@
         .simple-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm); }
         .single-column-grid { display: grid; grid-template-columns: 1fr; gap: var(--spacing-sm); }
 
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content {
+            background-color: var(--section-bg); padding: var(--spacing-lg);
+            border-radius: 8px; border: 2px solid var(--border-color);
+            width: 90%; max-width: 500px; text-align: center;
+        }
+        .modal-content p { margin-top: 0; margin-bottom: var(--spacing-md); }
+        .modal-auth-form { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+        .modal-content .modal-error { color: #f87171; font-size: 0.9rem; margin-top: var(--spacing-sm); height: 1.2rem; }
+        .modal-buttons { display: flex; justify-content: center; gap: var(--spacing-md); flex-wrap: wrap; margin-top: var(--spacing-md);}
+        .modal-buttons button {
+             font-family: var(--font-body); font-weight: bold;
+             padding: var(--spacing-sm) var(--spacing-md); border: 2px solid var(--header-text);
+             border-radius: 5px; background-color: var(--header-bg); color: #ffffff; cursor: pointer;
+        }
+        .modal-buttons button:hover:not(:disabled){ filter: brightness(1.2); }
+        .modal-buttons button:disabled { opacity: 0.6; cursor: wait; }
+        .modal-choices { display: flex; flex-direction: column; gap: var(--spacing-sm); max-height: 200px; overflow-y: auto; margin-top: var(--spacing-md); }
+        .modal-choices button {
+             background-color: var(--input-bg) !important;
+             color: var(--input-text) !important;
+             border: 1px solid var(--border-color) !important;
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -247,19 +296,29 @@
 </head>
 <body>
 
-    <form class="character-sheet">
+    <form class="character-sheet" onsubmit="return false;">
         <header class="sheet-header">
-            <div style="width: 100px;"></div> <!-- Spacer -->
+            <div class="actor-display">
+                <div id="actor-display-header">Loading...</div>
+                <div id="actor-uid-display"></div>
+            </div>
             <h1>Tangent SFF RPG Persona Folio</h1>
-             <div class="file-menu">
+              <div class="file-menu">
                 <button type="button" class="file-menu-button">File</button>
                 <div class="file-menu-dropdown">
-                    <button type="button" id="save-json-btn">Save</button>
-                    <button type="button" id="load-json-btn">Load</button>
+                    <button type="button" id="logout-btn" disabled>Logout</button>
+                    <hr>
+                    <button type="button" id="cloud-save-btn" disabled>Save to Cloud</button>
+                    <button type="button" id="cloud-load-btn" disabled>Load from Cloud</button>
+                    <button type="button" id="share-btn" disabled>Share</button>
+                    <hr>
+                    <button type="button" id="save-json-btn">Save Local</button>
+                    <button type="button" id="load-json-btn">Load Local</button>
+                    <input type="file" id="load-json-input" accept=".json">
+                    <hr>
                     <button type="button" id="save-pdf-btn">Print PDF</button>
                     <button type="button" id="save-md-btn">Print Markdown</button>
                 </div>
-                <input type="file" id="load-json-input" accept=".json">
             </div>
         </header>
         
@@ -301,8 +360,7 @@
                     </fieldset>
                      <fieldset><legend>Modifiers</legend>
                         <div class="single-column-grid" id="modifiers-list">
-                            <!-- Modifiers will be dynamically populated -->
-                        </div>
+                            </div>
                     </fieldset>
                 </div>
                 <div class="col-right">
@@ -345,11 +403,9 @@
             <fieldset><legend>Skills</legend>
                 <div class="columns-2 equal-width">
                     <div id="skills-list-left" class="skills-column">
-                        <!-- Mental skills will be dynamically populated by JavaScript -->
-                    </div>
+                        </div>
                     <div id="skills-list-right" class="skills-column">
-                        <!-- Other skills will be dynamically populated by JavaScript -->
-                    </div>
+                        </div>
                 </div>
             </fieldset>
         </section>
@@ -358,19 +414,18 @@
              <fieldset><legend>Attack</legend>
                 <div class="attack-grid" id="attack-rows">
                     <div class="attack-header">Attack</div><div class="attack-header">Score</div><div class="attack-header">Damage</div><div class="attack-header">Notes</div>
-                    <!-- Attack rows will be populated by JS -->
-                </div>
+                    </div>
             </fieldset>
             
             <fieldset><legend>Armor Location</legend>
                 <div class="armor-grid" id="armor-rows">
                     <div class="armor-header">Location</div><div class="armor-header">Total DR</div><div class="armor-header">Notes</div>
-                    <label for="armor-head">Head</label><input type="text" id="armor-head-dr"><input type="text" id="armor-head-notes">
-                    <label for="armor-torso">Torso</label><input type="text" id="armor-torso-dr"><input type="text" id="armor-torso-notes">
-                    <label for="armor-right-arm">Right Arm</label><input type="text" id="armor-right-arm-dr"><input type="text" id="armor-right-arm-notes">
-                    <label for="armor-left-arm">Left Arm</label><input type="text" id="armor-left-arm-dr"><input type="text" id="armor-left-arm-notes">
-                    <label for="armor-right-leg">Right Leg</label><input type="text" id="armor-right-leg-dr"><input type="text" id="armor-right-leg-notes">
-                    <label for="armor-left-leg">Left Leg</label><input type="text" id="armor-left-leg-dr"><input type="text" id="armor-left-leg-notes">
+                    <label for="armor-head-dr">Head</label><input type="text" id="armor-head-dr"><input type="text" id="armor-head-notes">
+                    <label for="armor-torso-dr">Torso</label><input type="text" id="armor-torso-dr"><input type="text" id="armor-torso-notes">
+                    <label for="armor-right-arm-dr">Right Arm</label><input type="text" id="armor-right-arm-dr"><input type="text" id="armor-right-arm-notes">
+                    <label for="armor-left-arm-dr">Left Arm</label><input type="text" id="armor-left-arm-dr"><input type="text" id="armor-left-arm-notes">
+                    <label for="armor-right-leg-dr">Right Leg</label><input type="text" id="armor-right-leg-dr"><input type="text" id="armor-right-leg-notes">
+                    <label for="armor-left-leg-dr">Left Leg</label><input type="text" id="armor-left-leg-dr"><input type="text" id="armor-left-leg-notes">
                 </div>
             </fieldset>
         </section>
@@ -388,36 +443,31 @@
              <fieldset><legend>Features</legend>
                 <div class="simple-grid" id="features-list">
                     <div class="grid-header">Feature</div><div class="grid-header">Effect</div>
-                    <!-- Feature rows will be populated -->
-                </div>
+                    </div>
             </fieldset>
              <fieldset><legend>Disadvantages</legend>
                 <div class="single-column-grid" id="disadvantages-list">
-                    <!-- Disadvantage rows will be populated -->
-                </div>
+                    </div>
             </fieldset>
              <fieldset><legend>Augmentations</legend>
                 <div class="simple-grid" id="augmentations-list">
                     <div class="grid-header">Augmentation</div><div class="grid-header">Effect</div>
-                    <!-- Augmentation rows will be populated -->
-                </div>
+                    </div>
             </fieldset>
              <fieldset><legend>Other Traits</legend>
                 <div class="single-column-grid" id="other-traits-list">
-                    <!-- Dynamic rows -->
-                </div>
+                    </div>
             </fieldset>
         </section>
 
         <section class="main-section" id="metafocus-section">
             <fieldset><legend>Metafocus</legend>
                  <div class="skill-group" id="metafocus-skills-list">
-                     <!-- Metafocus skills will be populated here -->
-                 </div>
+                     </div>
                  <hr>
                  <h5 class="skill-subcategory-header" style="text-align:center; margin-top: 1rem;">Invocations</h5>
                  <div class="simple-grid" id="invocations-list">
-                     <div class="grid-header">Invocation</div><div class="grid-header">Level</div>
+                         <div class="grid-header">Invocation</div><div class="grid-header">Level</div>
                  </div>
                  <hr>
                  <h5 class="skill-subcategory-header" style="text-align:center; margin-top: 1rem;">Special Abilities</h5>
@@ -426,21 +476,20 @@
             </fieldset>
         </section>
 
-
         <section class="main-section" id="folio-3">
              <fieldset><legend>Gear</legend>
                 <div class="single-column-grid" id="gear-list">
-                     <div class="grid-header">Gear</div>
+                        <div class="grid-header">Gear</div>
                 </div>
             </fieldset>
             <fieldset><legend>Mecha</legend>
                 <div class="single-column-grid" id="mecha-list">
-                     <div class="grid-header">Mecha</div>
+                        <div class="grid-header">Mecha</div>
                 </div>
             </fieldset>
             <fieldset><legend>Miscellaneous</legend>
                  <div class="single-column-grid" id="miscellaneous-list">
-                     <div class="grid-header">Item</div>
+                         <div class="grid-header">Item</div>
                 </div>
             </fieldset>
         </section>
@@ -448,8 +497,7 @@
         <section class="main-section" id="folio-4">
              <fieldset><legend>Notes</legend>
                 <div class="single-column-grid" id="notes-list">
-                    <!-- Notes rows will be populated -->
-                </div>
+                    </div>
             </fieldset>
         </section>
 
@@ -459,23 +507,55 @@
         WOLFE.BT@TANGENTLLC
     </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-content">
+            <p id="modal-text"></p>
+            <div id="modal-auth-form" class="modal-auth-form" style="display: none;">
+                <input type="email" id="modal-email" placeholder="Email">
+                <input type="password" id="modal-password" placeholder="Password">
+                <div class="modal-error" id="modal-error-text"></div>
+            </div>
+            <div id="modal-choices" class="modal-choices"></div>
+            <input type="text" id="modal-input" style="display: none;">
+            <div class="modal-buttons">
+                 <button id="modal-google-btn" style="display: none;">
+                     <svg style="display: inline-block; height: 18px; vertical-align: middle; margin-right: 8px;" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C42.021,35.596,44,30.138,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
+                     Sign in with Google
+                </button>
+                <button id="modal-register-btn" style="display: none;">Register</button>
+                <button id="modal-login-btn" style="display: none;">Login</button>
+                <button id="modal-copy-btn" style="display: none;">Copy</button>
+                <button id="modal-ok-btn">OK</button>
+                <button id="modal-cancel-btn" style="display: none;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REMOVED the separate script tag for the config object to prevent timing issues. -->
+
+    <script type="module">
+        // Firebase modules for database and authentication
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            signOut, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword,
+            GoogleAuthProvider,
+            signInWithPopup
+        } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', async () => {
             console.log("Character sheet script loaded. 🚀");
 
-            const sheet = document.querySelector('.character-sheet');
-            
             // --- DATA & SETUP ---
-
             const attributeOptions = [
-                { value: 'attr-strength', text: 'Strength' },
-                { value: 'attr-agility', text: 'Agility' },
-                { value: 'attr-constitution', text: 'Constitution' },
-                { value: 'attr-intellect', text: 'Intellect' },
-                { value: 'attr-wisdom', text: 'Wisdom' },
-                { value: 'attr-charisma', text: 'Charisma' },
+                { value: 'attr-strength', text: 'Strength' }, { value: 'attr-agility', text: 'Agility' },
+                { value: 'attr-constitution', text: 'Constitution' }, { value: 'attr-intellect', text: 'Intellect' },
+                { value: 'attr-wisdom', text: 'Wisdom' }, { value: 'attr-charisma', text: 'Charisma' },
             ];
-
             const mentalSkillData = {
                 "Mental": {
                     "skills": ["Alertness"],
@@ -485,51 +565,162 @@
                     }
                 }
             };
-
             const otherSkillData = {
-                 "Physical": {
-                    "skills": ["Acrobatics", "Athletics", "Piloting", "Stealth"]
-                },
+                "Physical": { "skills": ["Acrobatics", "Athletics", "Piloting", "Stealth"] },
                 "Social": {
-                     "subcategories": {
+                    "subcategories": {
                         "Manipulation": ["Insight", "Bluff", "Diplomacy", "Intimidate", "Streetwise"],
                         "Expression": ["Acting", "Comedy", "Dancing", "Disguise", "Keyboard", "Legerdemain", "Oratory", "Percussion", "Singing", "String", "Style", "Wind"]
                     }
                 },
                 "Combat": {
-                     "subcategories": {
+                    "subcategories": {
                         "Archaic": ["Defense", "Melee", "Ranged", "Unarmed"],
                         "Modern": ["Ballistic", "Heavy Weapons"],
                         "Advanced": ["Energy", "Heavy Energy"]
                     }
                 }
             };
-            
             const metafocusData = {
-                "Attune": [], // Attune is a skill on its own
-                "Dimension": ["Summoning", "Teleport"],
-                "Energy": ["Elemental", "Force"],
-                "Entropy": ["Chaos", "Order"],
-                "Illusion": ["Phantasmal", "Shadow"],
-                "Matter": ["Enhancement", "Transmutation"],
+                "Attune": [], "Dimension": ["Summoning", "Teleport"],
+                "Energy": ["Elemental", "Force"], "Entropy": ["Chaos", "Order"],
+                "Illusion": ["Phantasmal", "Shadow"], "Matter": ["Enhancement", "Transmutation"],
                 "Mental": ["Projection", "Sense"]
             };
 
+            // --- UI ELEMENTS ---
+            const sheet = document.querySelector('.character-sheet');
+            const actorDisplayHeader = document.getElementById('actor-display-header');
+            const actorUidDisplay = document.getElementById('actor-uid-display');
+            const logoutBtn = document.getElementById('logout-btn');
+            const cloudSaveBtn = document.getElementById('cloud-save-btn');
+            const cloudLoadBtn = document.getElementById('cloud-load-btn');
+            const shareBtn = document.getElementById('share-btn');
+            const fileMenuButton = document.querySelector('.file-menu-button');
+            const fileMenuDropdown = document.querySelector('.file-menu-dropdown');
+
+            // --- MODAL ---
+            const modal = document.getElementById('custom-modal');
+            const modalText = document.getElementById('modal-text');
+            const modalAuthForm = document.getElementById('modal-auth-form');
+            const modalEmailInput = document.getElementById('modal-email');
+            const modalPasswordInput = document.getElementById('modal-password');
+            const modalErrorText = document.getElementById('modal-error-text');
+            const modalChoices = document.getElementById('modal-choices');
+            const modalInput = document.getElementById('modal-input');
+            const modalOkBtn = document.getElementById('modal-ok-btn');
+            const modalCancelBtn = document.getElementById('modal-cancel-btn');
+            const modalCopyBtn = document.getElementById('modal-copy-btn');
+            const modalRegisterBtn = document.getElementById('modal-register-btn');
+            const modalLoginBtn = document.getElementById('modal-login-btn');
+            const modalGoogleBtn = document.getElementById('modal-google-btn');
+            let modalResolve = null;
+
+            // --- MODAL FUNCTIONS ---
+            const closeModal = () => {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modalText.textContent = '';
+                    modalInput.value = '';
+                    modalEmailInput.value = '';
+                    modalPasswordInput.value = '';
+                    modalErrorText.textContent = '';
+                    modalChoices.innerHTML = '';
+                    modalAuthForm.style.display = 'none';
+                    modalInput.style.display = 'none';
+                    modalChoices.style.display = 'none';
+                    modalCancelBtn.style.display = 'none';
+                    modalCopyBtn.style.display = 'none';
+                    modalRegisterBtn.style.display = 'none';
+                    modalLoginBtn.style.display = 'none';
+                    modalGoogleBtn.style.display = 'none';
+                    modalOkBtn.style.display = 'inline-block';
+                }, 300);
+            }
+
+            const showModal = (text, options = {}) => {
+                return new Promise(resolve => {
+                    modalResolve = resolve;
+                    modalText.textContent = text;
+
+                    // Reset modal state
+                    modalInput.style.display = 'none';
+                    modalInput.readOnly = false;
+                    modalAuthForm.style.display = 'none';
+                    modalChoices.innerHTML = '';
+                    modalChoices.style.display = 'none';
+                    modalOkBtn.style.display = 'inline-block';
+                    modalCancelBtn.style.display = 'none';
+                    modalCopyBtn.style.display = 'none';
+                    modalRegisterBtn.style.display = 'none';
+                    modalLoginBtn.style.display = 'none';
+                    modalGoogleBtn.style.display = 'none';
+
+                    if (options.auth) {
+                        modalAuthForm.style.display = 'flex';
+                        modalRegisterBtn.style.display = 'inline-block';
+                        modalLoginBtn.style.display = 'inline-block';
+                        modalGoogleBtn.style.display = 'inline-block';
+                        modalOkBtn.style.display = 'none';
+                    }
+
+                    if (options.prompt) {
+                        modalInput.style.display = 'block';
+                        modalInput.value = options.inputValue || '';
+                        modalInput.readOnly = options.readOnly || false;
+                    }
+
+                    if (options.choices) {
+                        modalChoices.style.display = 'flex';
+                        options.choices.forEach(choice => {
+                            const button = document.createElement('button');
+                            button.textContent = choice.text;
+                            button.dataset.value = choice.value;
+                            button.onclick = () => {
+                                if (modalResolve) modalResolve(choice.value);
+                                modalResolve = null;
+                                closeModal();
+                            };
+                            modalChoices.appendChild(button);
+                        });
+                        modalOkBtn.style.display = 'none';
+                    }
+
+                    if (options.showCancel || options.choices) {
+                        modalCancelBtn.style.display = 'inline-block';
+                    }
+
+                    if (options.showCopy) {
+                        modalCopyBtn.style.display = 'inline-block';
+                    }
+                    modal.classList.add('show');
+                });
+            }
+            
+            // --- FIREBASE AND AUTHENTICATION ---
+            let auth, db, appId;
+            // FIX: Define the config object directly inside the module scope to ensure it's available.
+            const firebaseConfig = {
+                apiKey: "AIzaSyD1aNbSzvIgrRTrwePM5n3c3AkTDvZbCTc",
+                authDomain: "tangent-persona.firebaseapp.com",
+                projectId: "tangent-persona",
+                storageBucket: "tangent-persona.appspot.com",
+                messagingSenderId: "694138536413",
+                appId: "1:694138536413:web:906b238795649bb70f3634"
+            };
+            
+            // --- FUNCTION DECLARATIONS (No changes needed in these helper functions) ---
             function createSkillRow(skillName, skillId) {
                 const row = document.createElement('div');
                 row.className = 'skill-row';
                 row.dataset.skillId = skillId;
-                let optionsHtml = '<option value="">--</option>';
-                attributeOptions.forEach(opt => {
-                    optionsHtml += `<option value="${opt.value}">${opt.text}</option>`;
-                });
+                let optionsHtml = '<option value="">--</option>' + attributeOptions.map(opt => `<option value="${opt.value}">${opt.text}</option>`).join('');
                 row.innerHTML = `
                     <label for="skill-${skillId}-rank">${skillName}</label>
                     <input type="number" id="skill-${skillId}-rank" class="skill-rank" placeholder="0">
                     <select id="skill-${skillId}-base" class="skill-base-select">${optionsHtml}</select>
                     <input type="number" id="skill-${skillId}-mod" class="skill-mod" placeholder="0">
-                    <input type="number" id="skill-${skillId}-total" class="skill-total" readonly>
-                `;
+                    <input type="number" id="skill-${skillId}-total" class="skill-total" readonly>`;
                 return row;
             }
 
@@ -538,20 +729,62 @@
                 row.className = 'skill-row';
                 row.dataset.skillId = skillId;
                 row.dataset.dynamicRow = "true";
-                let optionsHtml = '<option value="">--</option>';
-                attributeOptions.forEach(opt => {
-                    optionsHtml += `<option value="${opt.value}">${opt.text}</option>`;
-                });
+                let optionsHtml = '<option value="">--</option>' + attributeOptions.map(opt => `<option value="${opt.value}">${opt.text}</option>`).join('');
                 row.innerHTML = `
                     <input type="text" id="skill-${skillId}-name" class="skill-name-input" placeholder="Enter ability name..." data-dynamic-row="true">
                     <input type="number" id="skill-${skillId}-rank" class="skill-rank" placeholder="0" data-dynamic-row="true">
                     <select id="skill-${skillId}-base" class="skill-base-select" data-dynamic-row="true">${optionsHtml}</select>
                     <input type="number" id="skill-${skillId}-mod" class="skill-mod" placeholder="0" data-dynamic-row="true">
-                    <input type="number" id="skill-${skillId}-total" class="skill-total" readonly>
-                `;
+                    <input type="number" id="skill-${skillId}-total" class="skill-total" readonly>`;
                 return row;
             }
             
+            function addTraitRow(grid, traitType) {
+                const index = grid.querySelectorAll('[data-dynamic-row="true"]').length / 2;
+                const traitInput = document.createElement('input');
+                traitInput.type = 'text';
+                traitInput.id = `trait-${traitType}-trait-${index}`;
+                traitInput.dataset.dynamicRow = "true";
+                const effectInput = document.createElement('input');
+                effectInput.type = 'text';
+                effectInput.id = `trait-${traitType}-effect-${index}`;
+                effectInput.dataset.dynamicRow = "true";
+                grid.appendChild(traitInput);
+                grid.appendChild(effectInput);
+            }
+
+            function addSimpleGridRow(grid) {
+                const index = grid.querySelectorAll('[data-dynamic-row]').length / 2;
+                const type = grid.id.split('-')[0];
+                const newRow = document.createElement('div');
+                newRow.style.display = 'contents';
+                newRow.innerHTML = `<input type="text" id="${type}-name-${index}" data-dynamic-row="true"><input type="text" id="${type}-effect-${index}" data-dynamic-row="true">`;
+                grid.appendChild(newRow);
+            }
+
+            function addSingleColumnRow(grid) {
+                const index = grid.querySelectorAll('[data-dynamic-row]').length;
+                const type = grid.id.split('-')[0];
+                const newRow = document.createElement('div');
+                newRow.style.display = 'contents';
+                newRow.innerHTML = `<input type="text" id="${type}-name-${index}" data-dynamic-row="true">`;
+                grid.appendChild(newRow);
+            }
+            
+            function addSpecialAbilityRow(container) {
+                const index = container.querySelectorAll('.skill-row[data-dynamic-row]').length;
+                container.appendChild(createEditableSkillRow(`special-${index}`));
+            }
+
+            function addAttackRow() {
+                const container = document.getElementById('attack-rows');
+                const index = container.querySelectorAll('[data-dynamic-row]').length / 4;
+                const row = document.createElement('div');
+                row.style.display = 'contents'; 
+                row.innerHTML = `<input type="text" id="attack-name-${index}" aria-label="Attack ${index} Name" class="attack-name" data-dynamic-row="true"><input type="text" id="attack-score-${index}" aria-label="Attack ${index} Score" class="attack-score" data-dynamic-row="true"><input type="text" id="attack-damage-${index}" aria-label="Attack ${index} Damage" class="attack-damage" data-dynamic-row="true"><input type="text" id="attack-notes-${index}" aria-label="Attack ${index} Notes" class="attack-notes" data-dynamic-row="true">`;
+                container.appendChild(row);
+            }
+
             function populateSkillContainer(containerId, data) {
                 const container = document.getElementById(containerId);
                 if (!container) return;
@@ -590,61 +823,17 @@
                     container.appendChild(groupDiv);
                 }
             }
-            
-            function addTraitRow(grid, traitType) {
-                const index = grid.querySelectorAll('[data-dynamic-row="true"]').length / 2;
-                const traitInput = document.createElement('input');
-                traitInput.type = 'text';
-                traitInput.id = `trait-${traitType}-trait-${index}`;
-                traitInput.dataset.dynamicRow = "true";
-                const effectInput = document.createElement('input');
-                effectInput.type = 'text';
-                effectInput.id = `trait-${traitType}-effect-${index}`;
-                effectInput.dataset.dynamicRow = "true";
-                grid.appendChild(traitInput);
-                grid.appendChild(effectInput);
-            }
 
-            function addSimpleGridRow(grid) {
-                const index = grid.querySelectorAll('[data-dynamic-row]').length / 2;
-                const type = grid.id.split('-')[0];
-                const newRow = document.createElement('div');
-                newRow.style.display = 'contents';
-                newRow.innerHTML = `<input type="text" id="${type}-name-${index}" data-dynamic-row="true"><input type="text" id="${type}-effect-${index}" data-dynamic-row="true">`;
-                grid.appendChild(newRow);
-            }
-             function addSingleColumnRow(grid) {
-                const index = grid.querySelectorAll('[data-dynamic-row]').length;
-                const type = grid.id.split('-')[0];
-                 const newRow = document.createElement('div');
-                newRow.style.display = 'contents';
-                newRow.innerHTML = `<input type="text" id="${type}-name-${index}" data-dynamic-row="true">`;
-                grid.appendChild(newRow);
-            }
-            
-            function addSpecialAbilityRow(container) {
-                 const index = container.querySelectorAll('.skill-row[data-dynamic-row]').length;
-                 container.appendChild(createEditableSkillRow(`special-${index}`));
-            }
-
-
-            function populateFolio1() {
-                addSingleColumnRow(document.getElementById('modifiers-list'));
-                addAttackRow();
-            }
-            
             function populateMetafocus() {
                 const container = document.getElementById('metafocus-skills-list');
-                container.innerHTML = ''; // Clear previous content
+                container.innerHTML = '';
                 const headerRow = document.createElement('div');
                 headerRow.className = 'skill-row header';
                 headerRow.innerHTML = `<span>Skill</span><span>Rank</span><span>Base</span><span>Mod</span><span>Total</span>`;
                 container.appendChild(headerRow);
                 
-                // Add the top-level Attune skill
                 container.appendChild(createSkillRow("Attune", "metafocus-attune"));
 
-                // Add the rest in columns
                 const columnsDiv = document.createElement('div');
                 columnsDiv.className = 'columns-2 equal-width';
                 const leftCol = document.createElement('div');
@@ -660,10 +849,10 @@
                     if (subcatName === 'Attune') continue;
                     
                     if(metafocusData[subcatName].length > 0) { 
-                         const targetCol = leftSkills.includes(subcatName) ? leftCol : rightCol;
-                         const groupDiv = document.createElement('div');
-                         groupDiv.className = 'skill-group';
-                         
+                        const targetCol = leftSkills.includes(subcatName) ? leftCol : rightCol;
+                        const groupDiv = document.createElement('div');
+                        groupDiv.className = 'skill-group';
+                        
                         const subcatHeader = document.createElement('h5');
                         subcatHeader.className = 'skill-subcategory-header';
                         subcatHeader.textContent = subcatName;
@@ -680,7 +869,11 @@
                 columnsDiv.appendChild(rightCol);
                 container.appendChild(columnsDiv);
             }
-
+            
+            function populateFolio1() {
+                addSingleColumnRow(document.getElementById('modifiers-list'));
+                addAttackRow();
+            }
 
             function populateFolio2() {
                 const traitsContainerLeft = document.getElementById('traits-list-left');
@@ -709,10 +902,8 @@
                      traitsContainerRight.appendChild(createTraitGrid(traitType));
                 });
 
-                // Clear and repopulate simple/single grids
                 ['invocations-list', 'augmentations-list', 'features-list', 'other-traits-list', 'disadvantages-list', 'special-abilities-list'].forEach(id => {
                     const el = document.getElementById(id);
-                    // Clear all but header rows/elements
                     while(el.children.length > (el.classList.contains('simple-grid') ? 2 : (el.id === 'special-abilities-list' ? 0 : 1))) {
                         el.removeChild(el.lastChild);
                     }
@@ -725,7 +916,8 @@
                 addSingleColumnRow(document.getElementById('disadvantages-list'));
                 addSpecialAbilityRow(document.getElementById('special-abilities-list'));
             }
-             function populateFolio3() {
+
+            function populateFolio3() {
                 ['mecha-list', 'gear-list', 'miscellaneous-list'].forEach(id => {
                     const el = document.getElementById(id);
                     while(el.children.length > 1) { el.removeChild(el.lastChild); }
@@ -739,15 +931,6 @@
                  const el = document.getElementById('notes-list');
                  while(el.children.length > 0) { el.removeChild(el.lastChild); } // No header here
                 addSingleColumnRow(document.getElementById('notes-list'));
-            }
-
-            function addAttackRow() {
-                 const container = document.getElementById('attack-rows');
-                 const index = container.querySelectorAll('[data-dynamic-row]').length / 4;
-                 const row = document.createElement('div');
-                 row.style.display = 'contents'; 
-                 row.innerHTML = `<input type="text" id="attack-name-${index}" aria-label="Attack ${index} Name" class="attack-name" data-dynamic-row="true"><input type="text" id="attack-score-${index}" aria-label="Attack ${index} Score" class="attack-score" data-dynamic-row="true"><input type="text" id="attack-damage-${index}" aria-label="Attack ${index} Damage" class="attack-damage" data-dynamic-row="true"><input type="text" id="attack-notes-${index}" aria-label="Attack ${index} Notes" class="attack-notes" data-dynamic-row="true">`;
-                 container.appendChild(row);
             }
 
             const calculateSkillTotal = (skillRow) => {
@@ -787,28 +970,27 @@
                 if(simpleGrid) {
                     const inputs = Array.from(simpleGrid.querySelectorAll('[data-dynamic-row]'));
                     if (inputs.indexOf(target) >= inputs.length - 2) {
-                       addSimpleGridRow(simpleGrid);
+                        addSimpleGridRow(simpleGrid);
                     }
                     return;
                 }
 
-                 const singleGrid = target.closest('.single-column-grid');
-                 if(singleGrid) {
+                const singleGrid = target.closest('.single-column-grid');
+                if(singleGrid) {
                     const inputs = Array.from(singleGrid.querySelectorAll('[data-dynamic-row]'));
-                      if (target === inputs[inputs.length - 1]) {
-                         addSingleColumnRow(singleGrid);
+                    if (target === inputs[inputs.length - 1]) {
+                        addSingleColumnRow(singleGrid);
                     }
                     return;
-                 }
-
+                }
 
                 const specialList = target.closest('#special-abilities-list');
                 if(specialList) {
                     const inputs = Array.from(specialList.querySelectorAll('[data-dynamic-row]'));
                     if(inputs.indexOf(target) >= inputs.length - 5) { // 5 inputs per row
-                          addSpecialAbilityRow(specialList);
+                        addSpecialAbilityRow(specialList);
                     }
-                      return;
+                    return;
                 }
                 
                 const attackGrid = target.closest('#attack-rows');
@@ -820,9 +1002,246 @@
                 }
             }
 
+            const getCharacterData = () => {
+                const data = {};
+                const inputs = sheet.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    if (input.id) {
+                        data[input.id] = input.type === 'checkbox' ? input.checked : input.value;
+                    }
+                });
+                return data;
+            };
+
+            const loadCharacterData = (data) => {
+                populateFolio1();
+                populateFolio2();
+                populateFolio3();
+                populateFolio4();
+
+                const dynamicCounts = {};
+                const idPrefixes = ['trait-species-trait-', 'trait-origin-trait-', 'trait-occupation-trait-', 'trait-faction-trait-', 'attack-name-', 'features-name-', 'invocations-name-', 'augmentations-name-', 'modifiers-name-', 'disadvantages-name-', 'other-traits-name-', 'gear-name-', 'mecha-name-', 'miscellaneous-name-', 'notes-name-', 'skill-special-name-'];
+
+                for(const id in data) {
+                    for(const prefix of idPrefixes) {
+                        if(id.startsWith(prefix)) {
+                            dynamicCounts[prefix] = (dynamicCounts[prefix] || 0) + 1;
+                        }
+                    }
+                }
+                
+                for(const prefix in dynamicCounts) {
+                    const count = dynamicCounts[prefix];
+                    for(let i=0; i < count - 1; i++){
+                        if(prefix.startsWith('trait-')) {
+                            const type = prefix.split('-')[1];
+                            const container = document.getElementById(`traits-list-${type === 'species' || type === 'origin' ? 'left' : 'right'}`);
+                            const grid = container?.querySelector(`[data-trait-type="${type}"]`);
+                            if (grid) addTraitRow(grid, type);
+                        } else if(prefix === 'attack-name-') {
+                            addAttackRow();
+                        } else if (['features-name-', 'invocations-name-', 'augmentations-name-'].includes(prefix)) {
+                            addSimpleGridRow(document.getElementById(prefix.replace('-name-', '-list')));
+                        } else if (prefix === 'skill-special-name-') {
+                            addSpecialAbilityRow(document.getElementById('special-abilities-list'));
+                        } else {
+                            addSingleColumnRow(document.getElementById(prefix.replace('-name-', '-list')));
+                        }
+                    }
+                }
+
+                for (const id in data) {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        if (element.tagName === 'SELECT') {
+                            if ([...element.options].some(opt => opt.value === data[id])) {
+                                element.value = data[id];
+                            }
+                        } else {
+                            element.value = data[id];
+                        }
+                    }
+                }
+                
+                document.querySelectorAll('.skill-row[data-skill-id]').forEach(calculateSkillTotal);
+            };
+
+            const downloadFile = (filename, content, mimeType) => {
+                const blob = new Blob([content], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            };
+            
+            // --- MAIN EXECUTION LOGIC ---
+            // Populate the sheet on initial load
+            populateSkillContainer('skills-list-left', mentalSkillData);
+            populateSkillContainer('skills-list-right', otherSkillData);
+            populateMetafocus();
+            populateFolio1();
+            populateFolio2();
+            populateFolio3();
+            populateFolio4();
+            document.querySelectorAll('.skill-row[data-skill-id]').forEach(calculateSkillTotal);
+
+            // --- REVISED FIREBASE INITIALIZATION & AUTH ---
+            try {
+                if (!firebaseConfig || !firebaseConfig.apiKey) {
+                    throw new Error("Firebase configuration is missing or invalid. Cloud features are disabled.");
+                }
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                appId = firebaseConfig.appId; 
+                setLogLevel('error'); 
+                console.log("Firebase initialized.");
+
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                showModal(error.message);
+                actorDisplayHeader.textContent = "Error";
+                actorUidDisplay.textContent = "Cloud services disabled.";
+                [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = true);
+                return; 
+            }
+            
+            const getActorsCollection = () => collection(db, 'artifacts', appId, 'public', 'data', 'actors');
+            const getPrivateCollection = (uid) => collection(db, 'artifacts', appId, 'users', uid, 'characterSheets');
+            const getPublicCollection = () => collection(db, 'artifacts', appId, 'public', 'data', 'characterSheets');
+
+            const fetchAndDisplayActorName = async (uid) => {
+                try {
+                    const actorDocRef = doc(getActorsCollection(), uid);
+                    const actorDoc = await getDoc(actorDocRef);
+                    if (actorDoc.exists()) {
+                        actorDisplayHeader.textContent = actorDoc.data().actorName;
+                        [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = false);
+                        closeModal();
+                    } else {
+                        await promptAndSetActorName(uid);
+                    }
+                } catch (error) {
+                    console.error("Error fetching actor name:", error);
+                    showModal("Could not fetch your profile. Please try refreshing the page.");
+                }
+            };
+
+            const promptAndSetActorName = async (uid) => {
+                let actorName = '';
+                while(!actorName || actorName.trim() === "") {
+                    const result = await showModal("Welcome! Please choose a public Actor Name:", { prompt: true, showCancel: false });
+                    actorName = result ? result.trim() : "";
+                }
+
+                try {
+                    const actorDocRef = doc(getActorsCollection(), uid);
+                    await setDoc(actorDocRef, { actorName: actorName });
+                    await fetchAndDisplayActorName(uid);
+                } catch (error) {
+                    console.error("Error setting actor name: ", error);
+                    showModal("Could not save your Actor Name. Please try refreshing the page.");
+                }
+            };
+
+            const handleAuthAttempt = async (authFunction) => {
+                modalErrorText.textContent = '';
+                modalText.textContent = 'Please wait...';
+                [modalRegisterBtn, modalLoginBtn, modalGoogleBtn].forEach(btn => btn.disabled = true);
+                try {
+                    await authFunction();
+                } catch (error) {
+                    modalErrorText.textContent = error.message;
+                    modalText.textContent = "Welcome! Please log in or register to continue.";
+                    [modalRegisterBtn, modalLoginBtn, modalGoogleBtn].forEach(btn => btn.disabled = false);
+                }
+            };
+
+            // --- EVENT LISTENERS ---
+            modalOkBtn.addEventListener('click', () => {
+                if (modalResolve) {
+                    const isPrompt = modalInput.style.display === 'block';
+                    modalResolve(isPrompt ? modalInput.value : true);
+                }
+                modalResolve = null;
+                closeModal();
+            });
+
+            modalCancelBtn.addEventListener('click', () => {
+                if (modalResolve) modalResolve(null);
+                modalResolve = null;
+                closeModal();
+            });
+
+            modalCopyBtn.addEventListener('click', () => {
+                const textArea = document.createElement("textarea");
+                textArea.value = modalInput.value;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    modalCopyBtn.textContent = 'Copied!';
+                    setTimeout(() => { modalCopyBtn.textContent = 'Copy'; }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                }
+                document.body.removeChild(textArea);
+            });
+            
+            modalRegisterBtn.addEventListener('click', () => {
+                const email = modalEmailInput.value;
+                const password = modalPasswordInput.value;
+                handleAuthAttempt(() => createUserWithEmailAndPassword(auth, email, password));
+            });
+
+            modalLoginBtn.addEventListener('click', () => {
+                const email = modalEmailInput.value;
+                const password = modalPasswordInput.value;
+                handleAuthAttempt(() => signInWithEmailAndPassword(auth, email, password));
+            });
+
+            modalGoogleBtn.addEventListener('click', () => {
+                const provider = new GoogleAuthProvider();
+                handleAuthAttempt(() => signInWithPopup(auth, provider));
+            });
+            
+            logoutBtn.addEventListener('click', () => {
+                signOut(auth);
+            });
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    console.log("User is signed in:", user.uid);
+                    actorUidDisplay.textContent = `UID: ${user.uid}`;
+                    await fetchAndDisplayActorName(user.uid);
+                } else {
+                    console.log("User is signed out.");
+                    actorDisplayHeader.textContent = 'Logged Out';
+                    actorUidDisplay.textContent = '';
+                    [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = true);
+                    showModal("Welcome! Please log in or register to use cloud features.", { auth: true });
+                }
+            });
+
+            fileMenuButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                fileMenuDropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!fileMenuButton.contains(event.target) && !fileMenuDropdown.contains(event.target)) {
+                    fileMenuDropdown.classList.remove('show');
+                }
+            });
+
             sheet.addEventListener('input', (event) => {
                 if (event.target.matches('.skill-rank, .skill-mod, .attribute-input')) {
-                     const skillRow = event.target.closest('.skill-row');
+                    const skillRow = event.target.closest('.skill-row');
                     if (skillRow) {
                         calculateSkillTotal(skillRow);
                     }
@@ -843,526 +1262,134 @@
                     calculateSkillTotal(event.target.closest('.skill-row'));
                 }
             });
-
-            // --- IMPORT/EXPORT FUNCTIONS ---
-            const getInputValue = (id) => document.getElementById(id)?.value || '';
-            const downloadFile = (filename, content, mimeType) => {
-                const blob = new Blob([content], { type: mimeType });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            };
-
-            const saveAsJson = () => {
-                const data = {};
-                const inputs = sheet.querySelectorAll('input, select, textarea');
-                inputs.forEach(input => {
-                    if (input.id) {
-                        data[input.id] = input.value;
-                    }
-                });
-                const charName = getInputValue('char-name').replace(/\s+/g, '_') || 'tangent-character';
-                downloadFile(`${charName}.json`, JSON.stringify(data, null, 2), 'application/json');
-            };
-
-            const loadFromJson = (data) => {
-                 // Reset the sheet to a clean slate before loading
-                populateFolio1();
-                populateFolio2();
-                populateFolio3();
-                populateFolio4();
-
-                const dynamicCounts = {};
-                const idPrefixes = ['trait-species-trait-', 'trait-origin-trait-', 'trait-occupation-trait-', 'trait-faction-trait-', 'attack-name-', 'features-name-', 'invocations-name-', 'augmentations-name-', 'modifiers-name-', 'disadvantages-name-', 'other-traits-name-', 'gear-name-', 'mecha-name-', 'miscellaneous-name-', 'notes-name-', 'skill-special-name-'];
-
-                for(const id in data) {
-                    for(const prefix of idPrefixes) {
-                        if(id.startsWith(prefix)) {
-                            dynamicCounts[prefix] = (dynamicCounts[prefix] || 0) + 1;
-                        }
-                    }
+            
+            cloudSaveBtn.addEventListener('click', async () => {
+                const user = auth.currentUser;
+                if (!user) {
+                    showModal("You must be logged in to save.");
+                    return;
+                }
+                const privateSheets = getPrivateCollection(user.uid);
+                
+                const characterData = getCharacterData();
+                const characterName = document.getElementById('char-name').value;
+                
+                if (!characterName.trim()) {
+                    showModal("Please enter a Character Name before saving.");
+                    return;
                 }
                 
-                // Add necessary rows for each dynamic section
-                for(const prefix in dynamicCounts) {
-                    const count = dynamicCounts[prefix];
-                    for(let i=0; i < count - 1; i++){ // -1 because one row exists by default
-                        if(prefix.startsWith('trait-')) {
-                            const type = prefix.split('-')[1];
-                            const container = document.getElementById(`traits-list-${type.startsWith('s') || type.startsWith('o') ? 'left' : 'right'}`);
-                            const grid = container.querySelector(`[data-trait-type="${type}"]`);
-                            if (grid) addTraitRow(grid, type);
-                        } else if(prefix === 'attack-name-') {
-                            addAttackRow();
-                        } else if (['features-name-', 'invocations-name-', 'augmentations-name-'].includes(prefix)) {
-                            addSimpleGridRow(document.getElementById(prefix.replace('-name-', '-list')));
-                        } else if (prefix === 'skill-special-name-') {
-                            addSpecialAbilityRow(document.getElementById('special-abilities-list'));
-                        } else {
-                            addSingleColumnRow(document.getElementById(prefix.replace('-name-', '-list')));
-                        }
+                try {
+                    const sheetId = sheet.dataset.firestoreId;
+                    if (sheetId) {
+                        await setDoc(doc(privateSheets, sheetId), characterData);
+                        showModal(`'${characterName}' updated in the cloud!`);
+                    } else {
+                        const docRef = await addDoc(privateSheets, characterData);
+                        sheet.dataset.firestoreId = docRef.id;
+                        showModal(`'${characterName}' saved to the cloud!`);
                     }
+                } catch (error) {
+                    console.error("Error saving to Firestore: ", error);
+                    showModal("Failed to save to the cloud. See console for details.");
                 }
+            });
 
+            cloudLoadBtn.addEventListener('click', async () => {
+                const user = auth.currentUser;
+                if (!user) {
+                    showModal("You must be logged in to load.");
+                    return;
+                }
+                const privateSheets = getPrivateCollection(user.uid);
 
-                // Now populate all fields
-                for (const id in data) {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        // For selects, ensure the option exists before setting
-                        if (element.tagName === 'SELECT') {
-                            if ([...element.options].some(opt => opt.value === data[id])) {
-                                element.value = data[id];
-                            }
-                        } else {
-                            element.value = data[id];
-                        }
+                try {
+                    const querySnapshot = await getDocs(privateSheets);
+                    if (querySnapshot.empty) {
+                        showModal("No characters found in your cloud storage.");
+                        return;
                     }
-                }
-                
-                // Recalculate all skill totals after loading
-                document.querySelectorAll('.skill-row[data-skill-id]').forEach(calculateSkillTotal);
-            };
 
-            const saveAsPdf = () => {
-                const charName = getInputValue('char-name');
+                    const characterChoices = querySnapshot.docs.map(doc => ({
+                        text: doc.data()['char-name'] || 'Unnamed Character',
+                        value: doc.id
+                    }));
 
-                const getPdfBio = () => {
-                    const bioFields = [
-                        ['Name', getInputValue('char-name'), 'Concept', getInputValue('char-concept')],
-                        ['Species', getInputValue('char-species'), 'Occupation', getInputValue('char-occu')],
-                        ['Origin', getInputValue('char-origin'), 'Faction', getInputValue('char-faction')],
-                        ['Age', getInputValue('char-age'), 'Gender', getInputValue('char-gender')],
-                        ['Height', getInputValue('char-height'), 'Weight', getInputValue('char-weight')]
-                    ];
-
-                    const bioTable = {
-                        table: {
-                            widths: ['auto', '*', 'auto', '*'],
-                            body: bioFields.map(row => [
-                                { text: row[0] + ':', style: 'label' }, { text: row[1], style: 'value' },
-                                { text: row[2] + ':', style: 'label' }, { text: row[3], style: 'value' }
-                            ])
-                        },
-                        layout: 'noBorders',
-                        marginBottom: 10
-                    };
-
-                    const description = { text: [ { text: 'Description: ', style: 'label' }, { text: getInputValue('char-style'), style: 'value' } ], marginBottom: 5 };
-                    const motive = { text: [ { text: 'Motive: ', style: 'label' }, { text: getInputValue('char-motive'), style: 'value' } ], marginBottom: 15 };
-
-                    return [bioTable, description, motive];
-                };
-                
-                const getPdfAttributesAndStats = () => {
-                    const attributesBody = [
-                        [{text: 'Primary Attributes', style: 'h3', colSpan: 4, alignment: 'left', border: [false, false, false, true]}, {}, {}, {}]
-                    ];
-                    const attrRows = [
-                        ['Strength', 'attr-strength', 'Might', 'attr-might'],
-                        ['Agility', 'attr-agility', 'Reflex', 'attr-reflex'],
-                        ['Constitution', 'attr-constitution', 'Fortitude', 'attr-fortitude'],
-                        ['Intellect', 'attr-intellect', 'Logic', 'attr-logic'],
-                        ['Wisdom', 'attr-wisdom', 'Will', 'attr-will'],
-                        ['Charisma', 'attr-charisma', 'Etiquette', 'attr-etiquette']
-                    ];
-                    attrRows.forEach(row => {
-                         attributesBody.push([
-                            {text: row[0], style:'label', fontSize: 11, bold: true}, getInputValue(row[1]),
-                            {text: row[2], style:'label', italics: true}, getInputValue(row[3])
-                         ]);
+                    const selectedDocId = await showModal("Select a character to load:", {
+                        choices: characterChoices,
+                        showCancel: true
                     });
 
-                    const statsBody = [
-                        [{text: 'Core Stats', style: 'h3', colSpan: 2, alignment: 'left', border: [false, false, false, true]}, {}],
-                        [{text: 'Health:', style:'label'}, getInputValue('health')],
-                        [{text: 'Vitality:', style:'label'}, getInputValue('vitality')],
-                        [{text: 'Initiative:', style:'label'}, getInputValue('initiative')],
-                    ];
+                    if (!selectedDocId) return;
 
-                     return {
-                        columns: [
-                            { width: '60%', table: { widths: ['auto', '*', 'auto', '*'], body: attributesBody }, layout: 'noBorders'},
-                            { width: '40%', table: { widths: ['auto', '*'], body: statsBody }, layout: 'noBorders' }
-                        ],
-                        columnGap: 10,
-                        marginBottom: 15
-                     };
-                };
+                    const selectedDoc = querySnapshot.docs.find(doc => doc.id === selectedDocId);
+                    if (selectedDoc) {
+                        loadCharacterData(selectedDoc.data());
+                        sheet.dataset.firestoreId = selectedDoc.id;
+                        showModal(`'${selectedDoc.data()['char-name']}' loaded successfully.`);
+                    }
 
-                const getPdfSkillTables = (containerId) => {
-                    const tables = [];
-                    const container = document.getElementById(containerId);
-                    if (!container) return tables;
+                } catch (error) {
+                    console.error("Error listing characters from Firestore: ", error);
+                    showModal("Failed to list characters from the cloud. See console for details.");
+                }
+            });
+            
+            shareBtn.addEventListener('click', async () => {
+                const user = auth.currentUser;
+                if (!user) {
+                    showModal("You must be fully logged in to share.");
+                    return;
+                }
+                const privateSheetId = sheet.dataset.firestoreId;
+                if (!privateSheetId) {
+                    showModal("Please save the character to the cloud first to get a shareable link.");
+                    return;
+                }
+                
+                const privateSheets = getPrivateCollection(user.uid);
 
-                    container.querySelectorAll('.skill-group').forEach(group => {
-                        const groupBody = [];
-                        const groupNameEl = group.querySelector('.skill-group-header, .skill-subcategory-header');
-                        if (!groupNameEl) return;
-                        
-                        const groupName = groupNameEl.textContent;
-                        const headerStyle = group.querySelector('.skill-group-header') ? 'groupHeader' : 'subgroupHeader';
-                        groupBody.push([{ text: groupName.trim(), colSpan: 5, style: headerStyle}, {}, {}, {}, {}]);
+                try {
+                    const privateDocRef = doc(privateSheets, privateSheetId);
+                    const docSnap = await getDoc(privateDocRef);
+                
+                    if (!docSnap.exists()) {
+                        showModal("Cannot find the character data to share.");
+                        return;
+                    }
+                    const characterData = docSnap.data();
+                
+                    const publicSheets = getPublicCollection();
+                    const publicDocRef = doc(publicSheets, privateSheetId);
+                    await setDoc(publicDocRef, characterData);
 
-                        
-                        group.querySelectorAll('.skill-row[data-skill-id]').forEach(element => {
-                           if (element.classList.contains('skill-row') && element.dataset.skillId) {
-                                let label = (element.querySelector('.skill-name-input') || element.querySelector('label')).value || (element.querySelector('.skill-name-input') || element.querySelector('label')).textContent;
-                                const rank = element.querySelector('.skill-rank').value;
-                                const baseSelect = element.querySelector('.skill-base-select');
-                                const base = baseSelect.options[baseSelect.selectedIndex]?.text || '';
-                                const mod = element.querySelector('.skill-mod').value;
-                                const total = element.querySelector('.skill-total').value;
-                                if (label || rank || base !== '--' || mod) {
-                                    groupBody.push([label, rank, base, mod, {text: total, bold: true}]);
-                                }
-                            }
-                        });
-                        
-                        if(groupBody.length > 1) { // Only add table if there are skills in it
-                            tables.push({
-                                table: {
-                                    widths: ['*', 'auto', 'auto', 'auto', 'auto'],
-                                    body: groupBody,
-                                    dontBreakRows: true
-                                },
-                                 layout: 'lightHorizontalLines',
-                                 marginBottom: 10
-                            });
-                        }
-                    });
-                    return tables;
-                };
-
-                // UPDATED: Logic to handle empty Metafocus section
-                const getMetafocusPdfContent = () => {
-                    const content = [];
+                    const baseUrl = window.location.href.split('?')[0];
+                    const shareableLink = `${baseUrl}?sheet=${privateSheetId}`;
                     
-                    const attuneRow = document.querySelector('.skill-row[data-skill-id="metafocus-attune"]');
-                    if (attuneRow) {
-                         const rank = attuneRow.querySelector('.skill-rank').value;
-                         const total = attuneRow.querySelector('.skill-total').value;
-                         if(rank || (total && parseInt(total) !== 0)) {
-                            content.push({
-                                table: {
-                                    widths: ['*', 'auto', 'auto', 'auto', 'auto'],
-                                    body: [
-                                        [{text: 'Attune', style: 'groupHeader', colSpan: 5}, {}, {}, {}, {}],
-                                        ['Attune', rank, attuneRow.querySelector('.skill-base-select').options[attuneRow.querySelector('.skill-base-select').selectedIndex]?.text || '', attuneRow.querySelector('.skill-mod').value, {text: total, bold: true}]
-                                    ]
-                                },
-                                layout: 'lightHorizontalLines',
-                                marginBottom: 10
-                            });
-                         }
-                    }
-
-                    const leftColStack = getPdfSkillTables('metafocus-skills-list-left');
-                    const rightColStack = getPdfSkillTables('metafocus-skills-list-right');
-                    
-                    if (leftColStack.length > 0 || rightColStack.length > 0) {
-                         content.push({
-                            columns: [
-                                { width: '50%', stack: leftColStack },
-                                { width: '50%', stack: rightColStack }
-                            ],
-                            columnGap: 10
-                        });
-                    }
-                    
-                    // If after all checks, content is empty, add a blank table to ensure the header has a line under it.
-                    if (content.length === 0) {
-                        content.push({
-                            table: { widths: ['*'], body: [[' ']] },
-                            layout: 'lightHorizontalLines'
-                        });
-                    }
-
-                    return content;
-                };
-                
-                const getSimpleGridBody = (containerId, headers) => {
-                    const body = [headers.map(h => ({text: h, style: 'tableHeader'}))];
-                    const container = document.getElementById(containerId);
-                    if (!container) return body;
-                    const inputs = container.querySelectorAll('input[type=text], input[type=number]');
-                    const numCols = headers.length;
-                    for (let i = 0; i < inputs.length; i += numCols) {
-                        const row = [];
-                        for (let j = 0; j < numCols; j++) {
-                            row.push(inputs[i+j]?.value || '');
-                        }
-                        if (row.some(cell => cell)) {
-                             body.push(row);
-                        }
-                    }
-                    if (body.length === 1) { body.push(new Array(headers.length).fill('')); }
-                    return body;
-                };
-
-                const getSingleColumnBody = (containerId, header) => {
-                    const body = [[{text: header, style: 'tableHeader'}]];
-                     const container = document.getElementById(containerId);
-                    if (!container) return body;
-                    const inputs = container.querySelectorAll('input[type=text]');
-                    inputs.forEach(input => {
-                        if (input.value) { body.push([input.value]); }
-                    });
-                     if (body.length === 1) { body.push([' ']); }
-                    return body;
-                }
-                
-                const getAttackTableBody = () => getSimpleGridBody('attack-rows', ['Attack', 'Score', 'Damage', 'Notes']);
-                const getInvocationsBody = () => getSimpleGridBody('invocations-list', ['Invocation', 'Level']);
-                const getAugmentationsBody = () => getSimpleGridBody('augmentations-list', ['Augmentation', 'Effect']);
-                const getFeaturesBody = () => getSimpleGridBody('features-list', ['Feature', 'Effect']);
-
-
-                 const getArmorTableBody = () => {
-                    const body = [[{ text: 'Location', style: 'tableHeader' }, { text: 'Total DR', style: 'tableHeader' }, { text: 'Notes', style: 'tableHeader' }]];
-                      document.querySelectorAll('#armor-rows > label').forEach(label => {
-                         const location = label.textContent;
-                         const dr = document.getElementById(`${label.htmlFor}-dr`)?.value || '';
-                         const notes = document.getElementById(`${label.htmlFor}-notes`)?.value || '';
-                         body.push([location, dr, notes]);
-                    });
-                    return body;
-                };
-
-                const getTraitColumnStack = (traitTypes) => {
-                    const stack = [];
-                    traitTypes.forEach(traitType => {
-                        const body = [];
-                        const typeLowerCase = traitType.toLowerCase();
-                        body.push([{text: traitType, style: 'h3', colSpan: 2, alignment: 'left', border: [false, false, false, true]}, {}]);
-                        
-                        const traitGrid = document.querySelector(`.trait-grid[data-trait-type="${typeLowerCase}"]`);
-                        if(traitGrid) {
-                             const inputs = traitGrid.querySelectorAll('input[type="text"]');
-                            for (let i = 0; i < inputs.length; i += 2) {
-                                const traitVal = inputs[i].value;
-                                const effectVal = inputs[i+1].value;
-                                if (traitVal || effectVal) {
-                                    body.push([traitVal, effectVal]);
-                                }
-                            }
-                        }
-                        if(body.length === 1){ body.push(['','']); }
-                        stack.push({
-                            table: { widths:['35%', '65%'], body: body },
-                            layout: 'noBorders',
-                            marginBottom: 10
-                        });
-                    });
-                    return stack;
-                };
-
-                const docDefinition = {
-                    pageSize: 'LETTER',
-                    pageMargins: [ 25, 40, 25, 40 ],
-                    content: [
-                        // Page 1 (Cover Sheet)
-                        { text: 'TANGENT', style: 'h1', alignment: 'center' },
-                        { text: 'SCI-FI FANTASY RPG', style: 'h2', alignment: 'center', margin: [0, 0, 0, 15] },
-                        ...getPdfBio(),
-                        getPdfAttributesAndStats(),
-                        { text: 'Attack', style: 'h3', margin: [0, 15, 0, 5]},
-                        { table: { widths: ['*', 50, 50, '*'], body: getAttackTableBody() }, layout: 'lightHorizontalLines' },
-                        { text: 'Armor', style: 'h3', margin: [0, 15, 0, 5]},
-                        { table: { widths: [100, 100, '*'], body: getArmorTableBody() }, layout: 'lightHorizontalLines' },
-                        
-                        // Page 2 (Skills)
-                        { text: '', pageBreak: 'before' },
+                    showModal(
+                        "Anyone with this link can view this character sheet.", 
                         {
-                            columns: [
-                                { width: '50%', stack: getPdfSkillTables('skills-list-left') },
-                                { width: '50%', stack: getPdfSkillTables('skills-list-right') }
-                            ],
-                            columnGap: 10
-                        },
-                        
-                        // Page 3 (Traits, etc)
-                        { text: '', pageBreak: 'before' },
-                         {
-                            columns: [
-                                { width: '50%', stack: getTraitColumnStack(['Species', 'Origin']) },
-                                { width: '50%', stack: getTraitColumnStack(['Occupation', 'Faction']) }
-                            ],
-                            columnGap: 10
-                        },
-                        {text: 'Other Traits', style: 'h3', margin: [0, 15, 0, 5]},
-                        {table: { widths: ['*'], body: getSingleColumnBody('other-traits-list', 'Other Trait') }, layout:'lightHorizontalLines', marginBottom: 15},
-                        {text: 'Augmentations', style: 'h3', margin: [0, 15, 0, 5]},
-                        {table: { widths: ['*', '*'], body: getAugmentationsBody()}, layout:'lightHorizontalLines', marginBottom: 15},
-                        {text: 'Features', style: 'h3', margin: [0, 15, 0, 5]},
-                        {table: { widths: ['*', '*'], body: getFeaturesBody()}, layout:'lightHorizontalLines', marginBottom: 15},
-                        {text: 'Disadvantages', style: 'h3', margin: [0, 15, 0, 5]},
-                        {table: { widths: ['*'], body: getSingleColumnBody('disadvantages-list', 'Disadvantage') }, layout:'lightHorizontalLines', marginBottom: 15},
-                        { text: 'Metafocus', style: 'h3', margin: [0,15,0,5] },
-                        ...getMetafocusPdfContent(),
-                        
-                        // Page 4 (Gear)
-                        { text: '', pageBreak: 'before' },
-                        {text: 'Gear', style: 'h3', margin: [0, 15, 0, 5]},
-                        {table: { widths: ['*'], body: getSingleColumnBody('gear-list', 'Gear') }, layout:'lightHorizontalLines', marginBottom: 15},
-                        {text: 'Mecha', style: 'h3', margin: [0, 15, 0, 5]},
-                        {table: { widths: ['*'], body: getSingleColumnBody('mecha-list', 'Mecha') }, layout:'lightHorizontalLines', marginBottom: 15},
-                        {text: 'Miscellaneous', style: 'h3', margin: [0, 15, 0, 5]},
-                        {table: { widths: ['*'], body: getSingleColumnBody('miscellaneous-list', 'Item') }, layout:'lightHorizontalLines', marginBottom: 15},
-                        
-                        // Page 5 (Notes)
-                        { text: '', pageBreak: 'before' },
-                         {text: 'Notes', style: 'h3', margin: [0, 15, 0, 5]},
-                         {table: { widths: ['*'], body: getSingleColumnBody('notes-list', 'Note') }, layout:'lightHorizontalLines', marginBottom: 15}
-                    ],
-                    footer: function(currentPage, pageCount) { 
-                        if (currentPage === pageCount) {
-                            return { 
-                                text: 'WOLFE.BT@TANGENTLLC',
-                                alignment: 'center',
-                                style: 'footer'
-                            }; 
+                            prompt: true,
+                            inputValue: shareableLink,
+                            readOnly: true,
+                            showCopy: true,
                         }
-                        return null;
-                    },
-                    styles: {
-                        h1: { font: 'Roboto', fontSize: 24, bold: true },
-                        h2: { font: 'Roboto', fontSize: 10, color: '#495057' },
-                        h3: { font: 'Roboto', fontSize: 14, bold: true, textTransform: 'uppercase' },
-                        label: { bold: true, color: '#333333' },
-                        value: { italics: true, color: '#555' },
-                        attrValue: { alignment: 'right', bold: true, fontSize: 14 },
-                        tableHeader: { bold: true, fontSize: 9, color: 'black', fillColor: '#e9ecef', alignment: 'center' },
-                        groupHeader: { bold: true, fontSize: 11, color: 'black', margin: [0, 5, 0, 5], fillColor: '#e9ecef'},
-                        subgroupHeader: { bold: true, italics: true, fontSize: 9, color: '#333333', margin: [10, 2, 0, 2]},
-                        textarea: { margin: [0, 5, 0, 5], italics: true, color: '#555', fontSize: 9 },
-                        footer: { fontSize: 8, color: '#616161', margin: [0, 10, 0, 0]}
-                    },
-                    defaultStyle: { font: 'Roboto', fontSize: 9 }
-                };
-                
-                pdfMake.createPdf(docDefinition).download(`${charName.replace(/\s/g, '_') || 'tangent-character'}.pdf`);
-            };
-            
-            const saveAsMarkdown = () => {
-                let md = `# Tangent SFF RPG Persona Folio\n\n`;
-                const charName = getInputValue('char-name');
-                if (charName) md += `## ${charName}\n\n`;
-
-                const getMdSection = (title, fields) => {
-                    let sectionMd = `### ${title}\n\n`;
-                    fields.forEach(f => {
-                        const val = getInputValue(f.id);
-                        if(val) sectionMd += `- **${f.label}:** ${val}\n`;
-                    });
-                    return sectionMd + '\n';
+                    );
+                    
+                } catch (error) {
+                    console.error("Error creating share link: ", error);
+                    showModal("Could not create a share link. See console for details.");
                 }
+            });
 
-                const getMdGrid = (title, gridId, headers) => {
-                     let sectionMd = `### ${title}\n\n`;
-                     sectionMd += `| ${headers.join(' | ')} |\n`;
-                     sectionMd += `| ${headers.map(() => '---').join(' | ')} |\n`;
-                     
-                     const container = document.getElementById(gridId);
-                     const inputs = container.querySelectorAll('input[type=text], input[type=number]');
-                     const numCols = headers.length;
-                     for (let i = 0; i < inputs.length; i += numCols) {
-                         const rowValues = [];
-                         for(let j=0; j<numCols; j++) {
-                             rowValues.push(inputs[i+j]?.value || ' ');
-                         }
-                         if (rowValues.some(cell => cell.trim())) {
-                             sectionMd += `| ${rowValues.join(' | ')} |\n`;
-                         }
-                     }
-                     return sectionMd + '\n';
-                }
-                
-                 const getMdSingleColumnGrid = (title, gridId) => {
-                     let sectionMd = `### ${title}\n\n`;
-                     const container = document.getElementById(gridId);
-                     const inputs = container.querySelectorAll('input[type=text]');
-                     inputs.forEach(input => {
-                         if(input.value) sectionMd += `- ${input.value}\n`;
-                     });
-                     return sectionMd + '\n';
-                 }
+            document.getElementById('save-json-btn').addEventListener('click', () => {
+                const data = getCharacterData();
+                const charName = (data['char-name'] || 'character').replace(/\s+/g, '_');
+                downloadFile(`${charName}_folio.json`, JSON.stringify(data, null, 2), 'application/json');
+            });
 
-                // Bio
-                md += getMdSection('Character Information', [
-                    {id: 'char-concept', label: 'Concept'}, {id: 'char-species', label: 'Species'},
-                    {id: 'char-occu', label: 'Occupation'}, {id: 'char-origin', label: 'Origin'},
-                    {id: 'char-faction', label: 'Faction'}, {id: 'char-age', label: 'Age'},
-                    {id: 'char-gender', label: 'Gender'}, {id: 'char-height', label: 'Height'},
-                    {id: 'char-weight', label: 'Weight'}, {id: 'char-style', label: 'Description'},
-                    {id: 'char-motive', label: 'Motive'}
-                ]);
-
-                // Attributes and Stats
-                md += `### Attributes & Stats\n\n`
-                md += `| Attribute | Value | Secondary | Value |\n`
-                md += `| :--- | :--- | :--- | :--- |\n`
-                md += `| Strength | ${getInputValue('attr-strength')} | Might | ${getInputValue('attr-might')} |\n`
-                md += `| Agility | ${getInputValue('attr-agility')} | Reflex | ${getInputValue('attr-reflex')} |\n`
-                md += `| Constitution | ${getInputValue('attr-constitution')} | Fortitude | ${getInputValue('attr-fortitude')} |\n`
-                md += `| Intellect | ${getInputValue('attr-intellect')} | Logic | ${getInputValue('attr-logic')} |\n`
-                md += `| Wisdom | ${getInputValue('attr-wisdom')} | Will | ${getInputValue('attr-will')} |\n`
-                md += `| Charisma | ${getInputValue('attr-charisma')} | Etiquette | ${getInputValue('attr-etiquette')} |\n\n`
-                md += `- **Health:** ${getInputValue('health')} | **Vitality:** ${getInputValue('vitality')} | **Initiative:** ${getInputValue('initiative')}\n\n`;
-
-                // Skills
-                md += `### Skills\n\n| Skill | Rank | Base | Mod | Total |\n|---|---|---|---|---|\n`;
-                document.querySelectorAll('.skill-row[data-skill-id]').forEach(row => {
-                    const labelEl = row.querySelector('label') || row.querySelector('.skill-name-input');
-                    const label = labelEl.tagName === 'LABEL' ? labelEl.textContent : labelEl.value;
-                    const rank = row.querySelector('.skill-rank').value;
-                    const baseSelect = row.querySelector('.skill-base-select');
-                    const base = baseSelect.options[baseSelect.selectedIndex]?.text || '--';
-                    const mod = row.querySelector('.skill-mod').value;
-                    const total = row.querySelector('.skill-total').value;
-                    if (label || rank || mod || total) {
-                        md += `| ${label} | ${rank || 0} | ${base} | ${mod || 0} | **${total || 0}** |\n`;
-                    }
-                });
-                md += '\n';
-
-                // Combat and Traits
-                md += getMdGrid('Attacks', 'attack-rows', ['Attack', 'Score', 'Damage', 'Notes']);
-                md += getMdGrid('Features', 'features-list', ['Feature', 'Effect']);
-                md += getMdSingleColumnGrid('Disadvantages', 'disadvantages-list');
-                md += getMdGrid('Augmentations', 'augmentations-list', ['Augmentation', 'Effect']);
-
-                // Gear
-                md += getMdSingleColumnGrid('Gear', 'gear-list');
-                md += getMdSingleColumnGrid('Miscellaneous', 'miscellaneous-list');
-                
-                downloadFile(`${charName.replace(/\s/g, '_') || 'tangent-character'}.md`, md, 'text/markdown');
-            };
-            
-            pdfMake.fonts = {
-                Roboto: {
-                    normal: 'Roboto-Regular.ttf',
-                    bold: 'Roboto-Medium.ttf',
-                    italics: 'Roboto-Italic.ttf',
-                    bolditalics: 'Roboto-MediumItalic.ttf'
-                }
-            };
-            
-            // File Menu Logic
-            const fileMenuButton = document.querySelector('.file-menu-button');
-            const fileMenuDropdown = document.querySelector('.file-menu-dropdown');
             const loadJsonInput = document.getElementById('load-json-input');
-
-            document.getElementById('save-json-btn').addEventListener('click', saveAsJson);
             document.getElementById('load-json-btn').addEventListener('click', () => loadJsonInput.click());
-            document.getElementById('save-pdf-btn').addEventListener('click', saveAsPdf);
-            document.getElementById('save-md-btn').addEventListener('click', saveAsMarkdown);
-
             loadJsonInput.addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
@@ -1370,50 +1397,20 @@
                 reader.onload = (e) => {
                     try {
                         const data = JSON.parse(e.target.result);
-                        loadFromJson(data);
+                        loadCharacterData(data);
+                        sheet.dataset.firestoreId = '';
                     } catch (error) {
-                        console.error("Error parsing JSON file:", error);
-                        // Using a more robust notification than alert()
-                        const notice = document.createElement('div');
-                        notice.textContent = 'Error: Could not load character sheet. The file may be invalid.';
-                        notice.style.position = 'fixed';
-                        notice.style.top = '20px';
-                        notice.style.left = '50%';
-                        notice.style.transform = 'translateX(-50%)';
-                        notice.style.padding = '1rem';
-                        notice.style.backgroundColor = '#d9534f';
-                        notice.style.color = 'white';
-                        notice.style.borderRadius = '5px';
-                        notice.style.zIndex = '1000';
-                        document.body.appendChild(notice);
-                        setTimeout(() => document.body.removeChild(notice), 4000);
+                        showModal("Error parsing JSON file. It may be invalid.");
+                        console.error(error);
                     }
                 };
                 reader.readAsText(file);
-                loadJsonInput.value = ''; // Reset input so the same file can be loaded again
+                loadJsonInput.value = '';
             });
 
-            fileMenuButton.addEventListener('click', (event) => {
-                event.stopPropagation();
-                fileMenuDropdown.classList.toggle('show');
-            });
+            document.getElementById('save-pdf-btn').addEventListener('click', () => showModal("PDF generation coming soon!"));
+            document.getElementById('save-md-btn').addEventListener('click', () => showModal("Markdown export coming soon!"));
 
-            window.addEventListener('click', (event) => {
-                if (!fileMenuButton.contains(event.target)) {
-                    fileMenuDropdown.classList.remove('show');
-                }
-            });
-
-            // Initial Population
-            populateSkillContainer('skills-list-left', mentalSkillData);
-            populateSkillContainer('skills-list-right', otherSkillData);
-            populateMetafocus();
-            populateFolio1();
-            populateFolio2();
-            populateFolio3();
-            populateFolio4();
-
-            document.querySelectorAll('.skill-row[data-skill-id]').forEach(calculateSkillTotal);
         });
     </script>
 </body>
