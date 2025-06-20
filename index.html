@@ -735,10 +735,11 @@
                 signOut(auth);
             });
 
-            onAuthStateChanged(auth, (user) => {
+            onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     console.log("User is signed in:", user.uid);
-                    fetchAndDisplayActorName(user.uid);
+                    // This async function now handles the entire post-login flow.
+                    await fetchAndDisplayActorName(user.uid);
                 } else {
                     console.log("User is signed out.");
                     actorDisplayHeader.textContent = '';
