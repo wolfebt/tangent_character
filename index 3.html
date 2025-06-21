@@ -343,7 +343,8 @@
                     </fieldset>
                      <fieldset><legend>Modifiers</legend>
                         <div class="single-column-grid" id="modifiers-list">
-                            </div>
+                            <!-- Modifiers will be dynamically populated -->
+                        </div>
                     </fieldset>
                 </div>
                 <div class="col-right">
@@ -386,9 +387,11 @@
             <fieldset><legend>Skills</legend>
                 <div class="columns-2 equal-width">
                     <div id="skills-list-left" class="skills-column">
-                        </div>
+                        <!-- Mental skills will be dynamically populated by JavaScript -->
+                    </div>
                     <div id="skills-list-right" class="skills-column">
-                        </div>
+                        <!-- Other skills will be dynamically populated by JavaScript -->
+                    </div>
                 </div>
             </fieldset>
         </section>
@@ -397,7 +400,8 @@
              <fieldset><legend>Attack</legend>
                 <div class="attack-grid" id="attack-rows">
                     <div class="attack-header">Attack</div><div class="attack-header">Score</div><div class="attack-header">Damage</div><div class="attack-header">Notes</div>
-                    </div>
+                    <!-- Attack rows will be populated by JS -->
+                </div>
             </fieldset>
             
             <fieldset><legend>Armor Location</legend>
@@ -426,27 +430,32 @@
              <fieldset><legend>Features</legend>
                 <div class="simple-grid" id="features-list">
                     <div class="grid-header">Feature</div><div class="grid-header">Effect</div>
-                    </div>
+                    <!-- Feature rows will be populated -->
+                </div>
             </fieldset>
              <fieldset><legend>Disadvantages</legend>
                 <div class="single-column-grid" id="disadvantages-list">
-                    </div>
+                    <!-- Disadvantage rows will be populated -->
+                </div>
             </fieldset>
              <fieldset><legend>Augmentations</legend>
                 <div class="simple-grid" id="augmentations-list">
                     <div class="grid-header">Augmentation</div><div class="grid-header">Effect</div>
-                    </div>
+                    <!-- Augmentation rows will be populated -->
+                </div>
             </fieldset>
              <fieldset><legend>Other Traits</legend>
                 <div class="single-column-grid" id="other-traits-list">
-                    </div>
+                    <!-- Dynamic rows -->
+                </div>
             </fieldset>
         </section>
 
         <section class="main-section" id="metafocus-section">
             <fieldset><legend>Metafocus</legend>
                  <div class="skill-group" id="metafocus-skills-list">
-                     </div>
+                     <!-- Metafocus skills will be populated here -->
+                 </div>
                  <hr>
                  <h5 class="skill-subcategory-header" style="text-align:center; margin-top: 1rem;">Invocations</h5>
                  <div class="simple-grid" id="invocations-list">
@@ -480,7 +489,8 @@
         <section class="main-section" id="folio-4">
              <fieldset><legend>Notes</legend>
                 <div class="single-column-grid" id="notes-list">
-                    </div>
+                    <!-- Notes rows will be populated -->
+                </div>
             </fieldset>
         </section>
 
@@ -490,6 +500,7 @@
         WOLFE.BT@TANGENTLLC
     </footer>
 
+    <!-- Modal for notifications and prompts -->
     <div id="custom-modal" class="modal-overlay">
         <div class="modal-content">
             <p id="modal-text"></p>
@@ -654,9 +665,9 @@
                 return; // Stop execution if Firebase fails
             }
 
-            const getActorsCollection = () => collection(db, 'artifacts', '1_0_0', 'public', 'data', 'actors');
-            const getPrivateCollection = (uid) => collection(db, 'artifacts', '1_0_0', 'users', uid, 'characterSheets');
-            const getPublicCollection = () => collection(db, 'artifacts', '1_0_0', 'public', 'data', 'characterSheets');
+            const getActorsCollection = () => collection(db, 'actors');
+            const getPrivateCollection = (uid) => collection(db, 'users', uid, 'characterSheets');
+            const getPublicCollection = () => collection(db, 'publicCharacterSheets');
 
             const fetchAndDisplayActorName = async (uid) => {
                 try {
