@@ -73,9 +73,8 @@
             font-weight: bold;
             color: var(--text-color);
         }
-        #actor-display-header .uid-display {
-            font-size: 0.6em;
-            font-weight: normal;
+        #actor-uid-display {
+            font-size: 0.7em;
             word-break: break-all;
             color: var(--border-color);
             line-height: 1.2;
@@ -146,6 +145,8 @@
         #load-json-input { display: none; }
 
         .columns-2 { display: flex; gap: var(--spacing-lg); }
+        .columns-2 > .col-left { flex: 1; } 
+        .columns-2 > .col-right { flex: 1; }
         .columns-2.equal-width > * {
             flex: 1;
         }
@@ -295,7 +296,9 @@
 
     <form class="character-sheet" onsubmit="return false;">
         <header class="sheet-header">
-            <div id="actor-display-header" class="actor-display">Loading...</div>
+            <div class="actor-display">
+                <div id="actor-display-header">Loading...</div>
+            </div>
             <h1>Tangent SFF RPG Persona Folio</h1>
              <div class="file-menu">
                 <button type="button" class="file-menu-button">File</button>
@@ -685,7 +688,7 @@
                     const actorDocRef = doc(getActorsCollection(), uid);
                     const actorDoc = await getDoc(actorDocRef);
                     if (actorDoc.exists()) {
-                        actorDisplayHeader.innerHTML = `${actorDoc.data().actorName} <span class="uid-display">${user.email}</span>`;
+                        actorDisplayHeader.innerHTML = `${actorDoc.data().actorName} <div class="uid-display">${user.email}</div>`;
                         [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = false);
                         closeModal();
                     } else {
@@ -709,7 +712,7 @@
                 try {
                     const actorDocRef = doc(getActorsCollection(), uid);
                     await setDoc(actorDocRef, { actorName: actorName });
-                    await fetchAndDisplayActorName(uid);
+                    await fetchAndDisplayActorName(user);
                 } catch (error) {
                     console.error("Error setting actor name: ", error);
                     showModal("Could not save your Actor Name. Please try refreshing the page.");
