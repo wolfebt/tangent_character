@@ -63,11 +63,23 @@
         .actor-display {
             width: 200px; /* Give it space */
             text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 50px; /* Ensure consistent height */
+        }
+        #actor-display-header {
             font-size: 1.2em;
             font-weight: bold;
-            word-wrap: break-word; /* Wrap long UIDs */
             color: var(--text-color);
         }
+        #actor-uid-display {
+            font-size: 0.7em;
+            word-break: break-all;
+            color: var(--border-color);
+            line-height: 1.2;
+        }
+
         .creator-credit {
             text-align: center;
             margin-top: var(--spacing-lg);
@@ -133,8 +145,6 @@
         #load-json-input { display: none; }
 
         .columns-2 { display: flex; gap: var(--spacing-lg); }
-        .columns-2 > .col-left { flex: 2; }
-        .columns-2 > .col-right { flex: 1; }
         .columns-2.equal-width > * {
             flex: 1;
         }
@@ -284,7 +294,10 @@
 
     <form class="character-sheet" onsubmit="return false;">
         <header class="sheet-header">
-            <div id="actor-display-header" class="actor-display"></div>
+            <div class="actor-display">
+                <div id="actor-display-header">Loading...</div>
+                <div id="actor-uid-display"></div>
+            </div>
             <h1>Tangent SFF RPG Persona Folio</h1>
              <div class="file-menu">
                 <button type="button" class="file-menu-button">File</button>
@@ -343,7 +356,8 @@
                     </fieldset>
                      <fieldset><legend>Modifiers</legend>
                         <div class="single-column-grid" id="modifiers-list">
-                            </div>
+                            <!-- Modifiers will be dynamically populated -->
+                        </div>
                     </fieldset>
                 </div>
                 <div class="col-right">
@@ -386,9 +400,11 @@
             <fieldset><legend>Skills</legend>
                 <div class="columns-2 equal-width">
                     <div id="skills-list-left" class="skills-column">
-                        </div>
+                        <!-- Mental skills will be dynamically populated by JavaScript -->
+                    </div>
                     <div id="skills-list-right" class="skills-column">
-                        </div>
+                        <!-- Other skills will be dynamically populated by JavaScript -->
+                    </div>
                 </div>
             </fieldset>
         </section>
@@ -397,7 +413,8 @@
              <fieldset><legend>Attack</legend>
                 <div class="attack-grid" id="attack-rows">
                     <div class="attack-header">Attack</div><div class="attack-header">Score</div><div class="attack-header">Damage</div><div class="attack-header">Notes</div>
-                    </div>
+                    <!-- Attack rows will be populated by JS -->
+                </div>
             </fieldset>
             
             <fieldset><legend>Armor Location</legend>
@@ -426,27 +443,32 @@
              <fieldset><legend>Features</legend>
                 <div class="simple-grid" id="features-list">
                     <div class="grid-header">Feature</div><div class="grid-header">Effect</div>
-                    </div>
+                    <!-- Feature rows will be populated -->
+                </div>
             </fieldset>
              <fieldset><legend>Disadvantages</legend>
                 <div class="single-column-grid" id="disadvantages-list">
-                    </div>
+                    <!-- Disadvantage rows will be populated -->
+                </div>
             </fieldset>
              <fieldset><legend>Augmentations</legend>
                 <div class="simple-grid" id="augmentations-list">
                     <div class="grid-header">Augmentation</div><div class="grid-header">Effect</div>
-                    </div>
+                    <!-- Augmentation rows will be populated -->
+                </div>
             </fieldset>
              <fieldset><legend>Other Traits</legend>
                 <div class="single-column-grid" id="other-traits-list">
-                    </div>
+                    <!-- Dynamic rows -->
+                </div>
             </fieldset>
         </section>
 
         <section class="main-section" id="metafocus-section">
             <fieldset><legend>Metafocus</legend>
                  <div class="skill-group" id="metafocus-skills-list">
-                     </div>
+                     <!-- Metafocus skills will be populated here -->
+                 </div>
                  <hr>
                  <h5 class="skill-subcategory-header" style="text-align:center; margin-top: 1rem;">Invocations</h5>
                  <div class="simple-grid" id="invocations-list">
@@ -480,7 +502,8 @@
         <section class="main-section" id="folio-4">
              <fieldset><legend>Notes</legend>
                 <div class="single-column-grid" id="notes-list">
-                    </div>
+                    <!-- Notes rows will be populated -->
+                </div>
             </fieldset>
         </section>
 
@@ -490,6 +513,7 @@
         WOLFE.BT@TANGENTLLC
     </footer>
 
+    <!-- Modal for notifications and prompts -->
     <div id="custom-modal" class="modal-overlay">
         <div class="modal-content">
             <p id="modal-text"></p>
@@ -532,9 +556,21 @@
         document.addEventListener('DOMContentLoaded', async () => {
             console.log("Character sheet script loaded. 🚀");
 
+             // --- IMPORTANT: Firebase Configuration ---
+             const firebaseConfig = {
+                apiKey: "AIzaSyDg5I-5rofObhKS7cS2dz3cC5dybRKY9-Y",
+                authDomain: "tangent-sff-rpg-sheets.firebaseapp.com",
+                projectId: "tangent-sff-rpg-sheets",
+                storageBucket: "tangent-sff-rpg-sheets.firebasestorage.app",
+                messagingSenderId: "897760227296",
+                appId: "1:897760227296:web:0e4ec5a85d1e153d76c585",
+                measurementId: "G-VMEZ9HN80Q"
+             };
+
             // --- UI ELEMENTS ---
             const sheet = document.querySelector('.character-sheet');
             const actorDisplayHeader = document.getElementById('actor-display-header');
+            const actorUidDisplay = document.getElementById('actor-uid-display'); // Added this line
             const logoutBtn = document.getElementById('logout-btn');
             const cloudSaveBtn = document.getElementById('cloud-save-btn');
             const cloudLoadBtn = document.getElementById('cloud-load-btn');
@@ -623,21 +659,8 @@
             });
 
             // --- FIREBASE AND AUTHENTICATION ---
-            let auth, db;
+            let auth, db, appId;
             
-             // --- IMPORTANT ---
-            // PASTE YOUR FIREBASE CONFIG OBJECT HERE
-            // You can find this in your Firebase project settings.
-             const firebaseConfig = {
-                apiKey: "AIzaSyDg5I-5rofObhKS7cS2dz3cC5dybRKY9-Y",
-                authDomain: "tangent-sff-rpg-sheets.firebaseapp.com",
-                projectId: "tangent-sff-rpg-sheets",
-                storageBucket: "tangent-sff-rpg-sheets.firebasestorage.app",
-                messagingSenderId: "897760227296",
-                appId: "1:897760227296:web:0e4ec5a85d1e153d76c585",
-                measurementId: "G-VMEZ9HN80Q"
-             };
-
             try {
                 if (!firebaseConfig || !firebaseConfig.apiKey) {
                     throw new Error("Firebase configuration is missing. Please paste your config object into the script.");
@@ -648,15 +671,16 @@
                 getAnalytics(app);
                 setLogLevel('debug');
                 console.log("Firebase initialized.");
+                appId = firebaseConfig.appId;
             } catch (error) {
                 console.error("Firebase initialization failed:", error);
                 showModal(error.message);
                 return; // Stop execution if Firebase fails
             }
 
-            const getActorsCollection = () => collection(db, 'artifacts', '1_0_0', 'public', 'data', 'actors');
-            const getPrivateCollection = (uid) => collection(db, 'artifacts', '1_0_0', 'users', uid, 'characterSheets');
-            const getPublicCollection = () => collection(db, 'artifacts', '1_0_0', 'public', 'data', 'characterSheets');
+            const getActorsCollection = () => collection(db, 'artifacts', appId, 'public', 'data', 'actors');
+            const getPrivateCollection = (uid) => collection(db, 'artifacts', appId, 'users', uid, 'characterSheets');
+            const getPublicCollection = () => collection(db, 'artifacts', appId, 'public', 'data', 'characterSheets');
 
             const fetchAndDisplayActorName = async (uid) => {
                 try {
@@ -664,6 +688,7 @@
                     const actorDoc = await getDoc(actorDocRef);
                     if (actorDoc.exists()) {
                         actorDisplayHeader.textContent = actorDoc.data().actorName;
+                        actorUidDisplay.textContent = `UID: ${uid.substring(0,8)}...`;
                         [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = false);
                         closeModal();
                     } else {
@@ -672,14 +697,15 @@
                     }
                 } catch (error) {
                     console.error("Error fetching actor name:", error);
-                    modalErrorText.textContent = "Could not fetch profile.";
+                    showModal("Could not fetch your profile. Please try refreshing the page.");
                 }
             };
 
             const promptAndSetActorName = async (uid) => {
                 let actorName = '';
-                while(!actorName) {
-                    actorName = await showModal("Choose your public Actor Name:", { prompt: true, showCancel: false });
+                while(!actorName || actorName.trim() === "") {
+                    const result = await showModal("Welcome! Please choose a public Actor Name:", { prompt: true, showCancel: false });
+                    actorName = result ? result.trim() : "";
                 }
 
                 try {
@@ -688,7 +714,7 @@
                     await fetchAndDisplayActorName(uid);
                 } catch (error) {
                     console.error("Error setting actor name: ", error);
-                    showModal("Could not save your Actor Name.");
+                    showModal("Could not save your Actor Name. Please try refreshing the page.");
                 }
             };
             
@@ -734,9 +760,10 @@
                     await fetchAndDisplayActorName(user.uid);
                 } else {
                     console.log("User is signed out.");
-                    actorDisplayHeader.textContent = '';
+                    actorDisplayHeader.textContent = 'Logged Out';
+                    actorUidDisplay.textContent = '';
                     [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = true);
-                    showModal("Welcome! Please log in or register.", { auth: true });
+                    showModal("Welcome! Please log in or register to use cloud features.", { auth: true });
                 }
             });
 
