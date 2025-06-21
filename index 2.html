@@ -63,11 +63,23 @@
         .actor-display {
             width: 200px; /* Give it space */
             text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 50px; /* Ensure consistent height */
+        }
+        #actor-display-header {
             font-size: 1.2em;
             font-weight: bold;
-            word-wrap: break-word; /* Wrap long UIDs */
             color: var(--text-color);
         }
+        #actor-uid-display {
+            font-size: 0.7em;
+            word-break: break-all;
+            color: var(--border-color);
+            line-height: 1.2;
+        }
+
         .creator-credit {
             text-align: center;
             margin-top: var(--spacing-lg);
@@ -181,10 +193,6 @@
             grid-column: 1; 
             grid-row: 1; 
             font-size: 1.05rem;
-            font-weight: bold; /* Make primary attribute labels bold */
-        }
-        .attribute-group input {
-            text-align: center; /* Center text in all attribute inputs */
         }
         .attribute-group input:nth-of-type(1) { grid-column: 2; grid-row: 1; width: 60px; }
         .attribute-group label:nth-of-type(2) { 
@@ -194,7 +202,7 @@
             padding-left: var(--spacing-md);
             font-style: italic;
         }
-        .attribute-group input:nth-of-type(2) { grid-column: 2; grid-row: 2; width: 60px; }
+        .attribute-group input:nth-of-type(2) { grid-column: 2; grid-row: 2; width: 42px; }
         
         .attack-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 3fr; gap: var(--spacing-sm); align-items: center; }
         .armor-grid { display: grid; grid-template-columns: 1fr 1fr 4fr; gap: var(--spacing-sm) var(--spacing-md); align-items: center; }
@@ -259,16 +267,22 @@
             width: 90%; max-width: 500px; text-align: center;
         }
         .modal-content p { margin-top: 0; margin-bottom: var(--spacing-md); }
-        .modal-content .modal-error { color: #f87171; font-size: 0.9rem; margin-top: var(--spacing-sm); height: 1.2rem; }
         .modal-auth-form { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+        .modal-content .modal-error { color: #f87171; font-size: 0.9rem; margin-top: var(--spacing-sm); height: 1.2rem; }
         .modal-buttons { display: flex; justify-content: center; gap: var(--spacing-md); flex-wrap: wrap; margin-top: var(--spacing-md);}
         .modal-buttons button {
              font-family: var(--font-body); font-weight: bold;
              padding: var(--spacing-sm) var(--spacing-md); border: 2px solid var(--header-text);
              border-radius: 5px; background-color: var(--header-bg); color: #ffffff; cursor: pointer;
         }
-        .modal-buttons button:hover{ filter: brightness(1.2); }
+        .modal-buttons button:hover:not(:disabled){ filter: brightness(1.2); }
+        .modal-buttons button:disabled { opacity: 0.6; cursor: wait; }
         .modal-choices { display: flex; flex-direction: column; gap: var(--spacing-sm); max-height: 200px; overflow-y: auto; margin-top: var(--spacing-md); }
+        .modal-choices button {
+             background-color: var(--input-bg) !important;
+             color: var(--input-text) !important;
+             border: 1px solid var(--border-color) !important;
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -284,9 +298,12 @@
 
     <form class="character-sheet" onsubmit="return false;">
         <header class="sheet-header">
-            <div id="actor-display-header" class="actor-display"></div>
+            <div class="actor-display">
+                <div id="actor-display-header">Loading...</div>
+                <div id="actor-uid-display"></div>
+            </div>
             <h1>Tangent SFF RPG Persona Folio</h1>
-             <div class="file-menu">
+              <div class="file-menu">
                 <button type="button" class="file-menu-button">File</button>
                 <div class="file-menu-dropdown">
                     <button type="button" id="logout-btn" disabled>Logout</button>
@@ -327,7 +344,7 @@
         <section class="main-section" id="attributes-stats-section">
              <div class="columns-2">
                 <div class="col-left">
-                    <fieldset><legend>ATTRIBUTES</legend>
+                    <fieldset><legend>Primary Attributes</legend>
                         <div class="attributes-container">
                             <div class="attribute-column">
                                 <div class="attribute-group"><label for="attr-strength">Strength</label><input type="number" id="attr-strength" class="attribute-input"><label for="attr-might">Might</label><input type="number" id="attr-might"></div>
@@ -343,8 +360,7 @@
                     </fieldset>
                      <fieldset><legend>Modifiers</legend>
                         <div class="single-column-grid" id="modifiers-list">
-                            <!-- Modifiers will be dynamically populated -->
-                        </div>
+                            </div>
                     </fieldset>
                 </div>
                 <div class="col-right">
@@ -387,11 +403,9 @@
             <fieldset><legend>Skills</legend>
                 <div class="columns-2 equal-width">
                     <div id="skills-list-left" class="skills-column">
-                        <!-- Mental skills will be dynamically populated by JavaScript -->
-                    </div>
+                        </div>
                     <div id="skills-list-right" class="skills-column">
-                        <!-- Other skills will be dynamically populated by JavaScript -->
-                    </div>
+                        </div>
                 </div>
             </fieldset>
         </section>
@@ -400,19 +414,18 @@
              <fieldset><legend>Attack</legend>
                 <div class="attack-grid" id="attack-rows">
                     <div class="attack-header">Attack</div><div class="attack-header">Score</div><div class="attack-header">Damage</div><div class="attack-header">Notes</div>
-                    <!-- Attack rows will be populated by JS -->
-                </div>
+                    </div>
             </fieldset>
             
             <fieldset><legend>Armor Location</legend>
                 <div class="armor-grid" id="armor-rows">
                     <div class="armor-header">Location</div><div class="armor-header">Total DR</div><div class="armor-header">Notes</div>
-                    <label for="armor-head">Head</label><input type="text" id="armor-head-dr"><input type="text" id="armor-head-notes">
-                    <label for="armor-torso">Torso</label><input type="text" id="armor-torso-dr"><input type="text" id="armor-torso-notes">
-                    <label for="armor-right-arm">Right Arm</label><input type="text" id="armor-right-arm-dr"><input type="text" id="armor-right-arm-notes">
-                    <label for="armor-left-arm">Left Arm</label><input type="text" id="armor-left-arm-dr"><input type="text" id="armor-left-arm-notes">
-                    <label for="armor-right-leg">Right Leg</label><input type="text" id="armor-right-leg-dr"><input type="text" id="armor-right-leg-notes">
-                    <label for="armor-left-leg">Left Leg</label><input type="text" id="armor-left-leg-dr"><input type="text" id="armor-left-leg-notes">
+                    <label for="armor-head-dr">Head</label><input type="text" id="armor-head-dr"><input type="text" id="armor-head-notes">
+                    <label for="armor-torso-dr">Torso</label><input type="text" id="armor-torso-dr"><input type="text" id="armor-torso-notes">
+                    <label for="armor-right-arm-dr">Right Arm</label><input type="text" id="armor-right-arm-dr"><input type="text" id="armor-right-arm-notes">
+                    <label for="armor-left-arm-dr">Left Arm</label><input type="text" id="armor-left-arm-dr"><input type="text" id="armor-left-arm-notes">
+                    <label for="armor-right-leg-dr">Right Leg</label><input type="text" id="armor-right-leg-dr"><input type="text" id="armor-right-leg-notes">
+                    <label for="armor-left-leg-dr">Left Leg</label><input type="text" id="armor-left-leg-dr"><input type="text" id="armor-left-leg-notes">
                 </div>
             </fieldset>
         </section>
@@ -430,36 +443,31 @@
              <fieldset><legend>Features</legend>
                 <div class="simple-grid" id="features-list">
                     <div class="grid-header">Feature</div><div class="grid-header">Effect</div>
-                    <!-- Feature rows will be populated -->
-                </div>
+                    </div>
             </fieldset>
              <fieldset><legend>Disadvantages</legend>
                 <div class="single-column-grid" id="disadvantages-list">
-                    <!-- Disadvantage rows will be populated -->
-                </div>
+                    </div>
             </fieldset>
              <fieldset><legend>Augmentations</legend>
                 <div class="simple-grid" id="augmentations-list">
                     <div class="grid-header">Augmentation</div><div class="grid-header">Effect</div>
-                    <!-- Augmentation rows will be populated -->
-                </div>
+                    </div>
             </fieldset>
              <fieldset><legend>Other Traits</legend>
                 <div class="single-column-grid" id="other-traits-list">
-                    <!-- Dynamic rows -->
-                </div>
+                    </div>
             </fieldset>
         </section>
 
         <section class="main-section" id="metafocus-section">
             <fieldset><legend>Metafocus</legend>
                  <div class="skill-group" id="metafocus-skills-list">
-                     <!-- Metafocus skills will be populated here -->
-                 </div>
+                     </div>
                  <hr>
                  <h5 class="skill-subcategory-header" style="text-align:center; margin-top: 1rem;">Invocations</h5>
                  <div class="simple-grid" id="invocations-list">
-                      <div class="grid-header">Invocation</div><div class="grid-header">Level</div>
+                         <div class="grid-header">Invocation</div><div class="grid-header">Level</div>
                  </div>
                  <hr>
                  <h5 class="skill-subcategory-header" style="text-align:center; margin-top: 1rem;">Special Abilities</h5>
@@ -471,17 +479,17 @@
         <section class="main-section" id="folio-3">
              <fieldset><legend>Gear</legend>
                 <div class="single-column-grid" id="gear-list">
-                     <div class="grid-header">Gear</div>
+                        <div class="grid-header">Gear</div>
                 </div>
             </fieldset>
             <fieldset><legend>Mecha</legend>
                 <div class="single-column-grid" id="mecha-list">
-                     <div class="grid-header">Mecha</div>
+                        <div class="grid-header">Mecha</div>
                 </div>
             </fieldset>
             <fieldset><legend>Miscellaneous</legend>
                  <div class="single-column-grid" id="miscellaneous-list">
-                     <div class="grid-header">Item</div>
+                         <div class="grid-header">Item</div>
                 </div>
             </fieldset>
         </section>
@@ -489,8 +497,7 @@
         <section class="main-section" id="folio-4">
              <fieldset><legend>Notes</legend>
                 <div class="single-column-grid" id="notes-list">
-                    <!-- Notes rows will be populated -->
-                </div>
+                    </div>
             </fieldset>
         </section>
 
@@ -500,7 +507,6 @@
         WOLFE.BT@TANGENTLLC
     </footer>
 
-    <!-- Modal for notifications and prompts -->
     <div id="custom-modal" class="modal-overlay">
         <div class="modal-content">
             <p id="modal-text"></p>
@@ -513,8 +519,8 @@
             <input type="text" id="modal-input" style="display: none;">
             <div class="modal-buttons">
                  <button id="modal-google-btn" style="display: none;">
-                    <svg style="display: inline-block; height: 18px; vertical-align: middle; margin-right: 8px;" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C42.021,35.596,44,30.138,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
-                    Sign in with Google
+                     <svg style="display: inline-block; height: 18px; vertical-align: middle; margin-right: 8px;" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C42.021,35.596,44,30.138,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
+                     Sign in with Google
                 </button>
                 <button id="modal-register-btn" style="display: none;">Register</button>
                 <button id="modal-login-btn" style="display: none;">Login</button>
@@ -525,10 +531,11 @@
         </div>
     </div>
 
+    <!-- REMOVED the separate script tag for the config object to prevent timing issues. -->
+
     <script type="module">
         // Firebase modules for database and authentication
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
         import { 
             getAuth, 
             onAuthStateChanged, 
@@ -538,14 +545,53 @@
             GoogleAuthProvider,
             signInWithPopup
         } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, collection, query, where, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
         document.addEventListener('DOMContentLoaded', async () => {
             console.log("Character sheet script loaded. 🚀");
 
+            // --- DATA & SETUP ---
+            const attributeOptions = [
+                { value: 'attr-strength', text: 'Strength' }, { value: 'attr-agility', text: 'Agility' },
+                { value: 'attr-constitution', text: 'Constitution' }, { value: 'attr-intellect', text: 'Intellect' },
+                { value: 'attr-wisdom', text: 'Wisdom' }, { value: 'attr-charisma', text: 'Charisma' },
+            ];
+            const mentalSkillData = {
+                "Mental": {
+                    "skills": ["Alertness"],
+                    "subcategories": {
+                        "Knowledge": ["Academics", "Appraisal", "Computers", "Culture", "History", "Investigation", "Language", "Medicine", "Nature", "Navigation", "Nobility", "Physics", "Religion", "Science", "Survival", "Tactics", "Technology"],
+                        "Vocation": ["Administrator", "Alchemist", "Ambassador", "Architect", "Archivist", "Armorer", "Artist", "Artificer", "Broker", "Celebrity", "Constable", "Courtesan", "Culinarian", "Demolitionist", "Electrician", "Engineer", "Groundskeeper", "Handler", "Laborer", "Mechanic", "Researcher", "Salvager", "Soldier", "Tailor", "Transporter", "Weaponsmith"]
+                    }
+                }
+            };
+            const otherSkillData = {
+                "Physical": { "skills": ["Acrobatics", "Athletics", "Piloting", "Stealth"] },
+                "Social": {
+                    "subcategories": {
+                        "Manipulation": ["Insight", "Bluff", "Diplomacy", "Intimidate", "Streetwise"],
+                        "Expression": ["Acting", "Comedy", "Dancing", "Disguise", "Keyboard", "Legerdemain", "Oratory", "Percussion", "Singing", "String", "Style", "Wind"]
+                    }
+                },
+                "Combat": {
+                    "subcategories": {
+                        "Archaic": ["Defense", "Melee", "Ranged", "Unarmed"],
+                        "Modern": ["Ballistic", "Heavy Weapons"],
+                        "Advanced": ["Energy", "Heavy Energy"]
+                    }
+                }
+            };
+            const metafocusData = {
+                "Attune": [], "Dimension": ["Summoning", "Teleport"],
+                "Energy": ["Elemental", "Force"], "Entropy": ["Chaos", "Order"],
+                "Illusion": ["Phantasmal", "Shadow"], "Matter": ["Enhancement", "Transmutation"],
+                "Mental": ["Projection", "Sense"]
+            };
+
             // --- UI ELEMENTS ---
             const sheet = document.querySelector('.character-sheet');
             const actorDisplayHeader = document.getElementById('actor-display-header');
+            const actorUidDisplay = document.getElementById('actor-uid-display');
             const logoutBtn = document.getElementById('logout-btn');
             const cloudSaveBtn = document.getElementById('cloud-save-btn');
             const cloudLoadBtn = document.getElementById('cloud-load-btn');
@@ -570,238 +616,100 @@
             const modalGoogleBtn = document.getElementById('modal-google-btn');
             let modalResolve = null;
 
-            const showModal = (text, options = {}) => {
-                 // Hide all optional elements initially
-                [modalAuthForm, modalInput, modalChoices, modalCopyBtn, modalOkBtn, modalCancelBtn, modalRegisterBtn, modalLoginBtn, modalGoogleBtn].forEach(el => el.style.display = 'none');
-                modalErrorText.textContent = '';
-                
-                modalText.textContent = text;
-
-                if (options.auth) {
-                    modalAuthForm.style.display = 'flex';
-                    modalRegisterBtn.style.display = 'inline-block';
-                    modalLoginBtn.style.display = 'inline-block';
-                    modalGoogleBtn.style.display = 'inline-block';
-                } else if (options.choices) {
-                    modalChoices.style.display = 'flex';
-                    options.choices.forEach(choice => {
-                        const choiceBtn = document.createElement('button');
-                        choiceBtn.textContent = choice.text;
-                        choiceBtn.onclick = () => {
-                            modal.classList.remove('show');
-                            if(modalResolve) modalResolve(choice.value);
-                        }
-                        modalChoices.appendChild(choiceBtn);
-                    });
-                    modalCancelBtn.style.display = 'inline-block';
-                } else if (options.prompt) {
-                     modalInput.style.display = 'block';
-                     modalInput.value = options.inputValue || '';
-                     modalInput.placeholder = options.placeholder || '';
-                     modalInput.readOnly = !!options.readOnly;
-                     modalOkBtn.style.display = 'inline-block';
-                     if(options.showCancel) modalCancelBtn.style.display = 'inline-block';
-                     if(options.showCopy) modalCopyBtn.style.display = 'inline-block';
-                } else {
-                    modalOkBtn.style.display = 'inline-block';
-                }
-
-                modal.classList.add('show');
-                return new Promise(resolve => { modalResolve = resolve; });
-            };
-
+            // --- MODAL FUNCTIONS ---
             const closeModal = () => {
                 modal.classList.remove('show');
-            };
-
-            modalOkBtn.addEventListener('click', () => {
-                if (modalInput.style.display === 'block' && !modalInput.readOnly && !modalInput.value.trim()){
-                    modalErrorText.textContent = "Input cannot be empty.";
-                    return;
-                }
-                closeModal();
-                if(modalResolve) modalResolve(modalInput.value.trim());
-            });
-            modalCancelBtn.addEventListener('click', () => {
-                closeModal();
-                if(modalResolve) modalResolve(null);
-            });
-            modalCopyBtn.addEventListener('click', () => {
-                modalInput.select();
-                document.execCommand('copy');
-                modalCopyBtn.textContent = 'Copied!';
-                setTimeout(() => { modalCopyBtn.textContent = 'Copy'; }, 2000);
-            });
-
-            // --- FIREBASE AND AUTHENTICATION ---
-            let auth, db;
-            
-             // --- IMPORTANT ---
-            // PASTE YOUR FIREBASE CONFIG OBJECT HERE
-            // You can find this in your Firebase project settings.
-             const firebaseConfig = {
-                apiKey: "AIzaSyDg5I-5rofObhKS7cS2dz3cC5dybRKY9-Y",
-                authDomain: "tangent-sff-rpg-sheets.firebaseapp.com",
-                projectId: "tangent-sff-rpg-sheets",
-                storageBucket: "tangent-sff-rpg-sheets.firebasestorage.app",
-                messagingSenderId: "897760227296",
-                appId: "1:897760227296:web:0e4ec5a85d1e153d76c585",
-                measurementId: "G-VMEZ9HN80Q"
-             };
-
-            try {
-                if (!firebaseConfig || !firebaseConfig.apiKey) {
-                    throw new Error("Firebase configuration is missing. Please paste your config object into the script.");
-                }
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                getAnalytics(app);
-                setLogLevel('debug');
-                console.log("Firebase initialized.");
-            } catch (error) {
-                console.error("Firebase initialization failed:", error);
-                showModal(error.message);
-                return; // Stop execution if Firebase fails
+                setTimeout(() => {
+                    modalText.textContent = '';
+                    modalInput.value = '';
+                    modalEmailInput.value = '';
+                    modalPasswordInput.value = '';
+                    modalErrorText.textContent = '';
+                    modalChoices.innerHTML = '';
+                    modalAuthForm.style.display = 'none';
+                    modalInput.style.display = 'none';
+                    modalChoices.style.display = 'none';
+                    modalCancelBtn.style.display = 'none';
+                    modalCopyBtn.style.display = 'none';
+                    modalRegisterBtn.style.display = 'none';
+                    modalLoginBtn.style.display = 'none';
+                    modalGoogleBtn.style.display = 'none';
+                    modalOkBtn.style.display = 'inline-block';
+                }, 300);
             }
 
-            const getActorsCollection = () => collection(db, 'actors');
-            const getPrivateCollection = (uid) => collection(db, 'users', uid, 'characterSheets');
-            const getPublicCollection = () => collection(db, 'publicCharacterSheets');
+            const showModal = (text, options = {}) => {
+                return new Promise(resolve => {
+                    modalResolve = resolve;
+                    modalText.textContent = text;
 
-            const fetchAndDisplayActorName = async (uid) => {
-                try {
-                    const actorDocRef = doc(getActorsCollection(), uid);
-                    const actorDoc = await getDoc(actorDocRef);
-                    if (actorDoc.exists()) {
-                        actorDisplayHeader.textContent = actorDoc.data().actorName;
-                        [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = false);
-                        closeModal();
-                    } else {
-                        // First time login for this user, prompt for actor name
-                        await promptAndSetActorName(uid);
+                    // Reset modal state
+                    modalInput.style.display = 'none';
+                    modalInput.readOnly = false;
+                    modalAuthForm.style.display = 'none';
+                    modalChoices.innerHTML = '';
+                    modalChoices.style.display = 'none';
+                    modalOkBtn.style.display = 'inline-block';
+                    modalCancelBtn.style.display = 'none';
+                    modalCopyBtn.style.display = 'none';
+                    modalRegisterBtn.style.display = 'none';
+                    modalLoginBtn.style.display = 'none';
+                    modalGoogleBtn.style.display = 'none';
+
+                    if (options.auth) {
+                        modalAuthForm.style.display = 'flex';
+                        modalRegisterBtn.style.display = 'inline-block';
+                        modalLoginBtn.style.display = 'inline-block';
+                        modalGoogleBtn.style.display = 'inline-block';
+                        modalOkBtn.style.display = 'none';
                     }
-                } catch (error) {
-                    console.error("Error fetching actor name:", error);
-                    modalErrorText.textContent = "Could not fetch profile.";
-                }
-            };
 
-            const promptAndSetActorName = async (uid) => {
-                let actorName = '';
-                while(!actorName) {
-                    actorName = await showModal("Choose your public Actor Name:", { prompt: true, showCancel: false });
-                }
+                    if (options.prompt) {
+                        modalInput.style.display = 'block';
+                        modalInput.value = options.inputValue || '';
+                        modalInput.readOnly = options.readOnly || false;
+                    }
 
-                try {
-                    const actorDocRef = doc(getActorsCollection(), uid);
-                    await setDoc(actorDocRef, { actorName: actorName });
-                    await fetchAndDisplayActorName(uid);
-                } catch (error) {
-                    console.error("Error setting actor name: ", error);
-                    showModal("Could not save your Actor Name.");
-                }
+                    if (options.choices) {
+                        modalChoices.style.display = 'flex';
+                        options.choices.forEach(choice => {
+                            const button = document.createElement('button');
+                            button.textContent = choice.text;
+                            button.dataset.value = choice.value;
+                            button.onclick = () => {
+                                if (modalResolve) modalResolve(choice.value);
+                                modalResolve = null;
+                                closeModal();
+                            };
+                            modalChoices.appendChild(button);
+                        });
+                        modalOkBtn.style.display = 'none';
+                    }
+
+                    if (options.showCancel || options.choices) {
+                        modalCancelBtn.style.display = 'inline-block';
+                    }
+
+                    if (options.showCopy) {
+                        modalCopyBtn.style.display = 'inline-block';
+                    }
+                    modal.classList.add('show');
+                });
+            }
+            
+            // --- FIREBASE AND AUTHENTICATION ---
+            let auth, db, appId;
+            // FIX: Define the config object directly inside the module scope to ensure it's available.
+            const firebaseConfig = {
+                apiKey: "AIzaSyD1aNbSzvIgrRTrwePM5n3c3AkTDvZbCTc",
+                authDomain: "tangent-persona.firebaseapp.com",
+                projectId: "tangent-persona",
+                storageBucket: "tangent-persona.appspot.com",
+                messagingSenderId: "694138536413",
+                appId: "1:694138536413:web:906b238795649bb70f3634"
             };
             
-            modalRegisterBtn.addEventListener('click', async () => {
-                const email = modalEmailInput.value;
-                const password = modalPasswordInput.value;
-                modalErrorText.textContent = '';
-                try {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                } catch (error) {
-                    modalErrorText.textContent = error.message;
-                }
-            });
-
-            modalLoginBtn.addEventListener('click', async () => {
-                const email = modalEmailInput.value;
-                const password = modalPasswordInput.value;
-                modalErrorText.textContent = '';
-                try {
-                    await signInWithEmailAndPassword(auth, email, password);
-                } catch (error) {
-                     modalErrorText.textContent = error.message;
-                }
-            });
-
-            modalGoogleBtn.addEventListener('click', async () => {
-                const provider = new GoogleAuthProvider();
-                modalErrorText.textContent = '';
-                try {
-                    await signInWithPopup(auth, provider);
-                } catch (error) {
-                    modalErrorText.textContent = error.message;
-                }
-            });
-            
-            logoutBtn.addEventListener('click', () => {
-                signOut(auth);
-            });
-
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    console.log("User is signed in:", user.uid);
-                    await fetchAndDisplayActorName(user.uid);
-                } else {
-                    console.log("User is signed out.");
-                    actorDisplayHeader.textContent = '';
-                    [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = true);
-                    showModal("Welcome! Please log in or register.", { auth: true });
-                }
-            });
-
-            // --- FILE MENU LOGIC ---
-            fileMenuButton.addEventListener('click', (event) => {
-                event.stopPropagation();
-                fileMenuDropdown.classList.toggle('show');
-            });
-
-            document.addEventListener('click', (event) => {
-                if (!fileMenuButton.contains(event.target) && !fileMenuDropdown.contains(event.target)) {
-                    fileMenuDropdown.classList.remove('show');
-                }
-            });
-
-            // --- DATA & SETUP ---
-            const attributeOptions = [
-                { value: 'attr-strength', text: 'Strength' }, { value: 'attr-agility', text: 'Agility' },
-                { value: 'attr-constitution', text: 'Constitution' }, { value: 'attr-intellect', text: 'Intellect' },
-                { value: 'attr-wisdom', text: 'Wisdom' }, { value: 'attr-charisma', text: 'Charisma' },
-            ];
-            const mentalSkillData = {
-                "Mental": {
-                    "skills": ["Alertness"],
-                    "subcategories": {
-                        "Knowledge": ["Academics", "Appraisal", "Computers", "Culture", "History", "Investigation", "Language", "Medicine", "Nature", "Navigation", "Nobility", "Physics", "Religion", "Science", "Survival", "Tactics", "Technology"],
-                        "Vocation": ["Administrator", "Alchemist", "Ambassador", "Architect", "Archivist", "Armorer", "Artist", "Artificer", "Broker", "Celebrity", "Constable", "Courtesan", "Culinarian", "Demolitionist", "Electrician", "Engineer", "Groundskeeper", "Handler", "Laborer", "Mechanic", "Researcher", "Salvager", "Soldier", "Tailor", "Transporter", "Weaponsmith"]
-                    }
-                }
-            };
-            const otherSkillData = {
-               "Physical": { "skills": ["Acrobatics", "Athletics", "Piloting", "Stealth"] },
-               "Social": {
-                   "subcategories": {
-                       "Manipulation": ["Insight", "Bluff", "Diplomacy", "Intimidate", "Streetwise"],
-                       "Expression": ["Acting", "Comedy", "Dancing", "Disguise", "Keyboard", "Legerdemain", "Oratory", "Percussion", "Singing", "String", "Style", "Wind"]
-                   }
-               },
-               "Combat": {
-                   "subcategories": {
-                       "Archaic": ["Defense", "Melee", "Ranged", "Unarmed"],
-                       "Modern": ["Ballistic", "Heavy Weapons"],
-                       "Advanced": ["Energy", "Heavy Energy"]
-                   }
-               }
-            };
-            const metafocusData = {
-                "Attune": [], "Dimension": ["Summoning", "Teleport"],
-                "Energy": ["Elemental", "Force"], "Entropy": ["Chaos", "Order"],
-                "Illusion": ["Phantasmal", "Shadow"], "Matter": ["Enhancement", "Transmutation"],
-                "Mental": ["Projection", "Sense"]
-            };
-
-            // --- DYNAMIC ELEMENT CREATION ---
+            // --- FUNCTION DECLARATIONS (No changes needed in these helper functions) ---
             function createSkillRow(skillName, skillId) {
                 const row = document.createElement('div');
                 row.className = 'skill-row';
@@ -877,7 +785,6 @@
                 container.appendChild(row);
             }
 
-            // --- POPULATION FUNCTIONS ---
             function populateSkillContainer(containerId, data) {
                 const container = document.getElementById(containerId);
                 if (!container) return;
@@ -942,9 +849,9 @@
                     if (subcatName === 'Attune') continue;
                     
                     if(metafocusData[subcatName].length > 0) { 
-                         const targetCol = leftSkills.includes(subcatName) ? leftCol : rightCol;
-                         const groupDiv = document.createElement('div');
-                         groupDiv.className = 'skill-group';
+                        const targetCol = leftSkills.includes(subcatName) ? leftCol : rightCol;
+                        const groupDiv = document.createElement('div');
+                        groupDiv.className = 'skill-group';
                         
                         const subcatHeader = document.createElement('h5');
                         subcatHeader.className = 'skill-subcategory-header';
@@ -1026,7 +933,6 @@
                 addSingleColumnRow(document.getElementById('notes-list'));
             }
 
-            // --- CALCULATIONS & EVENT HANDLING ---
             const calculateSkillTotal = (skillRow) => {
                 const rank = parseInt(skillRow.querySelector('.skill-rank')?.value) || 0;
                 const mod = parseInt(skillRow.querySelector('.skill-mod')?.value) || 0;
@@ -1064,7 +970,7 @@
                 if(simpleGrid) {
                     const inputs = Array.from(simpleGrid.querySelectorAll('[data-dynamic-row]'));
                     if (inputs.indexOf(target) >= inputs.length - 2) {
-                       addSimpleGridRow(simpleGrid);
+                        addSimpleGridRow(simpleGrid);
                     }
                     return;
                 }
@@ -1096,9 +1002,246 @@
                 }
             }
 
+            const getCharacterData = () => {
+                const data = {};
+                const inputs = sheet.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    if (input.id) {
+                        data[input.id] = input.type === 'checkbox' ? input.checked : input.value;
+                    }
+                });
+                return data;
+            };
+
+            const loadCharacterData = (data) => {
+                populateFolio1();
+                populateFolio2();
+                populateFolio3();
+                populateFolio4();
+
+                const dynamicCounts = {};
+                const idPrefixes = ['trait-species-trait-', 'trait-origin-trait-', 'trait-occupation-trait-', 'trait-faction-trait-', 'attack-name-', 'features-name-', 'invocations-name-', 'augmentations-name-', 'modifiers-name-', 'disadvantages-name-', 'other-traits-name-', 'gear-name-', 'mecha-name-', 'miscellaneous-name-', 'notes-name-', 'skill-special-name-'];
+
+                for(const id in data) {
+                    for(const prefix of idPrefixes) {
+                        if(id.startsWith(prefix)) {
+                            dynamicCounts[prefix] = (dynamicCounts[prefix] || 0) + 1;
+                        }
+                    }
+                }
+                
+                for(const prefix in dynamicCounts) {
+                    const count = dynamicCounts[prefix];
+                    for(let i=0; i < count - 1; i++){
+                        if(prefix.startsWith('trait-')) {
+                            const type = prefix.split('-')[1];
+                            const container = document.getElementById(`traits-list-${type === 'species' || type === 'origin' ? 'left' : 'right'}`);
+                            const grid = container?.querySelector(`[data-trait-type="${type}"]`);
+                            if (grid) addTraitRow(grid, type);
+                        } else if(prefix === 'attack-name-') {
+                            addAttackRow();
+                        } else if (['features-name-', 'invocations-name-', 'augmentations-name-'].includes(prefix)) {
+                            addSimpleGridRow(document.getElementById(prefix.replace('-name-', '-list')));
+                        } else if (prefix === 'skill-special-name-') {
+                            addSpecialAbilityRow(document.getElementById('special-abilities-list'));
+                        } else {
+                            addSingleColumnRow(document.getElementById(prefix.replace('-name-', '-list')));
+                        }
+                    }
+                }
+
+                for (const id in data) {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        if (element.tagName === 'SELECT') {
+                            if ([...element.options].some(opt => opt.value === data[id])) {
+                                element.value = data[id];
+                            }
+                        } else {
+                            element.value = data[id];
+                        }
+                    }
+                }
+                
+                document.querySelectorAll('.skill-row[data-skill-id]').forEach(calculateSkillTotal);
+            };
+
+            const downloadFile = (filename, content, mimeType) => {
+                const blob = new Blob([content], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            };
+            
+            // --- MAIN EXECUTION LOGIC ---
+            // Populate the sheet on initial load
+            populateSkillContainer('skills-list-left', mentalSkillData);
+            populateSkillContainer('skills-list-right', otherSkillData);
+            populateMetafocus();
+            populateFolio1();
+            populateFolio2();
+            populateFolio3();
+            populateFolio4();
+            document.querySelectorAll('.skill-row[data-skill-id]').forEach(calculateSkillTotal);
+
+            // --- REVISED FIREBASE INITIALIZATION & AUTH ---
+            try {
+                if (!firebaseConfig || !firebaseConfig.apiKey) {
+                    throw new Error("Firebase configuration is missing or invalid. Cloud features are disabled.");
+                }
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                appId = firebaseConfig.appId; 
+                setLogLevel('error'); 
+                console.log("Firebase initialized.");
+
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                showModal(error.message);
+                actorDisplayHeader.textContent = "Error";
+                actorUidDisplay.textContent = "Cloud services disabled.";
+                [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = true);
+                return; 
+            }
+            
+            const getActorsCollection = () => collection(db, 'artifacts', appId, 'public', 'data', 'actors');
+            const getPrivateCollection = (uid) => collection(db, 'artifacts', appId, 'users', uid, 'characterSheets');
+            const getPublicCollection = () => collection(db, 'artifacts', appId, 'public', 'data', 'characterSheets');
+
+            const fetchAndDisplayActorName = async (uid) => {
+                try {
+                    const actorDocRef = doc(getActorsCollection(), uid);
+                    const actorDoc = await getDoc(actorDocRef);
+                    if (actorDoc.exists()) {
+                        actorDisplayHeader.textContent = actorDoc.data().actorName;
+                        [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = false);
+                        closeModal();
+                    } else {
+                        await promptAndSetActorName(uid);
+                    }
+                } catch (error) {
+                    console.error("Error fetching actor name:", error);
+                    showModal("Could not fetch your profile. Please try refreshing the page.");
+                }
+            };
+
+            const promptAndSetActorName = async (uid) => {
+                let actorName = '';
+                while(!actorName || actorName.trim() === "") {
+                    const result = await showModal("Welcome! Please choose a public Actor Name:", { prompt: true, showCancel: false });
+                    actorName = result ? result.trim() : "";
+                }
+
+                try {
+                    const actorDocRef = doc(getActorsCollection(), uid);
+                    await setDoc(actorDocRef, { actorName: actorName });
+                    await fetchAndDisplayActorName(uid);
+                } catch (error) {
+                    console.error("Error setting actor name: ", error);
+                    showModal("Could not save your Actor Name. Please try refreshing the page.");
+                }
+            };
+
+            const handleAuthAttempt = async (authFunction) => {
+                modalErrorText.textContent = '';
+                modalText.textContent = 'Please wait...';
+                [modalRegisterBtn, modalLoginBtn, modalGoogleBtn].forEach(btn => btn.disabled = true);
+                try {
+                    await authFunction();
+                } catch (error) {
+                    modalErrorText.textContent = error.message;
+                    modalText.textContent = "Welcome! Please log in or register to continue.";
+                    [modalRegisterBtn, modalLoginBtn, modalGoogleBtn].forEach(btn => btn.disabled = false);
+                }
+            };
+
+            // --- EVENT LISTENERS ---
+            modalOkBtn.addEventListener('click', () => {
+                if (modalResolve) {
+                    const isPrompt = modalInput.style.display === 'block';
+                    modalResolve(isPrompt ? modalInput.value : true);
+                }
+                modalResolve = null;
+                closeModal();
+            });
+
+            modalCancelBtn.addEventListener('click', () => {
+                if (modalResolve) modalResolve(null);
+                modalResolve = null;
+                closeModal();
+            });
+
+            modalCopyBtn.addEventListener('click', () => {
+                const textArea = document.createElement("textarea");
+                textArea.value = modalInput.value;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    modalCopyBtn.textContent = 'Copied!';
+                    setTimeout(() => { modalCopyBtn.textContent = 'Copy'; }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                }
+                document.body.removeChild(textArea);
+            });
+            
+            modalRegisterBtn.addEventListener('click', () => {
+                const email = modalEmailInput.value;
+                const password = modalPasswordInput.value;
+                handleAuthAttempt(() => createUserWithEmailAndPassword(auth, email, password));
+            });
+
+            modalLoginBtn.addEventListener('click', () => {
+                const email = modalEmailInput.value;
+                const password = modalPasswordInput.value;
+                handleAuthAttempt(() => signInWithEmailAndPassword(auth, email, password));
+            });
+
+            modalGoogleBtn.addEventListener('click', () => {
+                const provider = new GoogleAuthProvider();
+                handleAuthAttempt(() => signInWithPopup(auth, provider));
+            });
+            
+            logoutBtn.addEventListener('click', () => {
+                signOut(auth);
+            });
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    console.log("User is signed in:", user.uid);
+                    actorUidDisplay.textContent = `UID: ${user.uid}`;
+                    await fetchAndDisplayActorName(user.uid);
+                } else {
+                    console.log("User is signed out.");
+                    actorDisplayHeader.textContent = 'Logged Out';
+                    actorUidDisplay.textContent = '';
+                    [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = true);
+                    showModal("Welcome! Please log in or register to use cloud features.", { auth: true });
+                }
+            });
+
+            fileMenuButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                fileMenuDropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!fileMenuButton.contains(event.target) && !fileMenuDropdown.contains(event.target)) {
+                    fileMenuDropdown.classList.remove('show');
+                }
+            });
+
             sheet.addEventListener('input', (event) => {
                 if (event.target.matches('.skill-rank, .skill-mod, .attribute-input')) {
-                     const skillRow = event.target.closest('.skill-row');
+                    const skillRow = event.target.closest('.skill-row');
                     if (skillRow) {
                         calculateSkillTotal(skillRow);
                     }
@@ -1119,77 +1262,7 @@
                     calculateSkillTotal(event.target.closest('.skill-row'));
                 }
             });
-
-            // --- DATA IMPORT/EXPORT (LOCAL AND CLOUD) ---
-            const getCharacterData = () => {
-                const data = {};
-                const inputs = sheet.querySelectorAll('input, select, textarea');
-                inputs.forEach(input => {
-                    if (input.id) {
-                        data[input.id] = input.type === 'checkbox' ? input.checked : input.value;
-                    }
-                });
-                return data;
-            };
-
-            const loadCharacterData = (data) => {
-                // Reset the sheet to a clean slate before loading
-                populateFolio1();
-                populateFolio2();
-                populateFolio3();
-                populateFolio4();
-
-                const dynamicCounts = {};
-                const idPrefixes = ['trait-species-trait-', 'trait-origin-trait-', 'trait-occupation-trait-', 'trait-faction-trait-', 'attack-name-', 'features-name-', 'invocations-name-', 'augmentations-name-', 'modifiers-name-', 'disadvantages-name-', 'other-traits-name-', 'gear-name-', 'mecha-name-', 'miscellaneous-name-', 'notes-name-', 'skill-special-name-'];
-
-                for(const id in data) {
-                    for(const prefix of idPrefixes) {
-                        if(id.startsWith(prefix)) {
-                            dynamicCounts[prefix] = (dynamicCounts[prefix] || 0) + 1;
-                        }
-                    }
-                }
-                
-                // Add necessary rows for each dynamic section
-                for(const prefix in dynamicCounts) {
-                    const count = dynamicCounts[prefix];
-                    for(let i=0; i < count - 1; i++){ // -1 because one row exists by default
-                        if(prefix.startsWith('trait-')) {
-                            const type = prefix.split('-')[1];
-                            const container = document.getElementById(`traits-list-${type === 'species' || type === 'origin' ? 'left' : 'right'}`);
-                            const grid = container?.querySelector(`[data-trait-type="${type}"]`);
-                            if (grid) addTraitRow(grid, type);
-                        } else if(prefix === 'attack-name-') {
-                            addAttackRow();
-                        } else if (['features-name-', 'invocations-name-', 'augmentations-name-'].includes(prefix)) {
-                            addSimpleGridRow(document.getElementById(prefix.replace('-name-', '-list')));
-                        } else if (prefix === 'skill-special-name-') {
-                            addSpecialAbilityRow(document.getElementById('special-abilities-list'));
-                        } else {
-                            addSingleColumnRow(document.getElementById(prefix.replace('-name-', '-list')));
-                        }
-                    }
-                }
-
-                // Now populate all fields
-                for (const id in data) {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        if (element.tagName === 'SELECT') {
-                            if ([...element.options].some(opt => opt.value === data[id])) {
-                                element.value = data[id];
-                            }
-                        } else {
-                            element.value = data[id];
-                        }
-                    }
-                }
-                
-                // Recalculate all skill totals after loading
-                document.querySelectorAll('.skill-row[data-skill-id]').forEach(calculateSkillTotal);
-            };
             
-            // --- CLOUD SAVE/LOAD ---
             cloudSaveBtn.addEventListener('click', async () => {
                 const user = auth.currentUser;
                 if (!user) {
@@ -1247,7 +1320,7 @@
                         showCancel: true
                     });
 
-                    if (!selectedDocId) return; // User cancelled
+                    if (!selectedDocId) return;
 
                     const selectedDoc = querySnapshot.docs.find(doc => doc.id === selectedDocId);
                     if (selectedDoc) {
@@ -1262,11 +1335,10 @@
                 }
             });
             
-            // --- SHARE FUNCTIONALITY ---
             shareBtn.addEventListener('click', async () => {
                 const user = auth.currentUser;
-                 if (!user) {
-                    showModal("You must be logged in to share.");
+                if (!user) {
+                    showModal("You must be fully logged in to share.");
                     return;
                 }
                 const privateSheetId = sheet.dataset.firestoreId;
@@ -1274,24 +1346,25 @@
                     showModal("Please save the character to the cloud first to get a shareable link.");
                     return;
                 }
-            
+                
                 const privateSheets = getPrivateCollection(user.uid);
 
                 try {
                     const privateDocRef = doc(privateSheets, privateSheetId);
                     const docSnap = await getDoc(privateDocRef);
-            
+                
                     if (!docSnap.exists()) {
                         showModal("Cannot find the character data to share.");
                         return;
                     }
                     const characterData = docSnap.data();
-            
+                
                     const publicSheets = getPublicCollection();
                     const publicDocRef = doc(publicSheets, privateSheetId);
                     await setDoc(publicDocRef, characterData);
 
-                    const shareableLink = `${window.location.origin}${window.location.pathname}?sheet=${privateSheetId}`;
+                    const baseUrl = window.location.href.split('?')[0];
+                    const shareableLink = `${baseUrl}?sheet=${privateSheetId}`;
                     
                     showModal(
                         "Anyone with this link can view this character sheet.", 
@@ -1309,24 +1382,11 @@
                 }
             });
 
-            // --- LOCAL SAVE/LOAD ---
-            const downloadFile = (filename, content, mimeType) => {
-                const blob = new Blob([content], { type: mimeType });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            };
-
-            const saveAsJson = () => {
+            document.getElementById('save-json-btn').addEventListener('click', () => {
                 const data = getCharacterData();
                 const charName = (data['char-name'] || 'character').replace(/\s+/g, '_');
                 downloadFile(`${charName}_folio.json`, JSON.stringify(data, null, 2), 'application/json');
-            };
+            });
 
             const loadJsonInput = document.getElementById('load-json-input');
             document.getElementById('load-json-btn').addEventListener('click', () => loadJsonInput.click());
@@ -1338,54 +1398,19 @@
                     try {
                         const data = JSON.parse(e.target.result);
                         loadCharacterData(data);
-                        sheet.dataset.firestoreId = ''; // Clear Firestore ID when loading local file
+                        sheet.dataset.firestoreId = '';
                     } catch (error) {
                         showModal("Error parsing JSON file. It may be invalid.");
                         console.error(error);
                     }
                 };
                 reader.readAsText(file);
-                loadJsonInput.value = ''; // Reset for re-uploading same file
+                loadJsonInput.value = '';
             });
 
-            // --- PDF & MARKDOWN EXPORT ---
             document.getElementById('save-pdf-btn').addEventListener('click', () => showModal("PDF generation coming soon!"));
             document.getElementById('save-md-btn').addEventListener('click', () => showModal("Markdown export coming soon!"));
 
-            // --- INITIALIZATION ---
-            const loadSharedSheet = async () => {
-                const urlParams = new URLSearchParams(window.location.search);
-                const sharedSheetId = urlParams.get('sheet');
-                if (sharedSheetId && db) { // Ensure db is initialized
-                    try {
-                        const publicDocRef = doc(getPublicCollection(), sharedSheetId);
-                        const docSnap = await getDoc(publicDocRef);
-                        if (docSnap.exists()) {
-                            loadCharacterData(docSnap.data());
-                            sheet.dataset.firestoreId = ''; // It's a shared copy, not the original
-                            showModal("Loaded shared character sheet.");
-                        } else {
-                            showModal("Shared character sheet not found.");
-                        }
-                    } catch (error) {
-                        console.error("Error loading shared sheet: ", error);
-                        showModal("Could not load the shared character sheet.");
-                    }
-                }
-            };
-            
-            // Populate the sheet on initial load
-            populateSkillContainer('skills-list-left', mentalSkillData);
-            populateSkillContainer('skills-list-right', otherSkillData);
-            populateMetafocus();
-            populateFolio1();
-            populateFolio2();
-            populateFolio3();
-            populateFolio4();
-            document.querySelectorAll('.skill-row[data-skill-id]').forEach(calculateSkillTotal);
-
-            // Check for a shared sheet after initial population
-            loadSharedSheet();
         });
     </script>
 </body>
