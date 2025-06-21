@@ -73,8 +73,9 @@
             font-weight: bold;
             color: var(--text-color);
         }
-        #actor-uid-display {
-            font-size: 0.7em;
+        #actor-display-header .uid-display {
+            font-size: 0.6em;
+            font-weight: normal;
             word-break: break-all;
             color: var(--border-color);
             line-height: 1.2;
@@ -294,10 +295,7 @@
 
     <form class="character-sheet" onsubmit="return false;">
         <header class="sheet-header">
-            <div class="actor-display">
-                <div id="actor-display-header">Loading...</div>
-                <div id="actor-uid-display"></div>
-            </div>
+            <div id="actor-display-header" class="actor-display">Loading...</div>
             <h1>Tangent SFF RPG Persona Folio</h1>
              <div class="file-menu">
                 <button type="button" class="file-menu-button">File</button>
@@ -556,7 +554,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             console.log("Character sheet script loaded. 🚀");
 
-             // --- IMPORTANT: Firebase Configuration ---
+            // --- IMPORTANT: Firebase Configuration ---
              const firebaseConfig = {
                 apiKey: "AIzaSyDg5I-5rofObhKS7cS2dz3cC5dybRKY9-Y",
                 authDomain: "tangent-sff-rpg-sheets.firebaseapp.com",
@@ -570,7 +568,6 @@
             // --- UI ELEMENTS ---
             const sheet = document.querySelector('.character-sheet');
             const actorDisplayHeader = document.getElementById('actor-display-header');
-            const actorUidDisplay = document.getElementById('actor-uid-display'); // Added this line
             const logoutBtn = document.getElementById('logout-btn');
             const cloudSaveBtn = document.getElementById('cloud-save-btn');
             const cloudLoadBtn = document.getElementById('cloud-load-btn');
@@ -681,19 +678,19 @@
             const getActorsCollection = () => collection(db, 'artifacts', appId, 'public', 'data', 'actors');
             const getPrivateCollection = (uid) => collection(db, 'artifacts', appId, 'users', uid, 'characterSheets');
             const getPublicCollection = () => collection(db, 'artifacts', appId, 'public', 'data', 'characterSheets');
-
-            const fetchAndDisplayActorName = async (uid) => {
+            
+            const fetchAndDisplayActorName = async (user) => {
+                const uid = user.uid;
                 try {
                     const actorDocRef = doc(getActorsCollection(), uid);
                     const actorDoc = await getDoc(actorDocRef);
                     if (actorDoc.exists()) {
-                        actorDisplayHeader.textContent = actorDoc.data().actorName;
-                        actorUidDisplay.textContent = `UID: ${uid.substring(0,8)}...`;
+                        actorDisplayHeader.innerHTML = `${actorDoc.data().actorName} <span class="uid-display">${user.email}</span>`;
                         [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = false);
                         closeModal();
                     } else {
                         // First time login for this user, prompt for actor name
-                        await promptAndSetActorName(uid);
+                        await promptAndSetActorName(user);
                     }
                 } catch (error) {
                     console.error("Error fetching actor name:", error);
@@ -701,7 +698,8 @@
                 }
             };
 
-            const promptAndSetActorName = async (uid) => {
+            const promptAndSetActorName = async (user) => {
+                const uid = user.uid;
                 let actorName = '';
                 while(!actorName || actorName.trim() === "") {
                     const result = await showModal("Welcome! Please choose a public Actor Name:", { prompt: true, showCancel: false });
@@ -754,14 +752,13 @@
                 signOut(auth);
             });
 
-            onAuthStateChanged(auth, async (user) => {
+            onAuthStateChanged(auth, (user) => {
                 if (user) {
                     console.log("User is signed in:", user.uid);
-                    await fetchAndDisplayActorName(user.uid);
+                    fetchAndDisplayActorName(user);
                 } else {
                     console.log("User is signed out.");
                     actorDisplayHeader.textContent = 'Logged Out';
-                    actorUidDisplay.textContent = '';
                     [cloudSaveBtn, cloudLoadBtn, shareBtn, logoutBtn].forEach(btn => btn.disabled = true);
                     showModal("Welcome! Please log in or register to use cloud features.", { auth: true });
                 }
